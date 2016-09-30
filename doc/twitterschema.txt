@@ -1,0 +1,40 @@
+users
+  user_id: int
+  name: text
+  username: text #unique
+  email: email
+  password: text
+  joindate: date
+  following: int
+  followers: int
+
+followers
+  follower_id: text
+  following_id: text
+
+tweets
+  tweet_id: int
+  author_id: int
+  content: text
+  reply?: bool
+  retweet?: bool #retweets are not replies, both cannot be 1
+  reply_id: int #tweet_id, is null if either bools above are null
+  postdate: date
+  likes: int
+  retweets: int
+
+hashtags
+  hash_id: int #might not be necessary
+  tag: text
+
+users
+  has_many followers #accessed twice, with user_id==follower_id and user_id==following_id
+  has_many tweets
+
+tweets
+  belongs_to user
+  has_many users #mentions
+  has_many hashtags #hashtags
+
+hashtags
+  has_many tweets
