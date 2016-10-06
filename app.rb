@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require './config/environments'
 require 'byebug'
+require_relative 'models/user.rb'
+require_relative 'models/tweet.rb'
 
 
 # set up the environment
@@ -16,7 +18,7 @@ get '/' do
 end
 
 post '/submit/' do
-
+  erb :under_construction
 end
 
 get '/login' do
@@ -24,17 +26,17 @@ get '/login' do
 end
 
 post '/login/submit' do
-
+    erb :under_construction
 end
 
 get '/logout' do
-
+    erb :under_construction
 end
 
 get '/user/:name' do
-
+    erb :under_construction
 end
 
-get 'user/registration' do
-
+get '/registration' do
+  erb :registration
 end
