@@ -2,10 +2,13 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require './config/environments'
 require 'byebug'
+#require_relative 'lib/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 
 
+
+enable :sessions
 # set up the environment
 #env_index = ARGV.index("-e")
 #env_arg = ARGV[env_index + 1] if env_index
@@ -14,6 +17,7 @@ require_relative 'models/tweet.rb'
 #ActiveRecord::Base.establish_connection(databases[env])
 
 get '/' do
+  #authenticate!
   erb :home
 end
 
@@ -26,7 +30,19 @@ get '/login' do
 end
 
 post '/login/submit' do
-    erb :under_construction
+	if exist?(params[:email], params[:password])
+	   u = User.where(email: params[:email], password: params[:password])
+	   u = u[0] #in order to become the array of fields
+	   @name = u.name
+	   @email = u.email
+	   @username = u.user_name
+	   @followers = u.followers
+	   @followings = u.following
+	   @tweets = u.tweet_count
+	   erb :profile
+	 else
+	 	erb :registration
+	 end
 end
 
 get '/logout' do
@@ -41,6 +57,23 @@ get '/registration' do
   erb :registration
 end
 
-get '/navtest' do
-  erb :generic_page_test
+post '/registration/submit' do
+   u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
+   u.save
+   @name = u.name
+   @email = u.email
+   @username = u.user_name
+   @followers = u.followers
+   @followings = u.following
+   @tweets = u.tweet_count
+
+	erb :profile
 end
+
+
+
+
+  #method to check if a user exists in the database
+  def exist?(email,pass)
+  	 User.where(email: email, password: pass).exists?
+  end

@@ -8,7 +8,7 @@ class CreateUsers <ActiveRecord::Migration
       t.integer :followers
       t.integer :following
       t.integer :tweet_count
-      t.timetstamps :date_joined
+      t.timestamps 
     end
   end
 
