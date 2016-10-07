@@ -40,3 +40,7 @@ end
 get '/registration' do
   erb :registration
 end
+
+get '/navtest' do
+  erb :generic_page_test
+end
