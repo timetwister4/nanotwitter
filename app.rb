@@ -14,6 +14,7 @@ require_relative 'models/tweet.rb'
 #ActiveRecord::Base.establish_connection(databases[env])
 
 get '/' do
+  authenticate!
   erb :home
 end
 
