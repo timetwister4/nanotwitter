@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>nanoTwitter Home</title>
+    <title>nanoTwitter Profile</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -28,29 +28,32 @@
   </head>
   <body>
     <%= erb :navbar %>
-
+    <div class="container">
+      <div class="row" background-color>
+        <div class="col-md-4">
+          <div class="panel panel-default">
+            <div class="panel-body">
+          <h1> Hey <%= @user[:name] %> </h1>
+              <h3> User Info: </h3>
+              <ul>
+              <li> Username: <%= @user[:username]%></li>
+              <li> Email: <%= @user[:email]%> </li>
+              <li> Followers: <%= @user[:follows]%> </li>
+              <li> Followers: <%=@user[:followings]%> </li>
+              <li> Number of tweets: <%=@user[:tweets]%> </li>
+            </ul>
+          </div>
+          </div>
+          </div>
+        </div>
+      </div>
 <!-- Begin page-->
-
-
 <!-- jQuery via Google + local fallback -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
 
 <!--Bootstrap jQuery Plugins, compiled and minified -->
 <script src="/js/bootstrap.min.js"></script>
-
-
-
-<h1> Hey <%= @name %> </h1>
-
-    <h3> User Info: </h3>
-    <ul>
-    <li> Username: <%= @username%></li>
-    <li> Email: <%= @email%> </li>
-    <li> Followers: <%= @followes%> </li>
-    <li> Followers: <%=@followings%> </li>
-    <li> Number of tweets: <%=@tweets%> </li>
-    </ul>
 
 
 </body>
