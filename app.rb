@@ -1,14 +1,13 @@
 require 'sinatra'
 require 'sinatra/activerecord'
 require './config/environments'
+require './config/config_sinatra'
 require 'byebug'
-#require_relative 'lib/authentication.rb'
+require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 
 
-
-enable :sessions
 # set up the environment
 #env_index = ARGV.index("-e")
 #env_arg = ARGV[env_index + 1] if env_index
@@ -17,8 +16,9 @@ enable :sessions
 #ActiveRecord::Base.establish_connection(databases[env])
 
 get '/' do
-  #authenticate!
+  @current_user = current_user
   erb :home
+
 end
 
 post '/submit/' do
@@ -39,6 +39,7 @@ post '/login/submit' do
 	   @followers = u.followers
 	   @followings = u.following
 	   @tweets = u.tweet_count
+     session[:user_id] = u.id
 	   erb :profile
 	 else
 	 	erb :registration
@@ -49,9 +50,6 @@ get '/logout' do
     erb :under_construction
 end
 
-get '/user/:name' do
-    erb :under_construction
-end
 
 get '/registration' do
   erb :registration
