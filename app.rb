@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
-require './config/environments'
-require './config/config_sinatra'
+require_relative 'config/environments'
+require_relative 'config/config_sinatra'
 require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
@@ -16,6 +16,8 @@ require_relative 'models/tweet.rb'
 #ActiveRecord::Base.establish_connection(databases[env])
 
 get '/' do
+  #problem: users who are not logged in need to be able to see a non-logged in version
+  #should not automatically redirect them to login.
   authenticate!
   erb :home
 
@@ -34,6 +36,7 @@ post '/login/submit' do
 	if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
+     byebug
      session[:user_id] = @user.id
 	   erb :profile
   else
@@ -49,7 +52,9 @@ post '/login/submit' do
 end
 
 get '/logout' do
-    erb :under_construction
+    #erb :under_construction
+    log_out_now
+    "you are now logged out"
 end
 
 get '/user/:user_name' do
@@ -71,13 +76,10 @@ end
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
    u.save
-   @user = u 
+   @user = u
    erb :profile
 
  #   uri = '/test/' + u.name
 	# redirect uri#{}"user/#{u.name}"
 
 end
-
-
-

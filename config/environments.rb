@@ -12,7 +12,7 @@ configure :development do
   puts "[running in development mode]"
   ActiveRecord::Base.establish_connection(
     :adapter => 'sqlite3',
-    :database =>  'development.sqlite3.db'
+    :database =>  'db/development.sqlite3.db'
   )
 end
 
@@ -25,6 +25,6 @@ configure :test do
   puts "[running in test mode]"
   ActiveRecord::Base.establish_connection(
     :adapter => 'sqlite3',
-    :database =>  'test.sqlite3.db'
+    :database =>  '../db/test.sqlite3.db'
   )
 end
