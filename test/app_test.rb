@@ -20,12 +20,13 @@ describe "App" do
         email: "teamthunderbeardev@gmail.com",
         password: "strongpass"
       )
-    post '/login/submit', params
-      {email: "teamthunderbeardev@gmail.com",
-        password: "strongpass"}.to_json
-
-
-    end
+    post '/login/submit',
+    {:email => "teamthunderbeardev@gmail.com",
+        :password => "strongpass"}
+    assert last_response.ok?
+    byebug
+    assert last_response.body.include?("Bjorn")
+  end
 
     it "can log a user out" do
 

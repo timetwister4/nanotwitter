@@ -32,16 +32,18 @@ get '/login' do
 end
 
 post '/login/submit' do
-  #uri String.new
+  byebug
 	if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
      byebug
      session[:user_id] = @user.id
-	   erb :profile
+     byebug
+     erb :profile
   else
-     erb :registration
+     redirect '/registration'
   end
+
 
   #    uri = '/user/' + u.user_name
 
@@ -69,7 +71,7 @@ get '/user/:user_name' do
 end
 
 
-get '/registration' do
+get '/registration/?' do
   erb :registration
 end
 
