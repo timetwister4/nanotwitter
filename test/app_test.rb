@@ -20,11 +20,13 @@ describe "App" do
         email: "teamthunderbeardev@gmail.com",
         password: "strongpass"
       )
+      byebug
     post '/login/submit',
     {:email => "teamthunderbeardev@gmail.com",
         :password => "strongpass"}
-    assert last_response.ok?
     byebug
+    assert last_response.ok?
+
     assert last_response.body.include?("Bjorn")
   end
 

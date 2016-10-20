@@ -18,7 +18,8 @@ require_relative 'models/tweet.rb'
 get '/' do
   #problem: users who are not logged in need to be able to see a non-logged in version
   #should not automatically redirect them to login.
-  authenticate!
+  user_session = authenticate!
+  byebug
   erb :home
 
 end
@@ -39,7 +40,8 @@ post '/login/submit' do
      byebug
      session[:user_id] = @user.id
      byebug
-     erb :profile
+
+     redirect '/'
   else
      redirect '/registration'
   end

@@ -1,7 +1,10 @@
 def authenticate!
 		unless session[:user_id]
 			session[:original_request] = request.path_info
-			redirect '/login'#should not do this
+			#redirect '/login'#should not do this
+			false
+		else
+			session
 		end
 	end
 
