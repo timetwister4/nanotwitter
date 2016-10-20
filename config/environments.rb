@@ -11,8 +11,8 @@ puts "[Env: #{ENV['RACK_ENV']}.#{ENV['RAILS_ENV']}.#{ENV['SINATRA_ENV']}]"
 configure :development do
   puts "[running in development mode]"
   ActiveRecord::Base.establish_connection(
-    :adapter => 'sqlite3',
-    :database =>  'db/development.sqlite3.db'
+    :adapter => :sqlite3,
+    :database =>  "db/development.sqlite3.db"
   )
 end
 
@@ -25,6 +25,6 @@ configure :test do
   puts "[running in test mode]"
   ActiveRecord::Base.establish_connection(
     :adapter => 'sqlite3',
-    :database =>  '../db/test.sqlite3.db'
+    :database =>  'db/test.sqlite3.db'
   )
 end

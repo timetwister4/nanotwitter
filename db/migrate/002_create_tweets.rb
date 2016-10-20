@@ -5,7 +5,8 @@ class CreateTweets <ActiveRecord::Migration
       t.integer :likes
       t.boolean :reply
       t.integer :reply_id
-      t.timestamps 
+      t.belongs_to :author
+      t.timestamps
     end
   end
 

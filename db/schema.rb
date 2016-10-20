@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 2) do
     t.integer  "likes"
     t.boolean  "reply"
     t.integer  "reply_id"
+    t.integer  "author_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

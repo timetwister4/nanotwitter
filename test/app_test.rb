@@ -24,22 +24,29 @@ describe "App" do
     post '/login/submit',
     {:email => "teamthunderbeardev@gmail.com",
         :password => "strongpass"}
-      #byebug
-      #assert last_response.ok?
 
-      #assert last_response.body.include?("Bjorn")
+      assert_equal last_response.status, 302
+
+
   end
 
+    #this test demonstrates that a user is logged out
+    #by demonstrating it serves the correct page if logged out
     it "can log a user out" do
-
+      post '/login/submit',
+      {:email => "teamthunderbeardev@gmail.com",
+          :password => "strongpass"}
+      get '/logout'
+      get '/'
+      assert last_response.body.include?('<a class="btn btn-primary" href="/login">Login</a>')
     end
 
     it "serves correct page if logged in" do
-
-    end
-
-    it "serves correct page if logged out" do
-
+      post '/login/submit',
+      {:email => "teamthunderbeardev@gmail.com",
+          :password => "strongpass"}
+      get '/'
+      assert last_response.body.include?("Roar")
     end
 
   end
@@ -61,5 +68,30 @@ describe "App" do
 
     end
   end
+
+  describe "Tweeting" do
+    it "can save a tweet to the database" do
+      post 'tweet/new/submit', {"I am a toaster", 1}
+      
+
+    end
+    it "can retrieve all tweets by a user" do
+
+    end
+
+    it "can isolate tags" do
+
+    end
+
+    it "can isolate mentions" do
+
+    end
+
+  end
+
+  describe "Feeds" do
+
+  end
+
 
 end
