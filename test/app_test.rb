@@ -71,8 +71,8 @@ describe "App" do
 
   describe "Tweeting" do
     it "can save a tweet to the database" do
-      post 'tweet/new/submit', {"I am a toaster", 1}
-      
+      #post 'tweet/new/submit', {text: "I am a toaster", author_id: 1}
+
 
     end
     it "can retrieve all tweets by a user" do
