@@ -7,11 +7,14 @@ require_relative '../models/user.rb'
 include Rack::Test::Methods
 
 describe "App" do
+
+  def app
+    Sinatra::Application
+  end
+
   describe "Authentication" do
 
-    def app
-      Sinatra::Application
-    end
+
 
     it "can log a user in" do
       User.create(
@@ -20,11 +23,11 @@ describe "App" do
         email: "teamthunderbeardev@gmail.com",
         password: "strongpass"
       )
-      #byebug
+      byebug
     post '/login/submit',
     {:email => "teamthunderbeardev@gmail.com",
         :password => "strongpass"}
-
+        byebug
       assert_equal last_response.status, 302
 
 
@@ -47,6 +50,7 @@ describe "App" do
           :password => "strongpass"}
       get '/'
       assert last_response.body.include?("Roar")
+      assert last_response.body.include?("Logout")
     end
 
   end
@@ -71,11 +75,15 @@ describe "App" do
 
   describe "Tweeting" do
     it "can save a tweet to the database" do
-      #post 'tweet/new/submit', {text: "I am a toaster", author_id: 1}
-
-
+      Tweet.create(text: "I am toast", author: User.find(1))
+      byebug
+      assert (!(Tweet.find_by_text("I am toast") == nil))
     end
+
+
     it "can retrieve all tweets by a user" do
+      byebug
+      tweets = Tweet.find_by_author_id(1)
 
     end
 

@@ -80,10 +80,11 @@ post '/registration/submit' do
    @user = nil
    if u.save
      login(params)
+     redirect '/'
    else
      "There has been an error"
    end
-   redirect '/user/' + u[:user_name]
+   #redirect '/user/' + u[:user_name]
 end
 
 get '/tweet/new' do
@@ -93,7 +94,10 @@ end
 #the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:roar_text]
-  author = session[:user_id]
-  t=Tweet.create(text, author)
+  i = session[:user_id]
+  byebug
+  author = User.find(i)
+  t=Tweet.create(text: text, author: author )
+  t.save
   byebug
 end
