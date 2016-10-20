@@ -49,9 +49,9 @@ post '/login/submit' do
 	if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
-    #byebug
      session[:user_id] = @user.id
-     #byebug
+     session[:expires_at] = Time.current + 10.minutes
+     byebug
 
      redirect '/'
   else
