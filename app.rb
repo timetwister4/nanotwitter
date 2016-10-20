@@ -39,6 +39,7 @@ post '/login/submit' do
 	   @user = u[0] #in order to become the array of fields
      byebug
      session[:user_id] = @user.id
+     session[:expires_at] = Time.current + 10.minutes
      byebug
 
      redirect '/'
