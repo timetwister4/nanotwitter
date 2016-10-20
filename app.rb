@@ -37,13 +37,13 @@ get '/login' do
 end
 
 post '/login/submit' do
-  byebug
+  #byebug
 	if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
-     byebug
+     #byebug
 
      redirect '/'
   else
@@ -74,7 +74,7 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
-   byebug
+   #byebug
    @user = nil
    if u.save
      login(params)
