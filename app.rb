@@ -15,11 +15,23 @@ require_relative 'models/tweet.rb'
 #databases = YAML.load_file("config/database.yml")
 #ActiveRecord::Base.establish_connection(databases[env])
 
+def login (params)
+  if User.where(email: params[:email], password: params[:password]).exists?
+	   u = User.where(email: params[:email], password: params[:password])
+     @user = u[0] #in order to become the array of fields
+    #byebug
+     session[:user_id] = @user.id
+     return session
+  else
+    return nil
+  end
+end
+
 get '/' do
   #problem: users who are not logged in need to be able to see a non-logged in version
   #should not automatically redirect them to login.
   user_session = authenticate!
-  byebug
+  #byebug
   erb :home
 
 end
@@ -37,9 +49,9 @@ post '/login/submit' do
 	if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
-     byebug
+    #byebug
      session[:user_id] = @user.id
-     byebug
+     #byebug
 
      redirect '/'
   else
@@ -79,9 +91,22 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
-   u.save
-   @user = u
-   erb :profile
+   byebug
+   @user = nil
+   if u.save
+     login(params)
+   else
+     "There has been an error"
+   end
+   redirect '/user/' + u[:user_name]
+
+   #byebug
+   #login()
+   #redirect '/login/submit', {:email => @user[:email],
+       #:password => @user[:password]}
+   #post a login?
+   #should be a redirect
+   #erb :profile
 
  #   uri = '/test/' + u.name
 	# redirect uri#{}"user/#{u.name}"
