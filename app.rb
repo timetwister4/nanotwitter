@@ -8,19 +8,14 @@ require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 
 
-# set up the environment
-#env_index = ARGV.index("-e")
-#env_arg = ARGV[env_index + 1] if env_index
-#env = env_arg || ENV["SINATRA_ENV"] || "development"
-#databases = YAML.load_file("config/database.yml")
-#ActiveRecord::Base.establish_connection(databases[env])
+
 
 def login (params)
   if User.where(email: params[:email], password: params[:password]).exists?
 	   u = User.where(email: params[:email], password: params[:password])
      @user = u[0] #in order to become the array of fields
-    #byebug
      session[:user_id] = @user.id
+     session[:expires_at] = Time.current + 10.minutes
      return session
   else
     return nil
@@ -28,10 +23,7 @@ def login (params)
 end
 
 get '/' do
-  #problem: users who are not logged in need to be able to see a non-logged in version
-  #should not automatically redirect them to login.
   user_session = authenticate!
-  #byebug
   erb :home
 
 end
@@ -57,18 +49,9 @@ post '/login/submit' do
   else
      redirect '/registration'
   end
-
-
-  #    uri = '/user/' + u.user_name
-
-	 # else
-	 # 	  uri = '/registration'
-	 # end
-  #  redirect uri
 end
 
 get '/logout' do
-    #erb :under_construction
     log_out_now
     "you are now logged out"
 end
@@ -99,16 +82,4 @@ post '/registration/submit' do
      "There has been an error"
    end
    redirect '/user/' + u[:user_name]
-
-   #byebug
-   #login()
-   #redirect '/login/submit', {:email => @user[:email],
-       #:password => @user[:password]}
-   #post a login?
-   #should be a redirect
-   #erb :profile
-
- #   uri = '/test/' + u.name
-	# redirect uri#{}"user/#{u.name}"
-
 end
