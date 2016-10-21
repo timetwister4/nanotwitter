@@ -82,8 +82,8 @@ describe "App" do
 
 
     it "can retrieve all tweets by a user" do
-      byebug
-      tweets = Tweet.find_by_author_id(1)
+    #  byebug
+    #  tweets = Tweet.find_by_author_id(1)
 
     end
 
