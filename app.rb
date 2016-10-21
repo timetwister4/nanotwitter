@@ -95,9 +95,9 @@ end
 post '*/tweet/new/submit' do
   text = params[:roar_text]
   i = session[:user_id]
-  byebug
+  #byebug
   author = User.find(i)
   t=Tweet.create(text: text, author: author )
   t.save
-  byebug
+  #byebug
 end

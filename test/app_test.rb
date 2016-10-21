@@ -23,11 +23,11 @@ describe "App" do
         email: "teamthunderbeardev@gmail.com",
         password: "strongpass"
       )
-      byebug
+      #byebug
     post '/login/submit',
     {:email => "teamthunderbeardev@gmail.com",
         :password => "strongpass"}
-        byebug
+      #  byebug
       assert_equal last_response.status, 302
 
 
