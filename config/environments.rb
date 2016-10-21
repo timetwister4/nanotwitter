@@ -18,7 +18,16 @@ end
 
 configure :production do
   puts "[running in production mode]"
-  ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
+  db = URI.parse(ENV['DATABASE_URL'] || 'postgres://localhost/mydb')
+
+  ActiveRecord::Base.establish_connection(
+    :adapter => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
+    :host     => db.host,
+    :username => db.user,
+    :password => db.password,
+    :datbase => db.path[1..-1],
+    :encoding => 'utf8'
+  )
 end
 
 configure :test do
