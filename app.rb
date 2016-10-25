@@ -26,6 +26,8 @@ get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
+    @tweets = Tweet.where(author_id: session[:user_id])
+    #byebug
     erb :my_home #personalized homepage
   else
     erb :home #a generic homepage
@@ -93,11 +95,15 @@ end
 
 #the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
-  text = params[:roar_text]
+  text = params[:tweet_text]
   i = session[:user_id]
-  #byebug
   author = User.find(i)
-  t=Tweet.create(text: text, author: author )
+  t=Tweet.create(text: text, author: author, author_name: author.user_name)
   t.save
   #byebug
+  redirect '/'
+end
+
+get '/search/*' do
+  erb :under_construction
 end
