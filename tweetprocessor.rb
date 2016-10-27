@@ -5,7 +5,7 @@ require_relative 'models/tweet'
 
 class TweetProcessor
 
-  def make_tweet(text, author_id, reply*)
+  def make_tweet(text, author_id) #add splash param for reply information
     author = User.find(author_id)#get author for author fields
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)

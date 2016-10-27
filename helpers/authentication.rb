@@ -6,14 +6,14 @@ def authenticate!
 		else
 			session
 		end
-	end
+end
 
-	def current_user
-		current_user_id = session[:user_id]
-		return nil if current_user_id.nil?
-		User.find(current_user_id)
+def current_user
+	current_user_id = session[:user_id]
+	return nil if current_user_id.nil?
+	User.find(current_user_id)
+end
 
-	end
 	def log_out_now
 		session.clear
 	end
