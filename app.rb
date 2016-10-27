@@ -9,7 +9,7 @@ require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
-  send_file 'loaderio-accded2323af55270a8895980c841782.txt'
+  send_file 'loaderio-accded2323af55270a8895980c841782.txt
 end
 
 
@@ -119,7 +119,7 @@ post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
   author = User.find(i)
-  t=Tweet.create(text: text, author: author)
+  t=Tweet.create(text: text, author: author, author_name: author.user_name)
   t.save
   #byebug
   redirect '/';
