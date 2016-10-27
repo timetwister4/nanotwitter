@@ -9,7 +9,7 @@ require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
-  send_file 'loaderio-accded2323af55270a8895980c841782.txt
+  send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
 
 
