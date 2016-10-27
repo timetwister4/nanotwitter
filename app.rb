@@ -6,9 +6,11 @@ require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
+require_relative 'models/follow.rb'
 
 
 
+#consider moving this to the authentication helper.
 
 def login (params)
   if User.where(email: params[:email], password: params[:password]).exists?
@@ -22,6 +24,8 @@ def login (params)
   end
 end
 
+
+#root
 get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
@@ -32,19 +36,15 @@ get '/' do
   else
     erb :home #a generic homepage
   end
-
 end
 
-post '/submit/' do
-  erb :under_construction
-end
-
+# Login URLs #
 get '/login' do
   erb :login
 end
 
 post '/login/submit' do
-	if User.where(email: params[:email], password: params[:password]).exists?
+	if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
 	   u = User.where(email: params[:email], password: params[:password])
 	   @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
@@ -61,17 +61,7 @@ get'/logout' do
     redirect '/'
 end
 
-get '/user/:user_name' do
-    authenticate!
-    if User.where(user_name: params[:user_name]).exists?
-      u = User.where(user_name: params[:user_name])
-      @user = u[0]
-      erb :profile
-    else
-      erb :error
-    end
-end
-
+# Account Registration URLs #
 
 get '/registration/?' do
   erb :registration
@@ -79,21 +69,49 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
-   @user = nil
+   @user = nil #? What was this for?
    if u.save
      login(params)
      redirect '/'
    else
      "There has been an error"
    end
-   #redirect '/user/' + u[:user_name]
+end
+
+# User Profile URLs and Functions #
+
+get '/user/:user_name' do
+    if User.where(user_name: params[:user_name]).exists?
+      u = User.where(user_name: params[:user_name])
+      @user = u[0]
+      @follow_status = Follow.where(follower_id: session[:user_id], followed_id: u[0].id).exists?
+      erb :profile
+    else
+      erb :error
+    end
+end
+
+post '/user/:user_name/follow' do
+  follower = User.find(session[:user_id])#the person following
+  followed = User.find_by_user_name(params[:user_name]) #the person being followed
+  f = Follow.create(follower: follower, followed: followed)
+  f.save
+  redirect "/user/#{params[:user_name]}"
+end
+#note, consider storing followed users in the user's session cookie?
+#add to it when they add a follower
+
+post '/user/:user_name/unfollow' do
+  follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
+  Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+  redirect "/user/#{params[:user_name]}"
 end
 
 get '/tweet/new' do
   erb :under_construction
 end
 
-#the asterisk means that no matter what comes before this it will work
+#t note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
@@ -104,6 +122,12 @@ post '*/tweet/new/submit' do
   redirect '/'
 end
 
+
+# Other #
 get '/search/*' do
+  erb :under_construction
+end
+
+post '/submit/' do
   erb :under_construction
 end

@@ -2,7 +2,7 @@ class User <ActiveRecord::Base
   validates_uniqueness_of :user_name, :email #allows for uniqueness of handles and emails
   has_many :tweets
 
-  has_many :tweets
+  has_many :follows
 
   def to_json
     super(:except => :password)

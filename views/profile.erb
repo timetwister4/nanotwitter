@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>nanoTwitter Profile</title>
+    <title><%=@user[:user_name]%>'s Profile</title>
 
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -23,9 +23,22 @@
         background-color: skyblue;
       }
     </style>
-
-
   </head>
+  <script>
+    function myFunction(){
+      var user_name = "user/" +document.getElementById("user_name").innerHTML + "/follow"// document.getElementsById("user_name").innerHTML;
+      document.getElementById("demo").innerHTML = user_name;
+    }
+
+    function followUser( form ){
+      var new_action = document.getElementById("user_name").innerHTML+"/follow";
+      form.action = new_action;
+    }
+    function unfollowUser( form ){
+      var new_action = document.getElementById("user_name").innerHTML+"/unfollow";
+      form.action = new_action;
+    }
+  </script>
   <body>
     <%= erb :navbar %>
     <div class="container">
@@ -36,12 +49,24 @@
           <h1> Hey <%= @user[:name] %> </h1>
               <h3> User Info: </h3>
               <ul>
-              <li> Username: <%= @user[:user_name]%></li>
+              <li> Username:<div id="user_name"> <%= @user[:user_name]%></div></li>
               <li> Email: <%= @user[:email]%> </li>
               <li> Followers: <%= @user[:follows]%> </li>
               <li> Follows: <%=@user[:followings]%> </li>
               <li> Number of tweets: <%=@user[:tweets]%> </li>
             </ul>
+            <% if session[:user_id] #&& 3@user.id != session[:user_id]%>
+              <%if @follow_status %>
+                <form onsubmit="unfollowUser(this);" method="POST" name="unfollow-form">
+                  <button type="submit" class="btn btn-default">Unfollow</button>
+                </form>
+              <%else%>
+                <form onsubmit="followUser(this);" method="POST" name="follow-form">
+                  <button type="submit" class="btn btn-default">Follow</button>
+                </form>
+                <!--<a class="btn btn-primary" href="follow" method="POST"> cFollow</a>-->
+              <% end %>
+            <%end%>
           </div>
           </div>
           </div>
@@ -51,6 +76,7 @@
       <form action="/tweet/new/submit" method="POST">
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
+      <p id="demo"> Test paragraph </p>
 <!-- Begin page-->
 <!-- jQuery via Google + local fallback -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
