@@ -74,11 +74,11 @@ describe "App" do
   end
 
   describe "Tweeting" do
-    it "can save a tweet to the database" do
-      Tweet.create(text: "I am toast", author: User.find(1))
+  #  it "can save a tweet to the database" do
+  #    Tweet.create(text: "I am toast", author: User.find(1))
       #byebug
-      assert (!(Tweet.find_by_text("I am toast") == nil))
-    end
+  #    assert (!(Tweet.find_by_text("I am toast") == nil))
+  #  end
 
 
     it "can retrieve all tweets by a user" do
