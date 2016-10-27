@@ -119,7 +119,7 @@ post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
   author = User.find(i)
-  t=Tweet.create(text: text, author: author, author_name: author.user_name)
+  t=Tweet.create(text: text, author: author)
   t.save
   #byebug
   redirect '/';
