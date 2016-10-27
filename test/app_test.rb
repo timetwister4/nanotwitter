@@ -49,7 +49,7 @@ describe "App" do
       {:email => "teamthunderbeardev@gmail.com",
           :password => "strongpass"}
       get '/'
-      assert last_response.body.include?("Roar")
+      assert last_response.body.include?("Tweet")
       assert last_response.body.include?("Logout")
     end
 
