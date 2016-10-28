@@ -1,5 +1,5 @@
 class Tweet <ActiveRecord::Base
-  belongs_to :author, class_name: "User"
+  belongs_to :author, :class_name => "User"
 
   validates :text, presence: true #checks that the text is not empty
   validates :author, presence: true
