@@ -85,7 +85,7 @@ get '/registration/?' do
 end
 
 post '/registration/submit' do
-   u = User.create(name: params[:name], email: params[:email], user_name: params[:username], password: params[:password])
+   u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
    @user = nil #? What was this for?
    if u.save
      login(params)
@@ -122,9 +122,14 @@ end
 #add to it when they add a follower
 
 post '/user/:user_name/unfollow' do
+<<<<<<< HEAD
   follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   follow.destroy_all
   #Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+=======
+  #follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
+  Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+>>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
   redirect "/user/#{params[:user_name]}"
 end
 
@@ -151,4 +156,12 @@ end
 
 post '/submit/' do
   erb :under_construction
+end
+
+post '/tweet/:tweet_id/like' do
+
+end
+
+post '/tweet/:tweet_id/unlike' do
+
 end
