@@ -30,6 +30,8 @@ end
 
 #root
 get '/' do
+  byebug
+  session[:user_id] = 3
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
@@ -38,6 +40,18 @@ get '/' do
     erb :my_home #personalized homepage
   else
     erb :home #a generic homepage
+  end
+end
+
+
+get '/profile' do
+  if authenticate!
+    u = User.where(id: session[:user_id])
+    @user = u[0]
+    @tweets = Tweet.where(author_id: session[:user_id])
+    erb :profile
+  else
+    erb :error
   end
 end
 
@@ -88,6 +102,7 @@ get '/user/:user_name' do
       u = User.where(user_name: params[:user_name])
       @user = u[0]
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: u[0].id).exists?
+      @tweets = Tweet.where(author_id: session[:user_id])
       erb :profile
     else
       erb :error
@@ -97,6 +112,8 @@ end
 post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
+  follower.following += 1
+  followed.followers += 1
   f = Follow.create(follower: follower, followed: followed)
   f.save
   redirect "/user/#{params[:user_name]}"
@@ -105,8 +122,14 @@ end
 #add to it when they add a follower
 
 post '/user/:user_name/unfollow' do
+<<<<<<< HEAD
+  follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
+  follow.destroy_all
+  #Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+=======
   #follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+>>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
   redirect "/user/#{params[:user_name]}"
 end
 

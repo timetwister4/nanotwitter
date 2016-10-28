@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+require_relative 'app.rb'
+=======
 require 'csv'
 
 def get_status
@@ -38,22 +41,38 @@ def reset_user(name)
     User.delete(user[0].id)
   end
 end
+>>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
 
 get '/test/reset/all' do
   init_status = get_status
   reset_all
+<<<<<<< HEAD
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
+=======
   final_status = get_status
   compare_statuses(final_status, init_status).to_json
+>>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
 end
 
 get '/test/reset/testuser' do
   init_status = get_status
+<<<<<<< HEAD
+  reset_user
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
+  #Switch to User.new?
+  #Tweet.new(text: Faker.text)
+=======
   reset_user("TestUser")
   # Switch to User.new?
   User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
   # User faker rather than static tweet
   Tweet.create(author_id: User.where(author_name: "TestUser")[0].id, author_name: "TestUser", text: "Hello!")
   get_status - init_status
+>>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
 end
 
 get '/test/status' do
@@ -128,3 +147,38 @@ end
 
 get '/test/user/follow?count=n' do
 end
+
+
+def create_test_user
+   User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
+
+end
+
+
+def get_status
+  time = Time.now
+  users = User.all.count
+  tweets = Tweet.all.count
+  follows = Follow.all.count
+# follows = Follow.all.count
+  {:time => time, :users => users, :tweets => tweets, :follows => follows}
+end
+
+def reset_all
+  User.destroy_all
+  Tweet.destroy_all
+  Follow.destroy_all
+  #Feed.delete_all
+  #Follow.delete_all
+end
+
+def reset_user(name)
+  user = User.where(user_name: "TestUser")
+  tweet = Tweet.where(author_name: "TestUser")
+  
+  # if tweet[0]
+  #   Tweet.delete(tweet.ids)
+  # end
+  #Follow.where(follows: user).delete
+  #Follow.where(following: user).delete
+  #Feed.where(owner: user).delete
