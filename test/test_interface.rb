@@ -35,7 +35,6 @@ def reset_user(name)
   #following = Follow.where(following: user).delete
   #feed = Feed.where(owner: user).delete
   if user[0]
-    byebug
     User.delete(user[0].id)
   end
 end
@@ -64,7 +63,6 @@ end
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
-  byebug
   init_status = get_status
   reset_all
   CSV.foreach('./test/seed_data/users.csv') do |row|
