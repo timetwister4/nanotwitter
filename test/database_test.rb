@@ -68,24 +68,24 @@ describe "Database" do
     end
 
     it "initializes follower count to zero" do
-      assert_equal(User.where(name: "Bjorn")[0].followers, 0)
+      assert_equal(User.where(name: "Bjorn")[0].follower_count, 0)
     end
 
     it "initializes following count to zero" do
-      assert_equal(User.where(name: "Bjorn")[0].following, 0)
+      assert_equal(User.where(name: "Bjorn")[0].following_count, 0)
     end
 
     it "can increment the number of followers" do
       u = User.where(user_name: "thunderbear")
       u[0].increment_followers
-      assert_equal(u[0].followers, 1)
+      assert_equal(u[0].follower_count, 1)
     end
 
     it "can decrement the number of followers" do
       u = User. where(user_name: "thunderbear")
       u[0].increment_followers
       u[0].decrement_followers
-      assert_equal(u[0].followers, 0)
+      assert_equal(u[0].follower_count, 0)
     end
   end
 
@@ -125,7 +125,7 @@ describe "Database" do
       end
 
       it "initializes replies to false if not a reply" do
-        
+
       end
     end
 

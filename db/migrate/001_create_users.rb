@@ -5,10 +5,10 @@ class CreateUsers <ActiveRecord::Migration
       t.string :user_name
       t.string :email
       t.string :password
-      t.integer :followers
-      t.integer :following
+      t.integer :follower_count
+      t.integer :following_count
       t.integer :tweet_count
-      t.timestamps 
+      t.timestamps
     end
   end
 
