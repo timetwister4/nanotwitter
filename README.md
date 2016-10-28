@@ -1,4 +1,4 @@
-# nanotwitter
+tatus# nanotwitter
 Team Thunderbear's Nanotwitter Project
 
 ## Synopsis
@@ -16,7 +16,7 @@ This project exists to demonstrate our web application design skills and our kno
 
 ## Installation
 
-N/A at this time
+Download the code from this repository. Please have sqlite3 installed. From the directory where you have downloaded this code, run bundle install to ensure you have all the necessary gems. To run a local version of this application, simply enter "ruby app.rb"
 
 ## API Reference
 
@@ -24,7 +24,7 @@ N/A at this time
 
 ## Tests
 
-TBA
+Run Rake test to run all tests
 
 ## Contributors
 
