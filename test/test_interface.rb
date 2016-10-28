@@ -63,6 +63,7 @@ end
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
+  byebug
   init_status = get_status
   reset_all
   CSV.foreach('./test/seed_data/users.csv') do |row|
@@ -77,7 +78,8 @@ get '/test/reset/standard' do
     # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
     # Alternatively, sort CSV by row[2] and *then* create tweets
     Tweet.create(author_id: row[0].to_i, author_name: user[:name], text: row[1], created_at: row[2])
-    User.where(id: row[0].to_i)[0].increment_tweets
+    user.increment_tweets
+    user.save
   end
   
   # To minimize table searches, consider parsing both CSV files row by row, if possible?
@@ -86,8 +88,10 @@ get '/test/reset/standard' do
     if row[0].to_i != user.id
       user = User.where(id: row[0])[0]
     end
-    User.where(id: row[0].to_i)[0].increment_following
+    user.increment_following
+    user.save
     User.where(id: row[1].to_i)[0].increment_followers
+    User.where(id: row[1].to_i)[0].save
     Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
   end
   
