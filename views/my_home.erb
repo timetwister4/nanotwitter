@@ -46,9 +46,9 @@
           <ul>
           <li> Username: <%= @user[:user_name]%></li>
           <li> Email: <%= @user[:email]%> </li>
-          <li> Followers: <%= @user[:follows]%> </li>
-          <li> Follows: <%=@user[:followings]%> </li>
-          <li> Number of tweets: <%=@user[:tweets]%> </li>
+          <li> Followers: <%= @user[:followers]%> </li>
+          <li> Follows: <%=@user[:following]%> </li>
+          <li> Number of tweets: <%=@user[:tweet_count]%> </li>
         </ul>
       </div>
       </div>
@@ -61,7 +61,7 @@
         </div>
           <button type="submit" class="btn btn-default">Submit</button>
       </form>
-      Your Tweets
+      Your Followers' Tweets:
       <br>
       <% len = @tweets.length %>
       <% for i in 0 .. max_displayed %>
@@ -80,6 +80,7 @@
           <%end%>
         <%end%>
       </div>
+      <a href="/profile">profile</a>
     </div>
   </div>
   <script scr="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>

@@ -1,45 +1,20 @@
-def get_status
-  time = Time.now
-  users = User.all.count
-  tweets = Tweet.all.count
-# follows = Follow.all.count
-  {:time => time, :users => users, :tweets => tweets}
-end
-
-def reset_all
-  User.delete_all
-  Tweet.delete_all
-  #Feed.delete_all
-  #Follow.delete_all
-end
-
-def reset_user(name)
-  user = User.where(user_name: name)
-  tweet = Tweet.where(author_name: name)
-  if tweet[0]
-    Tweet.delete(tweet.ids)
-  end
-  #Follow.where(follows: user).delete
-  #Follow.where(following: user).delete
-  #Feed.where(owner: user).delete
-  if user[0]
-    byebug
-    User.delete(user[0].id)
-  end
-end
+require_relative 'app.rb'
 
 get '/test/reset/all' do
   init_status = get_status
   reset_all
-  final_status = get_status
-  (init_status - final_status).to_json
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
 end
 
 get '/test/reset/testuser' do
   init_status = get_status
-  reset_user("TestUser")
+  reset_user
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
   #Switch to User.new?
-  User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
   #Tweet.new(text: Faker.text)
 end
 
@@ -61,3 +36,38 @@ end
 
 get '/test/user/follow?count=n' do
 end
+
+
+def create_test_user
+   User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
+
+end
+
+
+def get_status
+  time = Time.now
+  users = User.all.count
+  tweets = Tweet.all.count
+  follows = Follow.all.count
+# follows = Follow.all.count
+  {:time => time, :users => users, :tweets => tweets, :follows => follows}
+end
+
+def reset_all
+  User.destroy_all
+  Tweet.destroy_all
+  Follow.destroy_all
+  #Feed.delete_all
+  #Follow.delete_all
+end
+
+def reset_user(name)
+  user = User.where(user_name: "TestUser")
+  tweet = Tweet.where(author_name: "TestUser")
+  
+  # if tweet[0]
+  #   Tweet.delete(tweet.ids)
+  # end
+  #Follow.where(follows: user).delete
+  #Follow.where(following: user).delete
+  #Feed.where(owner: user).delete
