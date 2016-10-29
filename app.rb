@@ -125,6 +125,7 @@ post '/user/:user_name/unfollow' do
   follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   follow.destroy_all
   #Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+  #follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   redirect "/user/#{params[:user_name]}"
 end
 
