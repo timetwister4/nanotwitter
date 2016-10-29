@@ -1,4 +1,4 @@
-#require_relative '/models/user.rb'
+require_relative '../models/user.rb'
 
 def authenticate!
 	 #when we solve the require relative problem write the line: unless session[:user_id] && User.where(id: session[:user_id])

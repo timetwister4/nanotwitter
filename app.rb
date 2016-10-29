@@ -122,14 +122,9 @@ end
 #add to it when they add a follower
 
 post '/user/:user_name/unfollow' do
-<<<<<<< HEAD
   follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   follow.destroy_all
   #Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
-=======
-  #follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
-  Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
->>>>>>> 75c8b7d65d5f2d0ed75e25f52adddc5e3cf3080c
   redirect "/user/#{params[:user_name]}"
 end
 
