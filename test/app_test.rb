@@ -13,17 +13,21 @@ describe "App" do
 
   describe "Authentication" do
 
-    it "can log a user in" do
+    before(:each) do
       User.create(
         name: "Bjorn",
         user_name: "thunderbear",
         email: "teamthunderbeardev@gmail.com",
         password: "strongpass"
       )
-    post '/login/submit',
-    {:email => "teamthunderbeardev@gmail.com",
-        :password => "strongpass"}
-      assert_equal last_response.status, 302
+    end
+
+    #create a before each thing to ensure that each test always has a user to log in
+    it "can log a user in" do
+      post '/login/submit',
+      {:email => "teamthunderbeardev@gmail.com",
+          :password => "strongpass"}
+          assert_equal last_response.status, 302
     end
 
     #this test demonstrates that a user is logged out
@@ -70,7 +74,14 @@ describe "App" do
     end
 
     it "will not create a user with a taken username" do
-
+      user_name_taken = User.where(user_name: "TestUser2").exists?
+      post 'registration/submit',
+      {name: "Bjorn",
+        user_name:"TestUser2",
+         email: "teamthunderbeardev@gmail.com",
+         password: "strongpass"}
+      assert user_name_taken
+      assert !User.where(user_name: "TestUser2", email: "teamthunderbeardev@gmail.com").exists?
     end
 
     it "will go to an error page if a user does not enter a password" do

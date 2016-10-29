@@ -7,7 +7,10 @@ require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
+require_relative 'tweetprocessor.rb'
 
+
+TweetFactory = TweetProcessor.new
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
@@ -101,11 +104,9 @@ post '/user/:user_name/follow' do
   f.save
   redirect "/user/#{params[:user_name]}"
 end
-#note, consider storing followed users in the user's session cookie?
-#add to it when they add a follower
+
 
 post '/user/:user_name/unfollow' do
-  #follow = Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name]))
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
   redirect "/user/#{params[:user_name]}"
 end
@@ -119,9 +120,9 @@ post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
   author = User.find(i)
-  t=Tweet.create(text: text, author: author, author_name: author.user_name)
-  t.save
-  #byebug
+  #t = Tweet.create(text: text, author: author, author_name: author.user_name)
+  #t.save
+  TweetFactory.make_tweet(text, author)
   redirect '/';
 end
 

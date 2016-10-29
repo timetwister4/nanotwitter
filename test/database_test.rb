@@ -91,28 +91,55 @@ describe "Database" do
 
   describe "Tweets" do
 
-    it "can store tweet to database" do
+    before(:each) do
+      Tweet.destroy_all
+      User.destroy_all
+      u = User.create(name: "Bjorn", user_name: "thunderbear", email: "teamthunderbeardev@gmail.com", password: "strongpass")
+      Tweet.create(text: "Test Text", author: u)
+    end
 
+    it "can store tweet to database" do
+        t = Tweet.create(text: "Test Text2", author: User.where(user_name: "thunderbear")[0])
+        assert Tweet.where(text: "Test Text2").exists?
     end
 
     it "must have has an author" do
-
+     t = Tweet.create(text: "Test Text 3")
+     assert !t.valid?
     end
 
     it "must contain text" do
-
+      t = Tweet.create(author: User.where(user_name: "BearHammer")[0])
+      assert !t.valid?
     end
 
     it "initializes likes to 0" do
-
+      t = Tweet.create(text: "Test Text 4", author: User.where(user_name: "BearHammer")[0])
+      assert_equal(t.likes, 0)
     end
 
     it "can increment likes" do
-
+        t = Tweet.where(text: "Test Text")[0]
+        starting_likes = t.likes
+        t.increment_likes
+        assert starting_likes < t.likes
     end
 
     it "can decrement likes" do
+      t = Tweet.where(text: "Test Text")[0]
+      starting_likes = t.increment_likes #ensures that likes is > 0
+      t.decrement_likes
+      assert starting_likes > t.likes
 
+    end
+
+    it "will not decrement likes if likes = 0" do
+      t = Tweet.where(text: "Test Text")[0]
+      while(t.likes > 0)
+        t.decrement_likes
+      end
+      t.decrement_likes
+      assert_equal(t.likes, 0)
     end
 
     describe "replies" do
@@ -131,7 +158,32 @@ describe "Database" do
 
 
   end
+  describe "follow" do
+    before(:each) do
+      User.create(name: "John", user_name: "TestUser4", email: "j@example.com", password: "strongpass")
+      User.create(name: "Mary", user_name: "TestUser5", email: "m@example.com", password: "strongpass")
+    end
 
+    it "can create a follow between users" do
+    end
+
+    it "prevents duplicate follows" do
+
+    end
+
+    it "can delete a follow" do
+
+    end
+
+    it "must have a follower" do
+
+    end
+
+    it "must have a followed user" do
+      
+    end
+
+  end
 
 
 end

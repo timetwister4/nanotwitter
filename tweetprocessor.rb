@@ -5,11 +5,11 @@ require_relative 'models/tweet'
 
 class TweetProcessor
 
-  def make_tweet(text, author_id) #add splash param for reply information
-    author = User.find(author_id)#get author for author fields
+  def make_tweet(text, author) #add splash param for reply information
+    #author = User.find(author_id)#get author for author fields
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
-    t = Tweet.create(text: (processed(text)[0]), author: author, author_name: author.user_name)
+    t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
     t.save
     make_tags(processed[1], t)
     make_mentions(processed[2], t)
@@ -24,7 +24,8 @@ class TweetProcessor
     words.each do |w|
       if w[0] == "@"
         name = w.partition("@")[2]
-        w.gsub!(w,"<a href=\"user\\#{name}\">#{w}<\\a>")
+        byebug
+        w.gsub!(w,"<a href=\"user\\#{name}\">#{w}</a>")
         mentions.push(name)
       elsif w[0] == "#"
         name = w.partition("#")[2]
@@ -39,11 +40,11 @@ class TweetProcessor
 
   end
 
-  def make_tags
+  def make_tags (tag_list, tweet)
     return "Not yet implemented"
   end
 
-  def make_mentions
+  def make_mentions (mention_list, tweet)
     return "Not Yet Implemented"
   end
 

@@ -34,7 +34,9 @@ class User <ActiveRecord::Base
   end
 
   def decrement_followers
-    self.follower_count -= 1
+    if(follower_count > 0)
+      self.follower_count -= 1
+    end
   end
 
   def increment_tweets
@@ -42,15 +44,19 @@ class User <ActiveRecord::Base
   end
 
   def decrement_tweets
-    self.tweet_count -= 1
+    if(tweet_count > 0)
+      self.tweet_count -= 1
+    end
   end
 
   def increment_following
-    self.following +=1
+    self.following_count +=1
   end
 
   def decrement_following
-    self.following -= 1
+    if (following_count > 0)
+      self.following_count -= 1
+    end
   end
 
 #consider adding following functions to the User class?

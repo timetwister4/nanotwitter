@@ -9,6 +9,7 @@ git *.gem
 /test/tmp/
 /test/version_tmp/
 /tmp/
+/test/*.byebug_history
 
 # Used by dotenv library to load environment variables.
 # .env
