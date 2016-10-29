@@ -12,6 +12,13 @@
 
 ActiveRecord::Schema.define(version: 9) do
 
+  create_table "feeds", force: :cascade do |t|
+    t.integer "user_id"
+    t.boolean "profile_feed"
+    t.boolean "home_feed"
+    t.integer "tweet_id"
+  end
+
   create_table "follows", force: :cascade do |t|
     t.integer "follower_id"
     t.integer "followed_id"
@@ -33,8 +40,8 @@ ActiveRecord::Schema.define(version: 9) do
     t.string   "user_name"
     t.string   "email"
     t.string   "password"
-    t.integer  "followers"
-    t.integer  "following"
+    t.integer  "follower_count"
+    t.integer  "following_count"
     t.integer  "tweet_count"
     t.datetime "created_at"
     t.datetime "updated_at"

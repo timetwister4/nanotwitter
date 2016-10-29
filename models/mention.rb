@@ -1,4 +1,4 @@
-class CreateMentions <ActiveRecord::Migration
+class CreateMentions <ActiveRecord::Base
   def self.up
     create_table :mentions do |t|
       t.belongs_to :tweet

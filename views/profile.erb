@@ -51,8 +51,8 @@
               <ul>
               <li> Username:<div id="user_name"> <%= @user[:user_name]%></div></li>
               <li> Email: <%= @user[:email]%> </li>
-              <li> Followers: <%= @user[:followers]%> </li>
-              <li> Follows: <%=@user[:following]%> </li>
+              <li> Followers: <%= @user[:follower_count]%> </li>
+              <li> Follows: <%=@user[:following_count]%> </li>
               <li> Number of tweets: <%=@user[:tweet_count]%> </li>
             </ul>
             <% if session[:user_id] #&& 3@user.id != session[:user_id]%>
@@ -71,24 +71,19 @@
           </div>
           </div>
           <div class= "col-md-6">
-             Your Tweets
+            Your Tweets
+            <br>
+          <% @tweets.each do |tweet| %>
+              <div class="panel panel-default">
+                <div class="panel panel-heading">
+                  <%=tweet.author_name%> tweeted at <%=tweet.created_at%> :
+                </div>
+                <div class ="panel panel-body">
+                  <%= tweet.text%>
+                </div>
+              </div>
               <br>
-              <% len = @tweets.length %>
-              <% for i in 0 .. max_displayed %>
-                <%if i < len %>
-                  <div class="panel panel-default">
-                    <div class="panel panel-heading">
-                      @<%=@tweets[len - i - 1].author_name%> tweeted:
-                    </div>
-                    <div class ="panel panel-body">
-                      <%= @tweets[len - i - 1].text%>
-                    </div>
-                  </div>
-                  <br>
-                  <%else%>
-                    <%break%>
-                  <%end%>
-                <%end%>
+            <%end%>
           </div>
           <a href="/">home</a>
         </div>
