@@ -14,6 +14,19 @@ def current_user
 	User.find(current_user_id)
 end
 
+
+def login (params)
+  if User.where(email: params[:email], password: params[:password]).exists?
+	   u = User.where(email: params[:email], password: params[:password])
+     @user = u[0] #in order to become the array of fields
+     session[:user_id] = @user.id
+     session[:expires_at] = Time.current + 10.minutes
+     return session
+  else
+    return nil
+  end
+end
+
 	def log_out_now
 		session.clear
 	end

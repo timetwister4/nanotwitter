@@ -5,8 +5,8 @@ require_relative 'models/tweet'
 
 class TweetProcessor
 
-  def make_tweet(text, author) #add splash param for reply information
-    #author = User.find(author_id)#get author for author fields
+  def make_tweet(text, author_id) #add splash param for reply information
+    author = User.find(author_id)#get author for author fields
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
     t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
@@ -24,9 +24,10 @@ class TweetProcessor
     words.each do |w|
       if w[0] == "@"
         name = w.partition("@")[2]
-        byebug
-        w.gsub!(w,"<a href=\"user\\#{name}\">#{w}</a>")
-        mentions.push(name)
+        if User.where(name: name).exists?
+          w.gsub!(w,"<a href=\"user\\#{name}\">#{w}</a>")
+          mentions.push(name)
+        end
       elsif w[0] == "#"
         name = w.partition("#")[2]
         w.gsub!(w, "a href=\"search\\?tag=#{name}")

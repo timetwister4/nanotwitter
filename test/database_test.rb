@@ -165,6 +165,7 @@ describe "Database" do
     end
 
     it "can create a follow between users" do
+
     end
 
     it "prevents duplicate follows" do
@@ -180,7 +181,7 @@ describe "Database" do
     end
 
     it "must have a followed user" do
-      
+
     end
 
   end

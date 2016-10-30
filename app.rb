@@ -15,29 +15,12 @@ get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
 
-
-#consider moving this to the authentication helper.
-
-def login (params)
-  if User.where(email: params[:email], password: params[:password]).exists?
-	   u = User.where(email: params[:email], password: params[:password])
-     @user = u[0] #in order to become the array of fields
-     session[:user_id] = @user.id
-     session[:expires_at] = Time.current + 10.minutes
-     return session
-  else
-    return nil
-  end
-end
-
-
 #root
 get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
     @tweets = Tweet.where(author_id: session[:user_id])
-    #byebug
     erb :my_home #personalized homepage
   else
     erb :home #a generic homepage
@@ -111,18 +94,12 @@ post '/user/:user_name/unfollow' do
   redirect "/user/#{params[:user_name]}"
 end
 
-get '/tweet/new' do
-  erb :under_construction
-end
-
-#t note the asterisk means that no matter what comes before this it will work
+# note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
   author = User.find(i)
-  #t = Tweet.create(text: text, author: author, author_name: author.user_name)
-  #t.save
-  TweetFactory.make_tweet(text, author)
+  TweetFactory.make_tweet(text, i)
   redirect '/';
 end
 
@@ -137,6 +114,7 @@ post '/submit/' do
 end
 
 post '/tweet/:tweet_id/like' do
+  #need to keep track of which users like which tweets
 
 end
 
