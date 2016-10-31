@@ -5,7 +5,7 @@ require_relative "follow.rb"
 class Feed <ActiveRecord::Base
   has_many :user
   has_many :tweets
-  
+
 
   #find way to validate uniqueness of pairing
 
@@ -29,6 +29,7 @@ class Feed <ActiveRecord::Base
   	 Feed.last(7) #return the last tweets in the Feed table.. right now its only shauls' tweets but when we have several users tweeting constantly it will make sense
   end
 
+#so far users do not get to see their follower's tweets
   def self.feed_followers(u_id,t_id) #posts the tweet that a user tweets into all the followers' feeds
   	relevant_follows = Follow.where(followed_id: u_id) #get all the follows where user being followed is the user who just posted a tweet
   	relevant_follows.each do |f| #for every relevant follow, create a feed record, by saving the id of the follower, the id of the tweet just created (by the person being followed) and make put it in their home feed!

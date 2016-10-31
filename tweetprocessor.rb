@@ -17,6 +17,7 @@ class TweetProcessor
   end
 
   def process_text text
+    
     name = String.new
     tags = Array.new
     mentions = Array.new
@@ -25,7 +26,7 @@ class TweetProcessor
     words.each do |w|
       if w[0] == "@"
         name = w.partition("@")[2]
-        if User.where(name: name).exists?
+        if User.where(user_name: name).exists?
           w.gsub!(w,"<a href=\"user\\#{name}\">#{w}</a>")
           mentions.push(name)
         end

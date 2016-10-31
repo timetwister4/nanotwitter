@@ -25,11 +25,6 @@
     </style>
   </head>
   <script>
-    function myFunction(){
-      var user_name = "user/" +document.getElementById("user_name").innerHTML + "/follow"// document.getElementsById("user_name").innerHTML;
-      document.getElementById("demo").innerHTML = user_name;
-    }
-
     function followUser( form ){
       var new_action = document.getElementById("user_name").innerHTML+"/follow";
       form.action = new_action;

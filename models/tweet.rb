@@ -2,6 +2,7 @@ class Tweet <ActiveRecord::Base
    belongs_to :author, :class_name => "User"
    has_many :feeds
 
+  #need to add character limit validation
   validates :text, presence: true #checks that the text is not empty
   validates :author, presence: true
 
@@ -11,7 +12,7 @@ class Tweet <ActiveRecord::Base
     self.likes ||= 0
     self.reply ||= false
   end
-
+  
   def increment_likes
     self.likes += 1
   end

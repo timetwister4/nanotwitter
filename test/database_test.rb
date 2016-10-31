@@ -87,6 +87,22 @@ describe "Database" do
       u[0].decrement_followers
       assert_equal(u[0].follower_count, 0)
     end
+
+    it "can access a list of its tweets" do
+      u = User.where(user_name: "thunderbear")[0]
+      t = Tweet.create(text: "test tweet", author: u)
+      my_tweet = u.tweets[0]
+      assert_equal(my_tweet, t)
+    end
+
+    it "can access a list of its followers" do
+
+    end
+
+    it "can access a list of users it follows" do
+
+    end
+
   end
 
   describe "Tweets" do
@@ -99,7 +115,7 @@ describe "Database" do
     end
 
     it "can store tweet to database" do
-        t = Tweet.create(text: "Test Text2", author: User.where(user_name: "thunderbear")[0])
+        Tweet.create(text: "Test Text2", author: User.where(user_name: "thunderbear")[0])
         assert Tweet.where(text: "Test Text2").exists?
     end
 
@@ -158,31 +174,63 @@ describe "Database" do
 
 
   end
-  describe "follow" do
+  describe "Follows" do
+
     before(:each) do
       User.create(name: "John", user_name: "TestUser4", email: "j@example.com", password: "strongpass")
       User.create(name: "Mary", user_name: "TestUser5", email: "m@example.com", password: "strongpass")
     end
 
     it "can create a follow between users" do
-
+      u = User.where(name:"John")[0]
+      v = User.where(name: "Mary")[0]
+      Follow.create(follower: u, followed: v)
+      assert Follow.where(follower: u, followed: v).exists?
     end
 
-    it "prevents gi follows" do
+    it "prevents duplicate follows" do
+      u = User.where(name: "John")[0]
+      v = User.where(name: "Mary")[0]
+      Follow.create(follower: u, followed: v)
+      Follow.create(follower: u, followed: v)
+      assert_equal(Follow.where(follower:u, followed: v).size, 1)
 
     end
 
     it "can delete a follow" do
+      u = User.where(name: "John")[0]
+      v = User.where(name: "Mary")[0]
+      Follow.create(follower: u, followed: v)
+      was_created = Follow.where(follower: u, followed: v).exists?
+      Follow.where(follower: u, followed: v).destroy_all
+      assert was_created
 
+      assert !Follow.where(follower: u, followed: v).exists?
     end
 
     it "must have a follower" do
-
+      u = User.where(name:"John")[0]
+      Follow.create(follower: u, followed: nil)
+      assert !Follow.where(follower: u, followed: nil).exists?
     end
 
     it "must have a followed user" do
+      u = User.where(name:"John")[0]
+      f = Follow.create(follower: nil, followed: u)
+      assert !Follow.where(follower: nil).exists?
 
     end
+
+    it "prevents a user from following itself" do
+      u = User.where(name: "John")[0]
+      Follow.create(follower: u, followed: u)
+      assert !Follow.where(follower: u, followed: u).exists?
+    end
+
+  end
+
+  describe "Feeds" do
+
 
   end
 
