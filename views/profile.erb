@@ -51,9 +51,9 @@
               <ul>
               <li> Username:<div id="user_name"> <%= @user[:user_name]%></div></li>
               <li> Email: <%= @user[:email]%> </li>
-              <li> Followers: <%= @user[:follows]%> </li>
-              <li> Follows: <%=@user[:followings]%> </li>
-              <li> Number of tweets: <%=@user[:tweets]%> </li>
+              <li> Followers: <%= @user[:follower_count]%> </li>
+              <li> Follows: <%=@user[:following_count]%> </li>
+              <li> Number of tweets: <%=@user[:tweet_count]%> </li>
             </ul>
             <% if session[:user_id] && @user.id != session[:user_id]%>
               <%if @follow_status %>
@@ -68,6 +68,22 @@
             <%end%>
           </div>
           </div>
+          </div>
+
+          <div class= "col-md-6">
+            Your Tweets
+            <br>
+          <% @tweets.each do |tweet| %>
+              <div class="panel panel-default">
+                <div class="panel panel-heading">
+                  <%=tweet.author_name%> tweeted at <%=tweet.created_at%> :
+                </div>
+                <div class ="panel panel-body">
+                  <%= tweet.text%>
+                </div>
+              </div>
+              <br>
+            <%end%>
           </div>
         </div>
       </div>

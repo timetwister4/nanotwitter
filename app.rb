@@ -9,8 +9,12 @@ require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
 
+require_relative 'models/feed.rb'
+
+
 
 TweetFactory = TweetProcessor.new
+
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
@@ -20,10 +24,28 @@ get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
-    @tweets = Tweet.where(author_id: session[:user_id])
+    #@tweets = Tweet.where(author_id: session[:user_id])
+    @feed = Feed.get_myhome_feed(session[:user_id])
+    @tweets = Feed.prepare_tweet_array(@feed) #puts all the tweet content together by pulling the tweets' ids from @feed. It makes an array of all these tweets
     erb :my_home #personalized homepage
   else
+    @feed = Feed.get_home_feed
+    @tweets = Feed.prepare_tweet_array(@feed)
     erb :home #a generic homepage
+  end
+end
+
+
+get '/profile' do
+  if authenticate!
+    u = User.where(id: session[:user_id])
+    @user = u[0]
+    @feed = Feed.get_profile_feed(session[:user_id])
+    @tweets = Feed.prepare_tweet_array(@feed)
+    #@tweets = Tweet.where(author_id: session[:user_id])
+    erb :profile
+  else
+    erb :error
   end
 end
 
@@ -73,7 +95,9 @@ get '/user/:user_name' do
     if User.where(user_name: params[:user_name]).exists?
       u = User.where(user_name: params[:user_name])
       @user = u[0]
-      @follow_status = Follow.where(follower_id: session[:user_id], followed_id: u[0].id).exists?
+      @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
+      @feed = Feed.get_profile_feed(@user.id)
+      @tweets = Feed.prepare_tweet_array(@feed)
       erb :profile
     else
       erb :error
@@ -83,6 +107,8 @@ end
 post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
+  follower.following_count += 1
+  followed.follower_count += 1
   f = Follow.create(follower: follower, followed: followed)
   f.save
   redirect "/user/#{params[:user_name]}"
@@ -98,8 +124,13 @@ end
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
   i = session[:user_id]
-  author = User.find(i)
-  TweetFactory.make_tweet(text, i)
+  #author = User.find(i)
+  #TweetFactory.make_tweet(text, i)
+  author = User.find(session[:user_id])
+  t = TweetFactory.make_tweet(text, i)#Tweet.create(text: text, author: author, author_name: author.user_name)
+  f = Feed.create(user_id: session[:user_id], tweet_id: t.id, profile_feed: true)
+  Feed.feed_followers(session[:user_id], t.id) #this method will post the tweet in the home_feeds of every follower of the current user
+  #byebug
   redirect '/';
 end
 

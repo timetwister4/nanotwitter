@@ -1,60 +1,29 @@
+require_relative 'app.rb'
 require 'csv'
 
-def get_status
-  time = Time.now
-  users = User.all.count
-  tweets = Tweet.all.count
-  follows = Follow.all.count
-  {:time => time, :users => users, :tweets => tweets, :follows => follows}
-end
-
-def compare_status(s_current, s_init)
-  time = s_current.to_a[0][1] - s_init.to_a[0][1]
-  users = s_current.to_a[1][1] - s_init.to_a[1][1]
-  tweets = s_current.to_a[2][1] - s_init.to_a[2][1]
-  follows = s_current.to_a[3][1] - s_init.to_a[3][1]
-  {:time => time, :users => users, :tweets => tweets, :follows => follows}
-end
-
-def reset_all
-  User.delete_all
-  Tweet.delete_all
-  #Mention.delete_all
-  #Hashtag.delete_all
-  #Feed.delete_all
-  Follow.delete_all
-end
-
-def reset_user(name)
-  user = User.where(user_name: name)
-  tweet = Tweet.where(author_name: name)
-  if tweet[0]
-    Tweet.delete(tweet.ids)
-  end
-  #followers = Follow.where(follows: user).delete
-  #following = Follow.where(following: user).delete
-  #feed = Feed.where(owner: user).delete
-  if user[0]
-    byebug
-    User.delete(user[0].id)
-  end
-end
 
 get '/test/reset/all' do
   init_status = get_status
   reset_all
-  final_status = get_status
-  compare_statuses(final_status, init_status).to_json
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
+
+#  fin_status = get_status
+#  @message = {:init_status => init_status, :fin_status => fin_status}
+#  erb :test_page
+
 end
 
 get '/test/reset/testuser' do
   init_status = get_status
-  reset_user("TestUser")
-  # Switch to User.new?
-  User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
-  # User faker rather than static tweet
-  Tweet.create(author_id: User.where(author_name: "TestUser")[0].id, author_name: "TestUser", text: "Hello!")
-  get_status - init_status
+  reset_user
+  fin_status = get_status
+  @message = {:init_status => init_status, :fin_status => fin_status}
+  erb :test_page
+  #Switch to User.new?
+  #Tweet.new(text: Faker.text)
+
 end
 
 get '/test/status' do
@@ -79,7 +48,8 @@ get '/test/reset/standard' do
     # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
     # Alternatively, sort CSV by row[2] and *then* create tweets
     Tweet.create(author_id: row[0].to_i, author_name: user[:name], text: row[1], created_at: row[2])
-    User.where(id: row[0].to_i)[0].increment(:tweets)
+    user.increment_tweets
+    user.save
   end
   
   # To minimize table searches, consider parsing both CSV files row by row, if possible?
@@ -88,8 +58,10 @@ get '/test/reset/standard' do
     if row[0].to_i != user.id
       user = User.where(id: row[0])[0]
     end
-    User.where(id: row[0].to_i)[0].increment(:following)
-    User.where(id: row[1].to_i)[0].increment(:followers)
+    user.increment_following
+    user.save
+    User.where(id: row[1].to_i)[0].increment_followers
+    User.where(id: row[1].to_i)[0].save
     Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
   end
   
@@ -126,3 +98,61 @@ end
 
 get '/test/user/follow?count=n' do
 end
+
+
+def create_test_user
+   User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
+
+end
+
+
+def get_status
+  time = Time.now
+  users = User.all.count
+  tweets = Tweet.all.count
+  follows = Follow.all.count
+# follows = Follow.all.count
+  {:time => time, :users => users, :tweets => tweets, :follows => follows}
+end
+
+def reset_all
+  User.destroy_all
+  Tweet.destroy_all
+  Follow.destroy_all
+  #Feed.delete_all
+  #Follow.delete_all
+end
+
+def reset_user(name)
+  user = User.where(user_name: "TestUser")
+  tweet = Tweet.where(author_name: "TestUser")
+end
+
+def reset_user(name)
+  user = User.where(user_name: name)
+  tweet = Tweet.where(author_name: name)
+  if tweet[0]
+    Tweet.delete(tweet.ids)
+  end
+  #followers = Follow.where(follows: user).delete
+  #following = Follow.where(following: user).delete
+  #feed = Feed.where(owner: user).delete
+  if user[0]
+    User.delete(user[0].id)
+  end
+end
+  
+  # if tweet[0]
+  #   Tweet.delete(tweet.ids)
+  # end
+  #Follow.where(follows: user).delete
+  #Follow.where(following: user).delete
+  #Feed.where(owner: user).delete
+def compare_status(s_current, s_init)
+  time = s_current.to_a[0][1] - s_init.to_a[0][1]
+  users = s_current.to_a[1][1] - s_init.to_a[1][1]
+  tweets = s_current.to_a[2][1] - s_init.to_a[2][1]
+  follows = s_current.to_a[3][1] - s_init.to_a[3][1]
+  {:time => time, :users => users, :tweets => tweets, :follows => follows}
+end
+

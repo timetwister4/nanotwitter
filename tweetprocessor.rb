@@ -13,6 +13,7 @@ class TweetProcessor
     t.save
     make_tags(processed[1], t)
     make_mentions(processed[2], t)
+    return t
   end
 
   def process_text text

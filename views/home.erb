@@ -34,6 +34,27 @@
      <%= erb :navbar %>
 
 
+  <div class="container">
+   <div class="row" background-color>
+    <div class= "col-md-6">
+            Random People's tweets:
+            <br>
+          <% @tweets.each do |tweet| %>
+              <div class="panel panel-default">
+                <div class="panel panel-heading">
+                  <%=tweet.author_name%> tweeted at <%=tweet.created_at%> :
+                </div>
+                <div class ="panel panel-body">
+                  <%= tweet.text%>
+                </div>
+              </div>
+              <br>
+            <%end%>
+          </div>
+        </div>
+      </div>
+
+
 <!-- Begin page-->
 
 <h1> Codeship Autodeploy Test</h1>

@@ -168,7 +168,7 @@ describe "Database" do
 
     end
 
-    it "prevents duplicate follows" do
+    it "prevents gi follows" do
 
     end
 

@@ -1,4 +1,7 @@
+require_relative '../models/user.rb'
+
 def authenticate!
+	 #when we solve the require relative problem write the line: unless session[:user_id] && User.where(id: session[:user_id])
 		unless session[:user_id]
 			session[:original_request] = request.path_info
 			#redirect '/login'#should not do this
