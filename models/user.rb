@@ -6,6 +6,8 @@ class User <ActiveRecord::Base
   validates :name, presence: true
 
   has_many :tweets , :class_name => "Tweet",  :foreign_key => :author_id
+  has_many :mentioned_in, :class_name => "Tweet", through: :mentions,
+    :source => :tweet
 
   has_many :followers, :class_name => "Follow",
    :foreign_key => :follower_id
@@ -15,9 +17,7 @@ class User <ActiveRecord::Base
 
   has_many :feeds
 
-  #has_many :followed_users, :through => :follows
-  #has_many :followings, :class_name => "Follow",
-  #  :foreign_key => :followed_id
+  has_many :mentions
 
   def to_json
     super(:except => :password)

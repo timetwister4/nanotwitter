@@ -24,6 +24,11 @@ ActiveRecord::Schema.define(version: 9) do
     t.integer "followed_id"
   end
 
+  create_table "mentions", force: :cascade do |t|
+    t.integer "tweet_id"
+    t.integer "user_id"
+  end
+
   create_table "tweets", force: :cascade do |t|
     t.string   "text"
     t.integer  "likes"

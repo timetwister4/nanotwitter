@@ -21,8 +21,12 @@
     <![endif]-->
      <style>
       body {
-        /*padding-top: 60px;*/
         background-color: skyblue;
+      }
+      h1 {
+        text-align: center;
+        color: white;
+        font-weight: bold;
       }
     </style>
 
@@ -37,7 +41,7 @@
   <div class="container">
    <div class="row" background-color>
     <div class= "col-md-6 col-md-offset-3" >
-            Random People's tweets:
+            <h1>Recent Tweets</h1>
             <br>
           <% @tweets.each do |tweet| %>
               <div class="panel panel-default">

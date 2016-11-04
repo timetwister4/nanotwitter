@@ -1,12 +1,8 @@
-class CreateMentions <ActiveRecord::Base
-  def self.up
-    create_table :mentions do |t|
-      t.belongs_to :tweet
-      t.belongs_to :user
-    end
-  end
+class Mention <ActiveRecord::Base
+  validates :user, presence: true
+  validates :tweet, presence: true
 
-  def self.down
-    drop_table :mentions
-  end
+  belongs_to :user
+  belongs_to :tweet
+
 end

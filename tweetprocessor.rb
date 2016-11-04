@@ -2,11 +2,13 @@ require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/tweet'
+require_relative 'models/mention.rb'
 
 class TweetProcessor
 
   def make_tweet(text, author_id) #add splash param for reply information
     author = User.find(author_id)#get author for author fields
+
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
     t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
@@ -17,7 +19,7 @@ class TweetProcessor
   end
 
   def process_text text
-    
+
     name = String.new
     tags = Array.new
     mentions = Array.new
@@ -27,12 +29,12 @@ class TweetProcessor
       if w[0] == "@"
         name = w.partition("@")[2]
         if User.where(user_name: name).exists?
-          w.gsub!(w,"<a href=\"user\\#{name}\">#{w}</a>")
+          w.gsub!(w,"<a href=\"user/#{name}\">#{w}</a>")
           mentions.push(name)
         end
       elsif w[0] == "#"
         name = w.partition("#")[2]
-        w.gsub!(w, "a href=\"search\\?tag=#{name}")
+        w.gsub!(w, "<a href=\"search/?tag=#{name}\">#{w}</a>")
         tags.push(name)
       end
     end
@@ -48,7 +50,10 @@ class TweetProcessor
   end
 
   def make_mentions (mention_list, tweet)
-    return "Not Yet Implemented"
+    mention_list.each do |m|
+      u = User.where(user_name: m)[0]
+      m = Mention.create(user: u, tweet: tweet)
+    end
   end
 
 

@@ -8,8 +8,9 @@ require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
-
 require_relative 'models/feed.rb'
+
+
 
 
 TweetFactory = TweetProcessor.new
@@ -41,7 +42,6 @@ get '/profile' do
     @user = u[0]
     @feed = Feed.get_profile_feed(session[:user_id])
     @tweets = Feed.prepare_tweet_array(@feed)
-    #@tweets = Tweet.where(author_id: session[:user_id])
     erb :profile
   else
     erb :error
@@ -79,7 +79,7 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-   @user = nil #? What was this for?
+   #@user = nil #? What was this for?
    if u.save
      login(params)
      redirect '/'
@@ -104,12 +104,14 @@ get '/user/:user_name' do
     end
 end
 
-#note, these need to increment and decrement the number of followers
+
 post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
-    follower.following_count += 1
-    followed.follower_count += 1
+    #follower.following_count += 1
+    follower.increment_following
+    #followed.follower_count += 1
+    followed.increment_followers
     f = Follow.create(follower: follower, followed: followed)
     f.save
   redirect "/user/#{params[:user_name]}"
@@ -124,14 +126,9 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  #author = User.find(i)
-  #TweetFactory.make_tweet(text, i)
-  #author = User.find(session[:user_id])
   t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name)
   f = Feed.create(user_id: session[:user_id], tweet_id: t.id, profile_feed: true)
-  #does not appear to work on users' pages yet
   Feed.feed_followers(session[:user_id], t.id) #this method will post the tweet in the home_feeds of every follower of the current user
-  #byebug
   redirect '/';
 end
 
