@@ -1,0 +1,12 @@
+November 4th
+
+Some sort of error in sessions, I think, when we have a lot of load. The error has such a long trace
+that the log deletes the top of it, so I don't know where it starts
+
+Load test of 25 simultaneous users over 15 seconds, get this error at some point.
+
+ActiveRecord::ConnectionTimeoutError - could not obtain a connection from the pool within 5.000 seconds
+ (waited 5.000 seconds); all pooled connections were in use
+
+ After running some load tests, checked instrumentation logs
+Tweet searching is taking up most of our time 
