@@ -1,4 +1,4 @@
-require_relative 'app.rb'
+require_relative '../app.rb'
 require 'csv'
 
 
@@ -39,7 +39,7 @@ get '/test/reset/standard' do
   CSV.foreach('./test/seed_data/users.csv') do |row|
     User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
   end
-  
+
   user = User.all[0]
   CSV.foreach('./test/seed_data/tweets.csv') do |row|
     if row[0].to_i != user.id
@@ -51,7 +51,7 @@ get '/test/reset/standard' do
     user.increment_tweets
     user.save
   end
-  
+
   # To minimize table searches, consider parsing both CSV files row by row, if possible?
   user = User.all[0]
   CSV.foreach('./test/seed_data/follows.csv') do |row|
@@ -64,7 +64,7 @@ get '/test/reset/standard' do
     User.where(id: row[1].to_i)[0].save
     Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
   end
-  
+
   final_status = get_status
   compare_statuses(final_status, init_status).to_json
 end
@@ -141,7 +141,7 @@ def reset_user(name)
     User.delete(user[0].id)
   end
 end
-  
+
   # if tweet[0]
   #   Tweet.delete(tweet.ids)
   # end
@@ -155,4 +155,3 @@ def compare_status(s_current, s_init)
   follows = s_current.to_a[3][1] - s_init.to_a[3][1]
   {:time => time, :users => users, :tweets => tweets, :follows => follows}
 end
-
