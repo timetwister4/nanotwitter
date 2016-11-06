@@ -7,8 +7,9 @@ require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
+require_relative 'models/home_feed.rb'
+require_relative 'feedprocessor.rb'
 require_relative 'tweetprocessor.rb'
-require_relative 'models/feed.rb'
 
 
 
@@ -25,12 +26,10 @@ get '/' do
     u = User.where(id: session[:user_id])
     @user = u[0]
     #@tweets = Tweet.where(author_id: session[:user_id])
-    @feed = Feed.get_myhome_feed(session[:user_id])
-    @tweets = Feed.prepare_tweet_array(@feed) #puts all the tweet content together by pulling the tweets' ids from @feed. It makes an array of all these tweets
+    @tweets = FeedProcessor.get_myhome_feed(session[:user_id])  
     erb :my_home #personalized homepage
   else
-    @feed = Feed.get_home_feed
-    @tweets = Feed.prepare_tweet_array(@feed)
+    @tweets = Tweet.last(7)
     erb :home #a generic homepage
   end
 end
@@ -40,8 +39,7 @@ get '/profile' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
-    @feed = Feed.get_profile_feed(session[:user_id])
-    @tweets = Feed.prepare_tweet_array(@feed)
+    @tweets = u.tweets
     erb :profile
   else
     erb :error
@@ -79,13 +77,9 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-   #@user = nil #? What was this for?
-   if u.save
-     login(params)
-     redirect '/'
-   else
-     "There has been an error"
-   end
+   u.save
+   redirect '/'
+   
 end
 
 # User Profile URLs and Functions #
@@ -95,8 +89,7 @@ get '/user/:user_name' do
       u = User.where(user_name: params[:user_name])
       @user = u[0]
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
-      @feed = Feed.get_profile_feed(@user.id)
-      @tweets = Feed.prepare_tweet_array(@feed)
+      @tweets = u.tweets
       byebug
       erb :profile
     else
@@ -126,9 +119,7 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name)
-  f = Feed.create(user_id: session[:user_id], tweet_id: t.id, profile_feed: true)
-  Feed.feed_followers(session[:user_id], t.id) #this method will post the tweet in the home_feeds of every follower of the current user
+  t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor 
   redirect '/';
 end
 
