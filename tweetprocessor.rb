@@ -16,6 +16,7 @@ class TweetProcessor
     processed = process_text(text)
     t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
     t.save
+    byebug
     author.increment_tweets 
     FeedProcessor.feed_followers(author,t)
     make_tags(processed[1], t)
@@ -62,4 +63,17 @@ class TweetProcessor
   end
 
 
+
+  def search_tweets(keyword)
+    query_tweets = []
+    all_tweets = Tweet.order("created_at DESC")
+    all_tweets.each do |tweet|
+      if tweet.author_name == keyword  || tweet.text.include?(keyword)
+          query_tweets << tweet
+      end
+    end
+    query_tweets  
   end
+
+
+end

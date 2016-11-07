@@ -128,8 +128,10 @@ end
 
 
 # Other #
-get '/search/*' do
-  erb :under_construction
+post '/search' do
+  keyword = params[:keyword]
+  @tweets = TweetFactory.search_tweets(keyword)
+  erb :search
 end
 
 post '/submit/' do
