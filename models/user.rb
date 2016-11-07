@@ -39,31 +39,37 @@ class User <ActiveRecord::Base
 
   def increment_followers
     self.follower_count += 1
+    self.save
   end
 
   def decrement_followers
     if(follower_count > 0)
       self.follower_count -= 1
+      self.save
     end
   end
 
   def increment_tweets
     self.tweet_count += 1
+    self.save
   end
 
   def decrement_tweets
     if(tweet_count > 0)
       self.tweet_count -= 1
+      self.save
     end
   end
 
-  def increment_following
+  def increment_followings
     self.following_count +=1
+    self.save
   end
 
-  def decrement_following
+  def decrement_followings
     if (following_count > 0)
       self.following_count -= 1
+      self.save
     end
   end
 

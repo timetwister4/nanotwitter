@@ -25,8 +25,7 @@ get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
-    #@tweets = Tweet.where(author_id: session[:user_id])
-    @tweets = FeedProcessor.get_myhome_feed(session[:user_id])  
+    @tweets = FeedProcessor.get_myhome_feed(session[:user_id]) 
     erb :my_home #personalized homepage
   else
     @tweets = Tweet.last(7)
@@ -78,6 +77,7 @@ end
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
    u.save
+   session[:user_id] = u.id
    redirect '/'
    
 end
@@ -89,8 +89,7 @@ get '/user/:user_name' do
       u = User.where(user_name: params[:user_name])
       @user = u[0]
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
-      @tweets = u.tweets
-      byebug
+      @tweets = @user.tweets
       erb :profile
     else
       erb :error
@@ -102,7 +101,7 @@ post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
     #follower.following_count += 1
-    follower.increment_following
+    follower.increment_followings
     #followed.follower_count += 1
     followed.increment_followers
     f = Follow.create(follower: follower, followed: followed)
@@ -112,7 +111,11 @@ end
 
 
 post '/user/:user_name/unfollow' do
+  follower = User.find(session[:user_id])#the person following
+  followed = User.find_by_user_name(params[:user_name]) #the person being followed
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+  follower.decrement_followings
+  followed.decrement_followers
   redirect "/user/#{params[:user_name]}"
 end
 
