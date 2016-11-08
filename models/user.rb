@@ -16,6 +16,7 @@ class User <ActiveRecord::Base
     :foreign_key => :followed_id
 
   has_many :feeds
+  has_many :feed_tweets, :class_name => "Tweet", through: :feeds, :source => :tweet
 
   has_many :mentions
 
