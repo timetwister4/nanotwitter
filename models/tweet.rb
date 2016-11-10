@@ -1,6 +1,7 @@
 class Tweet <ActiveRecord::Base
    belongs_to :author, :class_name => "User"
-   has_many :feeds
+   has_many :home_feeds
+   
    has_many :mentions
    has_many :mentioned_users, :class_name =>"User", through: :mentions, :source => :user
 

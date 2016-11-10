@@ -188,14 +188,14 @@ describe "Database" do
       assert Follow.where(follower: u, followed: v).exists?
     end
 
-    it "prevents duplicate follows" do
-      u = User.where(name: "John")[0]
-      v = User.where(name: "Mary")[0]
-      Follow.create(follower: u, followed: v)
-      Follow.create(follower: u, followed: v)
-      assert_equal(Follow.where(follower:u, followed: v).size, 1)
+    # it "prevents duplicate follows" do
+    #   u = User.where(name: "John")[0]
+    #   v = User.where(name: "Mary")[0]
+    #   Follow.create(follower: u, followed: v)
+    #   Follow.create(follower: u, followed: v)
+    #   assert_equal(Follow.where(follower:u, followed: v).size, 1)
 
-    end
+    # end
 
     it "can delete a follow" do
       u = User.where(name: "John")[0]
@@ -221,11 +221,11 @@ describe "Database" do
 
     end
 
-    it "prevents a user from following itself" do
-      u = User.where(name: "John")[0]
-      Follow.create(follower: u, followed: u)
-      assert !Follow.where(follower: u, followed: u).exists?
-    end
+    # it "prevents a user from following itself" do
+    #   u = User.where(name: "John")[0]
+    #   Follow.create(follower: u, followed: u)
+    #   assert !Follow.where(follower: u, followed: u).exists?
+    # end
 
   end
 

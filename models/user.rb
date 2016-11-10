@@ -6,17 +6,24 @@ class User <ActiveRecord::Base
   validates :name, presence: true
 
   has_many :tweets , :class_name => "Tweet",  :foreign_key => :author_id
-  has_many :mentioned_in, :class_name => "Tweet", through: :mentions,
-    :source => :tweet
+  has_many :home_feeds
+
+  # has_one :home_feed, :class_name => "HomeFeed", :foreign_key => :user_id
+  # has_one :profile_feed, :class_name => "ProfileFeed", :foreign_key => :user_id
+
+
 
   has_many :followers, :class_name => "Follow",
    :foreign_key => :follower_id
 
-   has_many :followed_users, :class_name => "Follow",
+  has_many :followed_users, :class_name => "Follow",
     :foreign_key => :followed_id
 
   has_many :feeds
   has_many :feed_tweets, :class_name => "Tweet", through: :feeds, :source => :tweet
+
+ has_many :mentioned_in, :class_name => "Tweet", through: :mentions,
+    :source => :tweet
 
   has_many :mentions
 
@@ -34,31 +41,37 @@ class User <ActiveRecord::Base
 
   def increment_followers
     self.follower_count += 1
+    self.save
   end
 
   def decrement_followers
     if(follower_count > 0)
       self.follower_count -= 1
+      self.save
     end
   end
 
   def increment_tweets
     self.tweet_count += 1
+    self.save
   end
 
   def decrement_tweets
     if(tweet_count > 0)
       self.tweet_count -= 1
+      self.save
     end
   end
 
-  def increment_following
+  def increment_followings
     self.following_count +=1
+    self.save
   end
 
-  def decrement_following
+  def decrement_followings
     if (following_count > 0)
       self.following_count -= 1
+      self.save
     end
   end
 

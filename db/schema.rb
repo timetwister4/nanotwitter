@@ -12,16 +12,14 @@
 
 ActiveRecord::Schema.define(version: 9) do
 
-  create_table "feeds", force: :cascade do |t|
-    t.integer "user_id"
-    t.boolean "profile_feed"
-    t.boolean "home_feed"
-    t.integer "tweet_id"
-  end
-
   create_table "follows", force: :cascade do |t|
     t.integer "follower_id"
     t.integer "followed_id"
+  end
+
+  create_table "home_feeds", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "tweet_id"
   end
 
   create_table "mentions", force: :cascade do |t|
@@ -35,6 +33,8 @@ ActiveRecord::Schema.define(version: 9) do
     t.boolean  "reply"
     t.integer  "reply_id"
     t.integer  "author_id"
+    t.integer  "home_feed_id"
+    t.integer  "profile_feed_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "author_name"
