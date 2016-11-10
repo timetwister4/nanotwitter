@@ -10,6 +10,8 @@ require_relative 'models/follow.rb'
 require_relative 'models/home_feed.rb'
 require_relative 'feedprocessor.rb'
 require_relative 'tweetprocessor.rb'
+require 'json'
+require_relative 'api.rb'
 
 
 
@@ -31,6 +33,12 @@ get '/' do
     @tweets = Tweet.last(7)
     erb :home #a generic homepage
   end
+end
+
+#in case a logged in user wants to see the general front page of nT
+get '/front' do
+  @tweets = Tweet.last(7)
+  erb :home
 end
 
 
@@ -123,12 +131,12 @@ end
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
   t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
-  redirect '/';
+  redirect '#';
 end
 
 
 # Other #
-post '/search' do
+get '/search/?' do
   keyword = params[:keyword]
   @tweets = TweetFactory.search_tweets(keyword)
   erb :search
@@ -145,4 +153,9 @@ end
 
 post '/tweet/:tweet_id/unlike' do
 
+end
+
+post '/ajax/test' do
+  byebug
+  "<p> Test paragraph</p>"
 end
