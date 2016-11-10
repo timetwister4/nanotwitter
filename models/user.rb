@@ -7,21 +7,23 @@ class User <ActiveRecord::Base
 
   has_many :tweets , :class_name => "Tweet",  :foreign_key => :author_id
   has_many :home_feeds
-  
+
   # has_one :home_feed, :class_name => "HomeFeed", :foreign_key => :user_id
   # has_one :profile_feed, :class_name => "ProfileFeed", :foreign_key => :user_id
 
- 
+
 
   has_many :followers, :class_name => "Follow",
    :foreign_key => :follower_id
 
   has_many :followed_users, :class_name => "Follow",
     :foreign_key => :followed_id
- 
+
+  has_many :feeds
+  has_many :feed_tweets, :class_name => "Tweet", through: :feeds, :source => :tweet
+
  has_many :mentioned_in, :class_name => "Tweet", through: :mentions,
     :source => :tweet
-  
 
   has_many :mentions
 

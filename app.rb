@@ -10,6 +10,8 @@ require_relative 'models/follow.rb'
 require_relative 'models/home_feed.rb'
 require_relative 'feedprocessor.rb'
 require_relative 'tweetprocessor.rb'
+require 'json'
+require_relative 'api.rb'
 
 
 
@@ -25,7 +27,7 @@ get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
-    @tweets = FeedProcessor.get_myhome_feed(session[:user_id]) 
+    @tweets = FeedProcessor.get_myhome_feed(session[:user_id])
     erb :my_home #personalized homepage
   else
     @tweets = Tweet.last(7)
@@ -33,11 +35,17 @@ get '/' do
   end
 end
 
+#in case a logged in user wants to see the general front page of nT
+get '/front' do
+  @tweets = Tweet.last(7)
+  erb :home
+end
+
 
 get '/profile' do
   if authenticate!
-    u = User.where(id: session[:user_id])
-    @user = u[0]
+    @user = User.find(id: session[:user_id])
+    #@user = u[0]
     @tweets = u.tweets
     erb :profile
   else
@@ -79,7 +87,7 @@ post '/registration/submit' do
    u.save
    session[:user_id] = u.id
    redirect '/'
-   
+
 end
 
 # User Profile URLs and Functions #
@@ -122,13 +130,13 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor 
-  redirect '/';
+  t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
+  redirect '#';
 end
 
 
 # Other #
-post '/search' do
+get '/search/?' do
   keyword = params[:keyword]
   @tweets = TweetFactory.search_tweets(keyword)
   erb :search
@@ -153,4 +161,9 @@ end
 
 post '/tweet/:tweet_id/unlike' do
 
+end
+
+post '/ajax/test' do
+  byebug
+  "<p> Test paragraph</p>"
 end

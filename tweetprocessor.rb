@@ -16,8 +16,7 @@ class TweetProcessor
     processed = process_text(text)
     t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
     t.save
-    byebug
-    author.increment_tweets 
+    author.increment_tweets
     FeedProcessor.feed_followers(author,t)
     make_tags(processed[1], t)
     make_mentions(processed[2], t)
@@ -56,6 +55,7 @@ class TweetProcessor
   end
 
   def make_mentions (mention_list, tweet)
+    #consider finding a way to make this all one database call
     mention_list.each do |m|
       u = User.where(user_name: m)[0]
       m = Mention.create(user: u, tweet: tweet)
@@ -66,13 +66,14 @@ class TweetProcessor
 
   def search_tweets(keyword)
     query_tweets = []
+    #doesn't this line pull all tweets from the database and sort them? Isn't that super expensive?
     all_tweets = Tweet.order("created_at DESC")
     all_tweets.each do |tweet|
       if tweet.author_name == keyword  || tweet.text.include?(keyword)
           query_tweets << tweet
       end
     end
-    query_tweets  
+    query_tweets
   end
 
 

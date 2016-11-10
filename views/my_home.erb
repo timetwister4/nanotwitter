@@ -1,6 +1,4 @@
 <!DOCTYPE HTML>
-<% max_displayed = 20 %>
-
 <html>
 <html lang="en">
   <head>
@@ -23,7 +21,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-     <style>
+    <style>
       body {
         /*padding-top: 60px;*/
         background-color: skyblue;
@@ -42,6 +40,27 @@
 
     </style>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $("#ShowTweets").click(function(){
+          var url = "api/v1/users/" + document.getElementById("user_name").innerHTML + "/tweets";
+          //$("#TESTSECTION").empty().append("JQuery is working");
+          $.post(url, function(result){
+            var tweets = JSON.parse(result);
+            $("#tweet_feed").html("Your Tweets: <br>");
+            for(i = 0; i<tweets.length; i++){
+              t = tweets[tweets.length-i-1];
+              $("#tweet_feed").append(
+                "<div class='panel panel-deault'>\n<div class = 'panel panel-heading'>\n" +
+                 t.author_name + " tweeted at " + t.created_at + ":\n</div>" +
+                 "<div class='panel panel-body'>\n" + t.text +"\n</div>\n</div>\n<br>");
+               };
+          //  $("#tweet_feed").html(tweets[1].text);
+        });
+    });
+  });
+</script>
 
   </head>
   <body>
@@ -59,11 +78,11 @@
       <h1> Hey <%= @user[:name] %> </h1>
           <h3> User Info: </h3>
           <ul>
-          <li> Username: <%= @user[:user_name]%></li>
+          <li> Username: <div id="user_name"><%= @user[:user_name]%></div></li>
           <li> Email: <%= @user[:email]%> </li>
           <li> Followers: <%= @user[:follower_count]%> </li>
           <li> Follows: <%=@user[:following_count]%> </li>
-          <li> Number of tweets: <%=@user[:tweet_count]%> </li>
+          <li> Number of tweets:<a id="ShowTweets"> <%=@user[:tweet_count]%> </a></li>
         </ul>
       </div>
       </div>
@@ -76,6 +95,7 @@
         </div>
           <button type="submit" class="btn btn-default">Submit</button>
       </form>
+      <div id = "tweet_feed">
       Tweets by People you Follow:
       <br>
       <% @tweets.each do |tweet| %>
@@ -101,9 +121,9 @@
           <br>
         <%end%>
       </div>
+      </div>
     </div>
   </div>
-
 
  <script>
     
@@ -159,5 +179,6 @@
 
 <!--Bootstrap jQuery Plugins, compiled and minified -->
     <script src="/js/bootstrap.min.js"></script>
+
 </body>
 </html>
