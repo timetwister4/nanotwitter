@@ -53,15 +53,19 @@ get '/profile' do
   end
 end
 
+
+
 # Login URLs #
 get '/login' do
   erb :login
 end
 
 post '/login/submit' do
-	if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
-	   u = User.where(email: params[:email], password: params[:password])
-	   @user = u[0] #in order to become the array of fields
+  successful_log_in = login(params)
+  if successful_log_in
+	#if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
+	   #u = User.where(email: params[:email], password: params[:password])
+	   #@user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
      redirect '/'
@@ -153,9 +157,4 @@ end
 
 post '/tweet/:tweet_id/unlike' do
 
-end
-
-post '/ajax/test' do
-  byebug
-  "<p> Test paragraph</p>"
 end

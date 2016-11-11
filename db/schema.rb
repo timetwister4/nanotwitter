@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 9) do
+ActiveRecord::Schema.define(version: 10) do
 
   create_table "follows", force: :cascade do |t|
     t.integer "follower_id"
@@ -33,8 +33,6 @@ ActiveRecord::Schema.define(version: 9) do
     t.boolean  "reply"
     t.integer  "reply_id"
     t.integer  "author_id"
-    t.integer  "home_feed_id"
-    t.integer  "profile_feed_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "author_name"
@@ -44,7 +42,7 @@ ActiveRecord::Schema.define(version: 9) do
     t.string   "name"
     t.string   "user_name"
     t.string   "email"
-    t.string   "password"
+    t.string   "password_hash"
     t.integer  "follower_count"
     t.integer  "following_count"
     t.integer  "tweet_count"

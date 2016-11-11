@@ -1,8 +1,13 @@
+require 'bcrypt'
+
 class User <ActiveRecord::Base
+
+  include BCrypt
+
   validates_uniqueness_of :user_name, :email #allows for uniqueness of handles and emails
   validates :user_name, presence: true, uniqueness: { case_sensitive: false}
   validates :email, presence: true, uniqueness: { case_sensitive: false}
-  validates :password, presence: true
+  validates :password_hash, presence: true
   validates :name, presence: true
 
   has_many :tweets , :class_name => "Tweet",  :foreign_key => :author_id
@@ -29,6 +34,15 @@ class User <ActiveRecord::Base
 
   def to_json
     super(:except => :password)
+  end
+
+  def password
+    @password ||= Password.new(password_hash)
+  end
+
+  def password=(new_password)
+    @password = Password.create(new_password)
+    self.password_hash = @password
   end
 
  after_initialize :set_default_values

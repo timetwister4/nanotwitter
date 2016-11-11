@@ -4,6 +4,8 @@ gem 'sinatra'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'byebug'
+gem 'bcrypt'
+
 
 group :development, :test do
   gem 'rake'
