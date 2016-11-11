@@ -33,13 +33,14 @@ class TweetProcessor
     words.each do |w|
       if w[0] == "@"
         name = w.partition("@")[2]
-        if User.where(user_name: name).exists?
+        u = User.where(user_name: name)
+        if (u != [])
           w.gsub!(w,"<a href=\"user/#{name}\">#{w}</a>")
-          mentions.push(name)
+          mentions.push(u[0])
         end
       elsif w[0] == "#"
         name = w.partition("#")[2]
-        w.gsub!(w, "<a href=\"search/?tag=#{name}\">#{w}</a>")
+        w.gsub!(w, "<a href=\"search/#{w}\">#{w}</a>")
         tags.push(name)
       end
     end
@@ -55,18 +56,14 @@ class TweetProcessor
   end
 
   def make_mentions (mention_list, tweet)
-    #consider finding a way to make this all one database call
-    mention_list.each do |m|
-      u = User.where(user_name: m)[0]
-      m = Mention.create(user: u, tweet: tweet)
-    end
+    m = mention_list.map{|u| {user: u, tweet: tweet} }
+    Mention.create(m)
   end
 
 
-
+  #make less hacky
   def search_tweets(keyword)
     query_tweets = []
-    #doesn't this line pull all tweets from the database and sort them? Isn't that super expensive?
     all_tweets = Tweet.order("created_at DESC")
     all_tweets.each do |tweet|
       if tweet.author_name == keyword  || tweet.text.include?(keyword)

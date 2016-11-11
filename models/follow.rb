@@ -1,6 +1,6 @@
 require_relative "tweet.rb"
 require_relative "user.rb"
-require_relative '../helpers/follow_validator' 
+require_relative '../helpers/follow_validator'
 
 class Follow <ActiveRecord::Base
   #include ActiveModel::Validations
@@ -9,7 +9,7 @@ class Follow <ActiveRecord::Base
 
    validates :follower, presence: true
    validates :followed, presence: true
-   #validates_with FollowValidator
+   validates_with FollowValidator
 
 
   #find way to validate uniqueness of pairing
