@@ -146,9 +146,17 @@ get '/search/?' do
   erb :search
 end
 
-post '/submit/' do
-  erb :under_construction
+post '/tweet/like' do
+  tweet = Tweet.find(params[:tweet_id])
+  a = tweet.likes
+  tweet.increase_likes
+  
 end
+
+post '/tweet/reply' do
+
+end
+
 
 post '/tweet/:tweet_id/like' do
   #need to keep track of which users like which tweets

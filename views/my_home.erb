@@ -7,8 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
+    <!-- <script src= "../public/js/tweet_events.js">  </script>  why doesn't this work?-->
 
     <title>nanoTwitter Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"> <!-- This is to enable icons -->
 
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -24,6 +26,18 @@
         /*padding-top: 60px;*/
         background-color: skyblue;
       }
+
+    .tooltip {
+        display:none;
+        position:absolute;
+        border:1px solid #333;
+        background-color:#161616;
+        border-radius:5px;
+        padding:10px;
+        color:#fff;
+        font-size:12px Arial;
+      }
+
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -50,8 +64,9 @@
 
   </head>
   <body>
-
-
+  <script src="http://code.jquery.com/jquery-latest.min.js"> 
+  </script>
+  
      <%= erb :navbar %>
 
 <!-- Begin page-->
@@ -91,6 +106,17 @@
             <div class ="panel panel-body">
               <%= tweet.text%>
             </div>
+             <div class="panel panel-footer">
+            <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet.id%> >
+                <i  class="fa fa-heart"> </i>
+                <p class="heart2" data-tweet-likes= <%= tweet.likes %>> <%= tweet.likes %></p> 
+            </a> 
+            
+            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet.id%> > <i  class="fa fa-reply"></i></a> 
+
+
+        
+            </div> 
           </div>
           <br>
         <%end%>
@@ -98,11 +124,61 @@
       </div>
     </div>
   </div>
-  <script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
+
+ <script>
+    
+    
+          $('a.heart').click(function(){
+              $.ajax({
+              url: "/tweet/like",
+              type: "POST",
+              data: {tweet_id: $('.heart').attr('data-tweet-id')},
+              success: function(){                                           
+                        var likes = $('.heart2').attr('data-tweet-likes')
+                        var likes = parseInt(likes) + 1
+                        $('.heart2').text(likes.toString())
+                      } 
+          
+             })
+          })
+
+
+          //   $('a.reply').click(function(){
+          //     $.ajax({
+          //     url: "/tweet/reply",
+          //     type: "POST",
+          //     data: {tweet_id: $('.reply').attr('data-tweet-id')}
+          
+          //    })
+          // })
+
+
+
+
+
+
+          // $('a.heart').hover(function(){
+          //     var title = $(this).attr('title')
+          //     $(this).data('tipText', title).removeAttr('title');
+          //     $('<p class="tooltip"></p>')
+          //     .text(title)
+          //     .appendTo('body')
+          //     .fadeIn('slow');
+
+          // })         
+
+</script>
+
+   
+
+<script scr="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
+
+
+  
 
 <!--Bootstrap jQuery Plugins, compiled and minified -->
-<script src="/js/bootstrap.min.js"></script>
-
+    <script src="/js/bootstrap.min.js"></script>
 
 </body>
 </html>
