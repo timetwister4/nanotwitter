@@ -112,7 +112,9 @@
                 <p class="heart2" data-tweet-likes= <%= tweet.likes %>> <%= tweet.likes %></p> 
             </a> 
             
-            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet.id%> > <i  class="fa fa-reply"></i></a> 
+            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet.id%> > 
+            <i  class="fa fa-reply"></i>
+            </a> 
 
 
         
@@ -143,14 +145,21 @@
           })
 
 
-          //   $('a.reply').click(function(){
-          //     $.ajax({
-          //     url: "/tweet/reply",
-          //     type: "POST",
-          //     data: {tweet_id: $('.reply').attr('data-tweet-id')}
-          
-          //    })
-          // })
+            $('a.reply').click(function(){
+              
+
+
+              $.ajax({
+              url: "/tweet/reply",
+              type: "POST",
+              data: {tweet_id: $('.reply').attr('data-tweet-id')},
+              success: function(data){
+
+                        debugger
+
+                       }
+             })
+          })
 
 
 

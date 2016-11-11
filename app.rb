@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
+# require_relative 'config/redis'
 require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
@@ -11,9 +12,11 @@ require_relative 'models/home_feed.rb'
 require_relative 'feedprocessor.rb'
 require_relative 'tweetprocessor.rb'
 require 'json'
+require 'redis'
+require 'redis-namespace'
 require_relative 'api.rb'
 
-
+redis = Redis.new
 
 
 TweetFactory = TweetProcessor.new
@@ -150,7 +153,7 @@ post '/tweet/like' do
 end
 
 post '/tweet/reply' do
-
+  {:key => "1"}.to_json
 end
 
 
@@ -164,6 +167,6 @@ post '/tweet/:tweet_id/unlike' do
 end
 
 post '/ajax/test' do
-  byebug
+
   "<p> Test paragraph</p>"
 end

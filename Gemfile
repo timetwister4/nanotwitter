@@ -4,6 +4,8 @@ gem 'sinatra'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'byebug'
+gem 'redis'
+gem 'redis-namespace'
 
 group :development, :test do
   gem 'rake'
