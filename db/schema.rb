@@ -10,32 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 10) do
+ActiveRecord::Schema.define(version: 3) do
 
   create_table "follows", force: :cascade do |t|
     t.integer "follower_id"
     t.integer "followed_id"
   end
 
-  create_table "home_feeds", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "tweet_id"
-  end
-
-  create_table "mentions", force: :cascade do |t|
-    t.integer "tweet_id"
-    t.integer "user_id"
-  end
-
   create_table "tweets", force: :cascade do |t|
     t.string   "text"
     t.integer  "likes"
-    t.boolean  "reply"
-    t.integer  "reply_id"
     t.integer  "author_id"
+    t.string   "author_name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "author_name"
   end
 
   create_table "users", force: :cascade do |t|

@@ -6,8 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title><%=@user[:user_name]%>'s Profile</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+
+    <title>nanoTwitter tag</title>
+
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 
@@ -19,59 +21,31 @@
     <![endif]-->
      <style>
       body {
-        /*padding-top: 60px;*/
         background-color: skyblue;
       }
+      h1 {
+        text-align: center;
+        color: white;
+        font-weight: bold;
+      }
     </style>
+
+
   </head>
-  <script>
-    function followUser( form ){
-      var new_action = document.getElementById("user_name").innerHTML+"/follow";
-      form.action = new_action;
-    }
-    function unfollowUser( form ){
-      var new_action = document.getElementById("user_name").innerHTML+"/unfollow";
-      form.action = new_action;
-    }
-  </script>
   <body>
   <script src="http://code.jquery.com/jquery-latest.min.js"> 
   </script>
 
-    <%= erb :navbar %>
-    <div class="container">
-      <div class="row" background-color>
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-body">
-          <h1> Hey <%= @user[:name] %> </h1>
-              <h3> User Info: </h3>
-              <ul>
-              <li> Username:<div id="user_name"> <%= @user[:user_name]%></div></li>
-              <li> Email: <%= @user[:email]%> </li>
-              <li> Followers: <%= @user[:follower_count]%> </li>
-              <li> Follows: <%=@user[:following_count]%> </li>
-              <li> Number of tweets: <%=@user[:tweet_count]%> </li>
-            </ul>
-            <% if session[:user_id] && @user.id != session[:user_id]%>
-              <%if @follow_status %>
-                <form onsubmit="unfollowUser(this);" method="POST" name="unfollow-form">
-                  <button type="submit" class="btn btn-default">Unfollow</button>
-                </form>
-              <%else%>
-                <form onsubmit="followUser(this);" method="POST" name="follow-form">
-                  <button type="submit" class="btn btn-default">Follow</button>
-                </form>
-              <% end %>
-            <%end%>
-          </div>
-          </div>
-          </div>
 
-          <div class= "col-md-6">
-            <%=@user[:user_name]%>'s Tweets
+     <%= erb :navbar %>
+
+
+  <div class="container">
+   <div class="row" background-color>
+    <div class= "col-md-6 col-md-offset-3" >
+            <h1><%= @tag_name %></h1>
             <br>
-          <% @tweets.each do |t| %>
+          <% @tweets.each do |tweet| %>
           <% tweet = JSON.parse(t) %>
               <div class="panel panel-default">
                 <div class="panel panel-heading">
@@ -81,27 +55,24 @@
                   <%= tweet["text"]%>
                 </div>
                 <div class="panel panel-footer">
-                  <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
-                      <i  class="fa fa-heart"> </i>
-                      <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
-                  </a> 
+            <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
+                <i  class="fa fa-heart"> </i>
+                <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
+            </a> 
             
-                    <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
-                      <i  class="fa fa-reply"></i>
-                    </a> 
+            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
+            <i  class="fa fa-reply"></i>
+            </a> 
 
 
         
-              </div> 
+            </div> 
               </div>
               <br>
             <%end%>
           </div>
         </div>
       </div>
-      <form action="/tweet/new/submit" method="POST">
-        <button type="submit" class="btn btn-default">Submit</button>
-      </form>
 
 
 <script>
@@ -155,10 +126,6 @@
 
 </script>
 
-
-
-
-<!-- Begin page-->
 <!-- jQuery via Google + local fallback -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>

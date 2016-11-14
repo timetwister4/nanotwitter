@@ -1,3 +1,2 @@
-gem 'redis'
-gem 'redis-namespace'
-$redis = Redis::Namespace.new("my_app", :redis => Redis.new)
+require 'redis'
+$redis = Redis.new(:host => 'localhost', :port => 6379)
