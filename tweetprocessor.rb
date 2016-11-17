@@ -3,9 +3,7 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/tweet'
 require_relative 'models/user'
-require_relative 'models/mention.rb'
-require_relative 'models/home_feed.rb'
-require_relative 'feedprocessor.rb'
+require_relative 'redis_operations.rb'
 
 class TweetProcessor
 
@@ -16,14 +14,21 @@ class TweetProcessor
     processed = process_text(text)
     t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
     t.save
-    author.increment_tweets
-    FeedProcessor.feed_followers(author,t)
-    make_tags(processed[1], t)
-    make_mentions(processed[2], t)
+    author.increment_tweets #check what each of the processed parameters are.
+    RedisClass.cache_tweet(t, id, t.id)
+    if processed[1].length > 0
+       RedisClass.cache_mentions(processed[1], t)
+    elsif processed[2].length > 0
+       RedisClass.cache_tags(processed[2],t)
+    end
+    
+    #FeedProcessor.feed_followers(author,t)
+    # make_tags(processed[1], t)
+    # make_mentions(processed[2], t)
     return t
   end
 
-  def process_text text
+  def process_text(text)
 
     name = String.new
     tags = Array.new
@@ -36,11 +41,11 @@ class TweetProcessor
         u = User.where(user_name: name)
         if (u != [])
           w.gsub!(w,"<a href=\"user/#{name}\">#{w}</a>")
-          mentions.push(u[0])
+          mentions.push(u.id)
         end
       elsif w[0] == "#"
         name = w.partition("#")[2]
-        w.gsub!(w, "<a href=\"search/#{w}\">#{w}</a>")
+        w.gsub!(w, "<a href=\"tag/#{name}\">#{w}</a>")
         tags.push(name)
       end
     end
@@ -51,14 +56,20 @@ class TweetProcessor
 
   end
 
-  def make_tags (tag_list, tweet)
-    return "Not yet implemented"
-  end
+  #####issues that we need to deal with: ######
+  #how do we do so that a tweet doesn't get duplicated when you mention someone that is also following you?
 
-  def make_mentions (mention_list, tweet)
-    m = mention_list.map{|u| {user: u, tweet: tweet} }
-    Mention.create(m)
-  end
+
+
+
+  # def make_tags (tag_list, tweet)
+  #   return "Not yet implemented"
+  # end
+
+  # def make_mentions (mention_list, tweet)
+  #   m = mention_list.map{|u| {user: u, tweet: tweet} }
+  #   Mention.create(m)
+  # end
 
 
   #make less hacky

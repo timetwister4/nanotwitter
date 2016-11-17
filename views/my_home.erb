@@ -98,21 +98,24 @@
       <div id = "tweet_feed">
       Tweets by People you Follow:
       <br>
-      <% @tweets.each do |tweet| %>
+      <% @tweets.each do |t| %> 
+      <% tweet = JSON.parse(t) %>   
           <div class="panel panel-default">
             <div class="panel panel-heading">
-              <%=tweet.author_name%> tweeted at <%=tweet.created_at%> :
+              <%=tweet["author_name"]%> tweeted at <%=tweet["created_at"]%> :
             </div>
             <div class ="panel panel-body">
-              <%= tweet.text%>
+              <%= tweet["text"]%>
             </div>
              <div class="panel panel-footer">
-            <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet.id%> >
+            <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
                 <i  class="fa fa-heart"> </i>
-                <p class="heart2" data-tweet-likes= <%= tweet.likes %>> <%= tweet.likes %></p> 
+                <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
             </a> 
             
-            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet.id%> > <i  class="fa fa-reply"></i></a> 
+            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
+            <i  class="fa fa-reply"></i>
+            </a> 
 
 
         
@@ -143,14 +146,21 @@
           })
 
 
-          //   $('a.reply').click(function(){
-          //     $.ajax({
-          //     url: "/tweet/reply",
-          //     type: "POST",
-          //     data: {tweet_id: $('.reply').attr('data-tweet-id')}
-          
-          //    })
-          // })
+            $('a.reply').click(function(){
+              
+
+
+              $.ajax({
+              url: "/tweet/reply",
+              type: "POST",
+              data: {tweet_id: $('.reply').attr('data-tweet-id')},
+              success: function(data){
+
+                        debugger
+
+                       }
+             })
+          })
 
 
 

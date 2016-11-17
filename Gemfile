@@ -4,7 +4,11 @@ gem 'sinatra'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'byebug'
+
+gem 'redis'
+gem 'redis-namespace'
 gem 'bcrypt'
+
 
 
 group :development, :test do

@@ -2,32 +2,32 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
+require_relative 'config/redis'
 require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
-require_relative 'models/home_feed.rb'
-require_relative 'feedprocessor.rb'
 require_relative 'tweetprocessor.rb'
+require_relative 'redis_operations.rb'
 require 'json'
+require 'redis'
+require 'redis-namespace'
 require_relative 'api.rb'
 
 
-
-
 TweetFactory = TweetProcessor.new
-
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
 
 #root
 get '/' do
+  session[:user_id] = 2
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
-    @tweets = FeedProcessor.get_myhome_feed(session[:user_id])
+    @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home #personalized homepage
   else
     @tweets = Tweet.last(7)
@@ -46,7 +46,7 @@ get '/profile' do
   if authenticate!
     @user = User.find(id: session[:user_id])
     #@user = u[0]
-    @tweets = u.tweets
+    @tweets = RedisClass.access_pfeed(session[:user_id])
     erb :profile
   else
     erb :error
@@ -62,10 +62,9 @@ end
 
 post '/login/submit' do
   successful_log_in = login(params)
-  if successful_log_in
-	#if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
-	   #u = User.where(email: params[:email], password: params[:password])
-	   #@user = u[0] #in order to become the array of fields
+	if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
+	   u = User.where(email: params[:email], password: params[:password])
+	   @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
      redirect '/'
@@ -88,12 +87,13 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-   if u.save
-     session[:user_id] = u.id
-     redirect '/'
-   else
-     redirect '/registration'
-   end
+    if u.save
+      RedisClass.cache_general(u)
+      session[:user_id] = u.id
+      redirect '/'
+    else
+      redirect '/registration'
+    end
 end
 
 # User Profile URLs and Functions #
@@ -103,7 +103,7 @@ get '/user/:user_name' do
       u = User.where(user_name: params[:user_name])
       @user = u[0]
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
-      @tweets = @user.tweets
+      @tweets = RedisClass.access_pfeed(@user.id)
       erb :profile
     else
       erb :error
@@ -114,11 +114,14 @@ end
 post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
+
     #follower.following_count += 1
     follower.increment_followings
     #followed.follower_count += 1
     followed.increment_followers
+    RedisClass.cache_follow(session[:user_id], followed.id)
     f = Follow.create(follower: follower, followed: followed)
+
     f.save
   redirect "/user/#{params[:user_name]}"
 end
@@ -128,6 +131,7 @@ post '/user/:user_name/unfollow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+  RedisClass.cache_unfollow(session[:user_id], followed.id)
   follower.decrement_followings
   followed.decrement_followers
   redirect "/user/#{params[:user_name]}"
@@ -150,21 +154,37 @@ end
 
 post '/tweet/like' do
   tweet = Tweet.find(params[:tweet_id])
-  a = tweet.likes
-  tweet.increase_likes
+  if RedisClass.cache_likes(tweet.id, session[:user_id], tweet)
+     return {:success => true}.to_json
 
-end
-
-post '/tweet/reply' do
-
+  end
 end
 
 
-post '/tweet/:tweet_id/like' do
-  #need to keep track of which users like which tweets
+get '/tag/:name' do
+  @tag_name = params[:name]
+  @tweets = RedisClass.access_tag(@tag_name)
+  erb :tag
 
 end
 
-post '/tweet/:tweet_id/unlike' do
+get '/tweet/replies' do  #This get block accesses all the replies of a certain tweet stored in redis
+  #RedisClass.access_replies
+  RedisClass.access_pfeed(1).to_json #this is to test how would we unparse the text
+end
 
+
+# post '/tweet/:tweet_id/like' do
+#   #need to keep track of which users like which tweets
+
+# end
+
+# post '/tweet/:tweet_id/unlike' do
+
+# end
+
+
+post '/ajax/test' do
+
+  "<p> Test paragraph</p>"
 end

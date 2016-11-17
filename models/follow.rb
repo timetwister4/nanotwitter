@@ -9,7 +9,7 @@ class Follow <ActiveRecord::Base
 
    validates :follower, presence: true
    validates :followed, presence: true
-   validates_with FollowValidator
+   #validates_with FollowValidator
 
 
   #find way to validate uniqueness of pairing

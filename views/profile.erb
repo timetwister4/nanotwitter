@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title><%=@user[:user_name]%>'s Profile</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
     <!-- Bootstrap -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 
@@ -35,6 +35,9 @@
     }
   </script>
   <body>
+  <script src="http://code.jquery.com/jquery-latest.min.js"> 
+  </script>
+
     <%= erb :navbar %>
     <div class="container">
       <div class="row" background-color>
@@ -68,14 +71,28 @@
           <div class= "col-md-6">
             <%=@user[:user_name]%>'s Tweets
             <br>
-          <% @tweets.each do |tweet| %>
+          <% @tweets.each do |t| %>
+          <% tweet = JSON.parse(t) %>
               <div class="panel panel-default">
                 <div class="panel panel-heading">
-                  <%=tweet.author_name%> tweeted at <%=tweet.created_at%> :
+                  <%=tweet["author_name"]%> tweeted at <%=tweet["created_at"]%> :
                 </div>
                 <div class ="panel panel-body">
-                  <%= tweet.text%>
+                  <%= tweet["text"]%>
                 </div>
+                <div class="panel panel-footer">
+                  <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
+                      <i  class="fa fa-heart"> </i>
+                      <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
+                  </a> 
+            
+                    <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
+                      <i  class="fa fa-reply"></i>
+                    </a> 
+
+
+        
+              </div> 
               </div>
               <br>
             <%end%>
@@ -85,6 +102,89 @@
       <form action="/tweet/new/submit" method="POST">
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
+
+
+<script>
+    
+    
+          $('a.heart').click(function(){
+              $.ajax({
+                  url: "/tweet/like",
+                  type: "POST",
+                  data: {tweet_id: $('.heart').attr('data-tweet-id')},
+                  success: function(data){         
+                      if (data.length != 0){
+                         var likes = $('.heart2').attr('data-tweet-likes')
+                         var likes = parseInt(likes) + 1
+                         $('.heart2').text(likes.toString())
+
+                      }                                   
+                  } 
+          
+              })
+          })
+
+
+            $('a.reply').click(function(){
+                $.ajax({
+                    url: "/tweet/replies",
+                    type: "GET",
+                    data: {tweet_id: $('.reply').attr('data-tweet-id')},
+                    success: function(data){                      
+                      var input = JSON.parse(data) 
+                      var replies = []
+                       for (i= 0; i< input.length; i++) {
+                         var hash = {}
+                         var str = input[i].substring(1,input[i].length-1)
+                         var str =  str + ',' //so that we cut the first {
+                         while (str.length != 0){
+                            a = str.substring(0,str.indexOf(':'))
+                            b = str.substring(str.indexOf(':')+1, str.indexOf(','))
+                            c = str.substring(str.indexOf(',')+1, str.length)
+                            hash[str.substring(0,str.indexOf(':'))] = str.substring(str.indexOf(':')+1, str.indexOf(','))
+                            str = str.substring(str.indexOf(',')+1, str.length)
+                         }
+                         replies.push(hash)
+
+                       }
+                       replies
+                       debugger
+                      //   for (j = 1 ; j < input[i].length; j++){
+                      //      if input[i].charAt(j) == 
+
+
+                      //   }
+                      //   replies.push(new_hash)
+                      // }
+                      // replies
+                      //we get rid of these 4 digists (first, second, last and second to last so that we can parse the input variable directly into a js hash. If not, parsing the data gives us an array of strings (were each string contains a hash..)
+                        
+                        
+
+                    }
+               })
+           })
+
+
+
+
+
+
+          // $('a.heart').hover(function(){
+          //     var title = $(this).attr('title')
+          //     $(this).data('tipText', title).removeAttr('title');
+          //     $('<p class="tooltip"></p>')
+          //     .text(title)
+          //     .appendTo('body')
+          //     .fadeIn('slow');
+
+          // })         
+
+</script>
+
+
+
+
 <!-- Begin page-->
 <!-- jQuery via Google + local fallback -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>

@@ -3,9 +3,8 @@ class CreateTweets <ActiveRecord::Migration
     create_table :tweets do |t|
       t.string :text
       t.integer :likes
-      t.boolean :reply
-      t.integer :reply_id
       t.belongs_to :author
+      t.string :author_name
       t.timestamps
     end
   end
