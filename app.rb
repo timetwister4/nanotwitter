@@ -23,6 +23,7 @@ end
 
 #root
 get '/' do
+  session[:user_id] = 2
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
@@ -151,20 +152,22 @@ end
 
 post '/tweet/like' do
   tweet = Tweet.find(params[:tweet_id])
-  a = tweet.likes
-  tweet.increase_likes
+  if RedisClass.cache_likes(tweet.id, session[:user_id], tweet)
+     return {:success => true}.to_json   
+  end
 end
 
 
 get '/tag/:name' do
   @tag_name = params[:name]
-  @tweets = RedisClass.access_tage(@tag_name)
+  @tweets = RedisClass.access_tag(@tag_name)
   erb :tag
 
 end
 
-post '/tweet/reply' do
-  {:key => "1"}.to_json
+get '/tweet/replies' do  #This get block accesses all the replies of a certain tweet stored in redis
+  #RedisClass.access_replies
+  RedisClass.access_pfeed(1).to_json #this is to test how would we unparse the text
 end
 
 

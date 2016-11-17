@@ -2,6 +2,7 @@ require 'redis'
 require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/user.rb'
+require_relative 'models/tweet.rb'
 require 'json'
 require 'byebug'
 
@@ -48,6 +49,17 @@ class RedisClass
 
 	end
 
+	def self.cache_likes(t_id, u_id, t) #we need to store likes so that a user cannot like the tweet two times
+		if $redis.sismember("tweet:#{t_id}:likes", u_id) == 0
+			$redis.sadd("tweet:#{t_id}:likes", u_id)
+			t.increase_likes
+			return true
+		else
+		   return false
+		end
+	end
+
+
 	def self.access_general(u_id)
 
 	end
@@ -69,6 +81,10 @@ class RedisClass
 	def self.access_tag(name)
 		$redis.lrange("tag:#{name}", 0, -1)
 
+	end
+
+	def self.access_replies(tweet_id)
+		$redis.lrange("tweet:#{tweet_id}:replies", 0, -1)
 	end
 
 
