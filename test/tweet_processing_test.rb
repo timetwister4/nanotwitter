@@ -1,4 +1,4 @@
-byerequire_relative './test_helper.rb'
+require_relative './test_helper.rb'
 require 'byebug'
 
 require_relative '../models/user.rb'
@@ -33,7 +33,7 @@ describe "Tweet Processor" do
   it "replaces tags with tag search URLs" do
     t = TweetProcessor.new
     processed_tweet = t.process_text("I love Ruby #Ruby")
-    assert processed_tweet[0].include?("<a href=\"search/tag=Ruby\">")
+    assert processed_tweet[0].include?("<a href=\"seartag=Ruby\">")
   end
 
   #it "creates mentions for all mentioned users" do
