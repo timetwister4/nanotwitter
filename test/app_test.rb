@@ -48,7 +48,6 @@ describe "App" do
       {:email => "teamthunderbeardev@gmail.com",
           :password => "strongpass"}
       get '/'
-      byebug
       assert last_response.body.include?("Logout")
     end
 

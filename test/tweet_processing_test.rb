@@ -1,4 +1,4 @@
-require_relative './test_helper.rb'
+byerequire_relative './test_helper.rb'
 require 'byebug'
 
 require_relative '../models/user.rb'
