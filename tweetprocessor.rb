@@ -17,11 +17,11 @@ class TweetProcessor
     author.increment_tweets #check what each of the processed parameters are.
     RedisClass.cache_tweet(t, id, t.id)
     if processed[1].length > 0
-       RedisClass.cache_mentions(processed[1], t)
+       RedisClass.cache_mentions(processed[1][:id], t)
     elsif processed[2].length > 0
        RedisClass.cache_tags(processed[2],t)
     end
-    
+
     #FeedProcessor.feed_followers(author,t)
     # make_tags(processed[1], t)
     # make_mentions(processed[2], t)
@@ -41,11 +41,11 @@ class TweetProcessor
         u = User.where(user_name: name)
         if (u != [])
           w.gsub!(w,"<a href=\"user/#{name}\">#{w}</a>")
-          mentions.push(u.id)
+          mentions.push(u)
         end
       elsif w[0] == "#"
         name = w.partition("#")[2]
-        w.gsub!(w, "<a href=\"tag/#{name}\">#{w}</a>")
+        w.gsub!(w, "<a href=\"search/tag=#{name}\">#{w}</a>")
         tags.push(name)
       end
     end

@@ -23,7 +23,6 @@ end
 
 #root
 get '/' do
-  session[:user_id] = 2
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
@@ -62,9 +61,9 @@ end
 
 post '/login/submit' do
   successful_log_in = login(params)
-	if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
-	   u = User.where(email: params[:email], password: params[:password])
-	   @user = u[0] #in order to become the array of fields
+	if successful_log_in
+	   #u = User.where(email: params[:email], password: params[:password])
+	  # @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
      redirect '/'
