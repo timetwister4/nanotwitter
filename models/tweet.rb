@@ -8,7 +8,7 @@ class Tweet <ActiveRecord::Base
    has_many :mentioned_users, :class_name =>"User", through: :mentions, :source => :user
 
   #need to add character limit validation
-  validates :text, presence: true #checks that the text is not empty
+  validates :text, presence: true, length: { maximum: 140 } #checks that the text is not empty
   validates :author, presence: true
 
   after_initialize :set_default_values

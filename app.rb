@@ -88,10 +88,12 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-   u.save
-   session[:user_id] = u.id
-   redirect '/'
-
+   if u.save
+     session[:user_id] = u.id
+     redirect '/'
+   else
+     redirect '/registration'
+   end
 end
 
 # User Profile URLs and Functions #
@@ -150,7 +152,7 @@ post '/tweet/like' do
   tweet = Tweet.find(params[:tweet_id])
   a = tweet.likes
   tweet.increase_likes
-  
+
 end
 
 post '/tweet/reply' do

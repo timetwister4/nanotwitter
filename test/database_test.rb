@@ -158,6 +158,12 @@ describe "Database" do
       assert_equal(t.likes, 0)
     end
 
+    it "must not be over 140 characters" do
+      t = "I am a string of over 140 characters.:) I am a string of over 140 characters.:) I am a string of over 140 characters.:) I am a string of over 140 characters.:)"
+      tweet = Tweet.create(text: t, author: User.find_by_name("Bjorn"), author_name: "Bjorn")
+      assert !Tweet.where(text: t).exists?
+    end
+
     describe "replies" do
       it "is a reply" do
 
