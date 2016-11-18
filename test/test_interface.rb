@@ -1,6 +1,6 @@
 require_relative '../app.rb'
 require 'csv'
-
+require 'faker'
 
 get '/test/reset/all' do
   init_status = get_status
@@ -66,38 +66,49 @@ get '/test/reset/standard' do
   end
 
   final_status = get_status
-  compare_statuses(final_status, init_status).to_json
+  compare_status(final_status, init_status).to_json
 end
 
-get '/test/users/create?count=:count&tweets=:tweets' do
+get '/test/users/create' do # ?count=:count&tweets=:tweets
   init_status = get_status
-  params[:count].times do
-    #User.create()
-    params[:tweets].times do
-      #Tweet.create()
+  params[:count].to_i.times do
+    uname = Faker::Name.name
+    user = User.create(name: uname, email: Faker::Internet.safe_email(uname), user_name: Faker::Internet.user_name(uname, %w(. _ -)), password: Faker::Internet.password)
+    params[:tweets].to_i.times do
+      Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
     end
   end
   final_status = get_status
-  compare_statuses(final_status, init_status).to_json
+  compare_status(final_status, init_status).to_json
 end
 
-get '/test/user/:user_name/tweets?count=:count' do
+get '/test/user/:user_name/tweets' do # ?count=:count
   init_status = get_status
   user = User.where(user_name: params[:user_name])
   if user[0]
-    params[:count].times do
-      #Tweet.create()
+    params[:count].to_i.times do
+      Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
+      user.increment_tweets
     end
   end
   final_status = get_status
-  compare_statuses(final_status, init_status).to_json
+  compare_status(final_status, init_status).to_json
 end
 
-get '/test/user/u/follow?count=n' do
+get '/test/user/:user_name/follow' do # ?count=:count
+  user = User.where(user_name: params[:user_name])
+  follows = Follow.where(followed: user)
+  #Ensures user does not try to follow themself - should deny the creation, but would ultimately mean :count-1 follows
+  to_follow = User.where_not("id = ? or id = ?", follows.id, user.id).order("RANDOM()").first(params[:count])
+  to_follow.each do |obj|
+    Follow.create(follower: obj, following: user)
+    obj.increment_followings
+    user.increment_followers
+  end
 end
 
-get '/test/user/follow?count=n' do
-end
+#get '/test/user/follow?count=n' do
+#end
 
 
 def create_test_user
@@ -130,7 +141,7 @@ end
 
 def reset_user(name)
   user = User.where(user_name: name)
-  tweet = Tweet.where(author_name: name)
+  tweet = Tweet.where(author_name: user.user_name)
   if tweet[0]
     Tweet.delete(tweet.ids)
   end
