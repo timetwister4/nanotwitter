@@ -23,7 +23,6 @@ end
 
 #root
 get '/' do
-  session[:user_id] = 2
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
@@ -44,7 +43,7 @@ end
 
 get '/profile' do
   if authenticate!
-    @user = User.find(id: session[:user_id])
+    @user = User.find(session[:user_id])
     #@user = u[0]
     @tweets = RedisClass.access_pfeed(session[:user_id])
     erb :profile
@@ -138,7 +137,7 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  t = TweetFactory.make_tweet(text, session[:user_id])#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
+  t = TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
   redirect '#';
 end
 
@@ -152,9 +151,7 @@ end
 
 post '/tweet/like' do
   tweet = Tweet.find(params[:tweet_id])
-  if RedisClass.cache_likes(tweet.id, session[:user_id], tweet)
-     return {:success => true}.to_json   
-  end
+  RedisClass.cache_likes(tweet.id, session[:user_id], tweet).to_json
 end
 
 
@@ -166,8 +163,13 @@ get '/tag/:name' do
 end
 
 get '/tweet/replies' do  #This get block accesses all the replies of a certain tweet stored in redis
-  #RedisClass.access_replies
-  RedisClass.access_pfeed(1).to_json #this is to test how would we unparse the text
+  {:id => params[:tweet_id], :replies => RedisClass.access_pfeed(1)}.to_json #this is to test how would we unparse the text
+end
+
+post '/tweet/reply/:reply_id' do
+text = params[:tweet_text]
+t = TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
+redirect '/'
 end
 
 

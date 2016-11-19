@@ -107,7 +107,7 @@
             <div class ="panel panel-body">
               <%= tweet["text"]%>
             </div>
-             <div class="panel panel-footer">
+             <div class="panel panel-footer" id="footer">
             <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
                 <i  class="fa fa-heart"> </i>
                 <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
@@ -128,56 +128,9 @@
     </div>
   </div>
 
- <script>
-    
-    
-          $('a.heart').click(function(){
-              $.ajax({
-              url: "/tweet/like",
-              type: "POST",
-              data: {tweet_id: $('.heart').attr('data-tweet-id')},
-              success: function(){                                           
-                        var likes = $('.heart2').attr('data-tweet-likes')
-                        var likes = parseInt(likes) + 1
-                        $('.heart2').text(likes.toString())
-                      } 
-          
-             })
-          })
+ <script src="js/liking.js" type="text/javascript"></script>
 
-
-            $('a.reply').click(function(){
-              
-
-
-              $.ajax({
-              url: "/tweet/reply",
-              type: "POST",
-              data: {tweet_id: $('.reply').attr('data-tweet-id')},
-              success: function(data){
-
-                        debugger
-
-                       }
-             })
-          })
-
-
-
-
-
-
-          // $('a.heart').hover(function(){
-          //     var title = $(this).attr('title')
-          //     $(this).data('tipText', title).removeAttr('title');
-          //     $('<p class="tooltip"></p>')
-          //     .text(title)
-          //     .appendTo('body')
-          //     .fadeIn('slow');
-
-          // })         
-
-</script>
+ <script src="js/replying.js" type="text/javascript"></script>
 
    
 

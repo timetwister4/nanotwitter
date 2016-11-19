@@ -30,7 +30,7 @@ class RedisClass
 		end
 	end
 
-	def self.cache_reply(tweet_id, reply)
+	def self.cache_reply(reply, tweet_id)
 		$redis.rpush("tweet:#{tweet_id}:replies", reply.to_json)
 	end
 
@@ -50,12 +50,10 @@ class RedisClass
 	end
 
 	def self.cache_likes(t_id, u_id, t) #we need to store likes so that a user cannot like the tweet two times
-		if $redis.sismember("tweet:#{t_id}:likes", u_id) == 0
+	    if $redis.sismember("tweet:#{t_id}:likes", u_id) == false
 			$redis.sadd("tweet:#{t_id}:likes", u_id)
 			t.increase_likes
 			return true
-		else
-		   return false
 		end
 	end
 

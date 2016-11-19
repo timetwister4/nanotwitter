@@ -1,0 +1,17 @@
+<div class="col-md-4">
+    <div class="panel panel-default">
+       <div class="panel-body">
+          <h1> Hey <%= @user[:name] %> </h1>
+          <h3> User Info: </h3>
+          <ul>
+            <li> Username: <div id="user_name"><%= @user[:user_name]%></div>
+            </li>
+            <li> Email: <%= @user[:email]%> </li>
+            <li> Followers: <%= @user[:follower_count]%> </li>
+            <li> Follows: <%=@user[:following_count]%> </li>
+            <li> Number of tweets:<a id="ShowTweets"> <%=@user[:tweet_count]%> </a>
+            </li>
+         </ul>
+      </div>
+   </div>
+ </div>

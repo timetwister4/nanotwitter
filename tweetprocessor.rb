@@ -7,15 +7,22 @@ require_relative 'redis_operations.rb'
 
 class TweetProcessor
 
-  def make_tweet(text,id) #add splash param for reply information
+  def make_tweet(text,id,reply_id) #add splash param for reply information
     author = User.find(id)#get author for author fields
 
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
-    t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
-    t.save
-    author.increment_tweets #check what each of the processed parameters are.
-    RedisClass.cache_tweet(t, id, t.id)
+    if reply_id.nil?
+      t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
+      t.save
+      author.increment_tweets #check what each of the processed parameters are.
+      RedisClass.cache_tweet(t, id, t.id)
+    else
+      t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name, reply_id: reply_id)
+      t.save
+      RedisClass.cache_reply(t, reply_id)
+    end
+
     if processed[1].length > 0
        RedisClass.cache_mentions(processed[1], t)
     elsif processed[2].length > 0

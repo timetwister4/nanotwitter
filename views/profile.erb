@@ -80,7 +80,7 @@
                 <div class ="panel panel-body">
                   <%= tweet["text"]%>
                 </div>
-                <div class="panel panel-footer">
+                <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet["id"]%>>
                   <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
                       <i  class="fa fa-heart"> </i>
                       <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
@@ -104,84 +104,9 @@
       </form>
 
 
-<script>
-    
-    
-          $('a.heart').click(function(){
-              $.ajax({
-                  url: "/tweet/like",
-                  type: "POST",
-                  data: {tweet_id: $('.heart').attr('data-tweet-id')},
-                  success: function(data){         
-                      if (data.length != 0){
-                         var likes = $('.heart2').attr('data-tweet-likes')
-                         var likes = parseInt(likes) + 1
-                         $('.heart2').text(likes.toString())
+<script src="js/liking.js" type="text/javascript"></script>
 
-                      }                                   
-                  } 
-          
-              })
-          })
-
-
-            $('a.reply').click(function(){
-                $.ajax({
-                    url: "/tweet/replies",
-                    type: "GET",
-                    data: {tweet_id: $('.reply').attr('data-tweet-id')},
-                    success: function(data){                      
-                      var input = JSON.parse(data) 
-                      var replies = []
-                       for (i= 0; i< input.length; i++) {
-                         var hash = {}
-                         var str = input[i].substring(1,input[i].length-1)
-                         var str =  str + ',' //so that we cut the first {
-                         while (str.length != 0){
-                            a = str.substring(0,str.indexOf(':'))
-                            b = str.substring(str.indexOf(':')+1, str.indexOf(','))
-                            c = str.substring(str.indexOf(',')+1, str.length)
-                            hash[str.substring(0,str.indexOf(':'))] = str.substring(str.indexOf(':')+1, str.indexOf(','))
-                            str = str.substring(str.indexOf(',')+1, str.length)
-                         }
-                         replies.push(hash)
-
-                       }
-                       replies
-                       debugger
-                      //   for (j = 1 ; j < input[i].length; j++){
-                      //      if input[i].charAt(j) == 
-
-
-                      //   }
-                      //   replies.push(new_hash)
-                      // }
-                      // replies
-                      //we get rid of these 4 digists (first, second, last and second to last so that we can parse the input variable directly into a js hash. If not, parsing the data gives us an array of strings (were each string contains a hash..)
-                        
-                        
-
-                    }
-               })
-           })
-
-
-
-
-
-
-          // $('a.heart').hover(function(){
-          //     var title = $(this).attr('title')
-          //     $(this).data('tipText', title).removeAttr('title');
-          //     $('<p class="tooltip"></p>')
-          //     .text(title)
-          //     .appendTo('body')
-          //     .fadeIn('slow');
-
-          // })         
-
-</script>
-
+<script src="js/replying.js" type="text/javascript"></script>
 
 
 
