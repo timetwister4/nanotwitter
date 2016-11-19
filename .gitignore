@@ -11,7 +11,7 @@ git *.gem
 /tmp/
 /test/*.byebug_history
 /db/development.sqlite.db
-/db/test.sqlite.db
+/db/*.db
 
 # Used by dotenv library to load environment variables.
 # .env

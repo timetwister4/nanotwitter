@@ -3,7 +3,7 @@ require 'byebug'
 
 require_relative '../models/user.rb'
 require_relative '../models/tweet.rb'
-require_relative '../models/mention.rb'
+#require_relative '../models/mention.rb'
 require_relative '../tweetprocessor.rb'
 
 describe "Tweet Processor" do
@@ -33,16 +33,16 @@ describe "Tweet Processor" do
   it "replaces tags with tag search URLs" do
     t = TweetProcessor.new
     processed_tweet = t.process_text("I love Ruby #Ruby")
-    assert processed_tweet[0].include?("<a href=\"search/#Ruby\">")
+    assert processed_tweet[0].include?("<a href=\"search/tag=Ruby\">")
   end
 
-  it "creates mentions for all mentioned users" do
-    u = User.create(name: "Mary", user_name: "TestUser", email: "mary@example.com", password: "strongpass")
-    v = User.create(name: "John", user_name: "TestUser2", email: "john@example.com", password: "strongpass")
-    t = TweetProcessor.new
-    tweet = t.make_tweet("Thanks for Beta Testing! @TestUser and @TestUser2", u.id)
-    assert Mention.where(user: u).exists? && Mention.where(user: v).exists?
-  end
+  #it "creates mentions for all mentioned users" do
+  #  u = User.create(name: "Mary", user_name: "TestUser", email: "mary@example.com", password: "strongpass")
+  #  v = User.create(name: "John", user_name: "TestUser2", email: "john@example.com", password: "strongpass")
+  #  t = TweetProcessor.new
+  #  tweet = t.make_tweet("Thanks for Beta Testing! @TestUser and @TestUser2", u.id)
+  #  assert Mention.where(user: u).exists? && Mention.where(user: v).exists?
+  #end
 
   #it "creates tags for all tags in the tweet"
 

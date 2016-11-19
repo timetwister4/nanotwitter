@@ -2,7 +2,7 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
-require_relative 'config/redis'
+require_relative 'config/initializers/redis'
 require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
@@ -61,9 +61,9 @@ end
 
 post '/login/submit' do
   successful_log_in = login(params)
-	if User.where(email: params[:email], password: params[:password]).exists?#need to implement pw hashing
-	   u = User.where(email: params[:email], password: params[:password])
-	   @user = u[0] #in order to become the array of fields
+	if successful_log_in
+	   #u = User.where(email: params[:email], password: params[:password])
+	  # @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
      redirect '/'
@@ -86,11 +86,13 @@ end
 
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-   u.save
-   RedisClass.cache_general(u)
-   session[:user_id] = u.id
-   redirect '/'
-
+    if u.save
+      RedisClass.cache_general(u)
+      session[:user_id] = u.id
+      redirect '/'
+    else
+      redirect '/registration'
+    end
 end
 
 # User Profile URLs and Functions #
@@ -111,14 +113,14 @@ end
 post '/user/:user_name/follow' do
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
-    
+
     #follower.following_count += 1
     follower.increment_followings
     #followed.follower_count += 1
     followed.increment_followers
     RedisClass.cache_follow(session[:user_id], followed.id)
     f = Follow.create(follower: follower, followed: followed)
-    
+
     f.save
   redirect "/user/#{params[:user_name]}"
 end
@@ -187,5 +189,3 @@ post '/ajax/test' do
 
   "<p> Test paragraph</p>"
 end
-
-
