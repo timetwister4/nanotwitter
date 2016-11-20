@@ -68,8 +68,10 @@ class RedisClass
 
 	end
 
+	def self.access_followings(u_id)
+		$redis.smembers("user:#{u_id}:follows")
 
-
+	end
 
 	def self.access_hfeed(u_id)
 	    $redis.lrange("user:#{u_id}:hfeed",0, -1) #returns the unparsed tweets (in json format)
@@ -85,6 +87,10 @@ class RedisClass
 		$redis.lrange("tweet:#{tweet_id}:replies", 0, -1)
 	end
 
+	def self.access_likes(tweet_id)
+		$redis.smembers("tweet:#{tweet_id}:likes")
+
+	end
 
 
 	
