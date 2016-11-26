@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'activerecord'
 gem 'sinatra-activerecord'
 gem 'byebug'
+gem 'typhoeus'
 
 gem 'redis'
 gem 'redis-namespace'
