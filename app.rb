@@ -62,8 +62,9 @@ end
 post '/login/submit' do
   successful_log_in = login(params)
 	if successful_log_in
-	   #u = User.where(email: params[:email], password: params[:password])
-	  # @user = u[0] #in order to become the array of fields
+	   #ANNE CHANGE SO THAT IT WORKS WITH ENCRYPTED PASSWORDSS
+     u = User.where(email: params[:email], password_hash: params[:password])
+	   @user = u[0] #in order to become the array of fields
      session[:user_id] = @user.id
      session[:expires_at] = Time.current + 10.minutes
      redirect '/'
@@ -110,7 +111,9 @@ get '/user/:user_name' do
 end
 
 
-post '/user/:user_name/follow' do
+post '/user/follow' do
+  
+
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
 
@@ -120,27 +123,28 @@ post '/user/:user_name/follow' do
     followed.increment_followers
     RedisClass.cache_follow(session[:user_id], followed.id)
     f = Follow.create(follower: follower, followed: followed)
-
     f.save
-  redirect "/user/#{params[:user_name]}"
+    redirect '/user' + followed.user_name
 end
 
 
-post '/user/:user_name/unfollow' do
+post '/user/unfollow' do
+  redirect '/registration'
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
   RedisClass.cache_unfollow(session[:user_id], followed.id)
   follower.decrement_followings
   followed.decrement_followers
-  redirect "/user/#{params[:user_name]}"
+  redirect '/user' + followed.user_name
+  
 end
 
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
   t = TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
-  redirect '#';
+  redirect '#'
 end
 
 

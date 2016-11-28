@@ -5,7 +5,8 @@ require 'byebug'
 require_relative 'models/user'
 require_relative 'models/tweet'
 
-post'api/v1/tweets/:tweet_id' do
+
+post 'api/v1/tweets/:tweet_id' do
   Tweet.find(params[:tweet]).to_json
 end
 

@@ -9,11 +9,15 @@ require 'byebug'
 class RedisClass
 
 	def self.cache_follow(user_id, person_followed)
-		$redis.sadd("user:#{user_id}:follows", person_followed)
+		$redis.sadd("user:#{user_id}:followings", person_followed)
+		$redis.sadd("user:#{person_followed}:followers", user_id)
+		byebug
 	end
 
 	def self.cache_unfollow(user_id, person_unfollowed)
-		$redis.srem("user:#{user_id}:follows", person_unfollowed)
+		$redis.srem("user:#{user_id}:followings", person_unfollowed)
+		$redis.srem("user:#{person_unfollowed}:followers", user_id)
+		byebug
 	end
 
 	def self.cache_general(user)
@@ -23,10 +27,10 @@ class RedisClass
 
 	def self.cache_tweet(tweet,user_id, tweet_id)
 		$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
-		$redis.rpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
+		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
 		followers = $redis.smembers("user:#{user_id}:follows")
 		followers.each do |f_id|
-			$redis.rpush("user:#{f_id}:hfeed", tweet.to_json)
+			$redis.lpush("user:#{f_id}:hfeed", tweet.to_json)
 		end
 	end
 
@@ -68,9 +72,14 @@ class RedisClass
 
 	end
 
+	#access the ids of all the people that the person with the given id (u_id) follows
 	def self.access_followings(u_id)
-		$redis.smembers("user:#{u_id}:follows")
+		$redis.smembers("user:#{u_id}:followings")
 
+	end
+	#access the ids of all the people that follow the person with the given id (u_id)
+	def self.access_followers(u_id)
+		$redis.smembers("user:#{u_id}:followers")
 	end
 
 	def self.access_hfeed(u_id)

@@ -26,6 +26,6 @@ configure :test do
   puts "[running in test mode]"
   ActiveRecord::Base.establish_connection(
     :adapter => :sqlite3,
-    :database =>  'db/test.sqlite3.db'
+    :database =>  'test/test.sqlite3.db'
   )
 end

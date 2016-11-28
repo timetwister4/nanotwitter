@@ -1,8 +1,15 @@
-function followUser( form ){
-      var new_action = document.getElementById("user_name").innerHTML+"/follow";
-      form.action = new_action;
-    }
-    function unfollowUser( form ){
-      var new_action = document.getElementById("user_name").innerHTML+"/unfollow";
-      form.action = new_action;
-    }
+$('#follow').click(function(){
+	$.ajax({
+          url: "/user/follow",
+          type: "POST",
+          data: {user_name: $(this).attr('data-user-name')}
+	})
+})
+
+$('#unfollow').click(function(){
+	$.ajax({
+          url: "/user/unfollow",
+          type: "POST",
+          data: {user_name: $(this).attr('data-user-name')}
+	})
+})
