@@ -36,7 +36,6 @@ end
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
-<<<<<<< HEAD
   #byebug
   init_status = get_status
   reset_all_database
