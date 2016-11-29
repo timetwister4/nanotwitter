@@ -20,11 +20,7 @@ class RedisClass
 		byebug
 	end
 
-	def self.cache_general(user)
-		$redis.set("user:#{user.id}:general", user.to_json)
-
-	end
-
+	
 	def self.cache_tweet(tweet,user_id, tweet_id)
 		$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
 		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
@@ -62,11 +58,6 @@ class RedisClass
 	end
 
 
-	def self.access_general(u_id)
-
-	end
-
-
 	def self.access_pfeed(u_id)
 		$redis.lrange("user:#{u_id}:pfeed", 0, -1) #return the unparsed tweets of your nt profile
 
@@ -98,6 +89,32 @@ class RedisClass
 
 	def self.access_likes(tweet_id)
 		$redis.smembers("tweet:#{tweet_id}:likes")
+
+	end
+
+	def self.number_of_keys
+		$redis.dbsize
+	end
+
+	def self.delete_keys
+		$redis.flushdb
+	end
+
+	def self.delete_user_keys(id)
+		$redis.del("user:#{id}:hfeed")
+		$redis.del("user:#{id}:pfeed")
+		$redis.del("user:#{id}:followings")
+		$redis.del("user:#{id}:followers")
+	end
+
+	def self.delete_user_from_follows(id)
+		users = User.all
+		users.each do |u|
+			followers = $redis.smembers("user:#{u[0].id}:followers")
+			followings = $redis.smembers("user:#{u[0].id}:followings")
+			followers.delete(id)
+			followings.delete(id)
+		end
 
 	end
 
