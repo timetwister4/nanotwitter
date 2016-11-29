@@ -41,6 +41,7 @@ get '/test/reset/standard' do
   reset_all_database
   reset_all_redis
   #There HAS to be a faster way to do this. This has been running for ages now.
+  
   CSV.foreach('./test/seed_data/users.csv') do |row|
     User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
   end
