@@ -22,6 +22,9 @@ get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
 
+get 'loaderio-97e86023c438b5621c512742d95a8419' do
+  "loaderio-97e86023c438b5621c512742d95a8419"
+end
 #root
 get '/' do
   if authenticate!
@@ -91,7 +94,6 @@ end
 post '/registration/submit' do
    u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
     if u.save
-      RedisClass.cache_general(u)
       session[:user_id] = u.id
       redirect '/'
     else

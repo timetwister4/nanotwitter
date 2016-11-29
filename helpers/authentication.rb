@@ -38,6 +38,9 @@ def login (params)
   end
 end
 
+def log_out_now
+	session[:user_id] = nil
+end
 	def logged_in?
 		!session[:user_id].nil?
 	end
