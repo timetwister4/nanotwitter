@@ -70,6 +70,11 @@ post '/login/submit' do
   end
 end
 
+#inline login
+get '/?user=:user_name&password=:password' do
+  login(params)
+  redirect '/'
+end
 
 get'/logout' do
     log_out_now
