@@ -22,7 +22,7 @@ get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
 
-get 'loaderio-97e86023c438b5621c512742d95a8419' do
+get '/loaderio-97e86023c438b5621c512742d95a8419' do
   "loaderio-97e86023c438b5621c512742d95a8419"
 end
 #root
