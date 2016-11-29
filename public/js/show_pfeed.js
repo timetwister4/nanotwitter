@@ -1,4 +1,3 @@
-
       $(document).ready(function(){
         $("#ShowTweets").click(function(){
           var url = "api/v1/users/" + document.getElementById("user_name").innerHTML + "/tweets";
