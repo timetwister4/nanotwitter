@@ -38,8 +38,9 @@ end
 get '/test/reset/standard' do
   #byebug
   init_status = get_status
-  reset_all
-  #There HAS to be a faster way to do this. This has been running for ages now. 
+  reset_all_database
+  reset_all_redis
+  #There HAS to be a faster way to do this. This has been running for ages now.
   CSV.foreach('./test/seed_data/users.csv') do |row|
     User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
   end
@@ -89,7 +90,7 @@ get '/test/users/create?count=:count&tweets=:tweets' do # ?count=:count&tweets=:
 
 end
 
-get '/test/user/:user_name/tweets?count=:count' do # 
+get '/test/user/:user_name/tweets?count=:count' do #
   init_status = get_status
   user = User.where(user_name: params[:user_name])
   if user[0]
@@ -102,7 +103,7 @@ get '/test/user/:user_name/tweets?count=:count' do #
   compare_status(final_status, init_status).to_json
 end
 
-get '/test/user/:user_name/follow?count=:count' do # 
+get '/test/user/:user_name/follow?count=:count' do #
   user = User.where(user_name: params[:user_name])
   follows = Follow.where(followed: user)
   #Ensures user does not try to follow themself - should deny the creation, but would ultimately mean :count-1 follows
