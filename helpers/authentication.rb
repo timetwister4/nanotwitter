@@ -21,7 +21,6 @@ end
 
 
 def login (params)
-
 	u = nil
 	if params[:email]
 		u = User.find_by_email(params[:email])
@@ -31,8 +30,7 @@ def login (params)
 		return false
 	end
   if u && u.password == params[:password]
-		byebug
-     session[:user_id] = u.id
+	   session[:user_id] = u.id
      session[:expires_at] = Time.current + 10.minutes
      return session
   else
