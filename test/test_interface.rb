@@ -152,9 +152,9 @@ def get_status
 end
 
 def reset_all_database
-  User.destroy_all
-  Tweet.destroy_all
-  Follow.destroy_all
+  User.delete_all
+  Tweet.delete_all
+  Follow.delete_all
 
 end
 
