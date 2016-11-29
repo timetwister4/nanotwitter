@@ -36,12 +36,13 @@ end
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
+<<<<<<< HEAD
   #byebug
   init_status = get_status
   reset_all_database
   reset_all_redis
   #There HAS to be a faster way to do this. This has been running for ages now.
-  
+
   CSV.foreach('./test/seed_data/users.csv') do |row|
     User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
   end
@@ -50,30 +51,45 @@ get '/test/reset/standard' do
   CSV.foreach('./test/seed_data/tweets.csv') do |row|
     if row[0].to_i != user.id
       user = User.where(id: row[0].to_i)[0]
+init_status = get_status
+  t = Thread.new {
+    #byebug
+    reset_all_database
+    reset_all_redis
+    #There HAS to be a faster way to do this. This has been running for ages now.
+    CSV.foreach('./test/seed_data/users.csv') do |row|
+      User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
+    end
+    user = User.all[0]
+    CSV.foreach('./test/seed_data/tweets.csv') do |row|
+      if row[0].to_i != user.id
+        user = User.where(id: row[0].to_i)[0]
+      end
+
+      # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
+      # Alternatively, sort CSV by row[2] and *then* create tweets
+      Tweet.create(author_id: row[0].to_i, author_name: user[:name], text: row[1], created_at: row[2])
+      user.increment_tweets
+      user.save
     end
 
-    # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
-    # Alternatively, sort CSV by row[2] and *then* create tweets
-    Tweet.create(author_id: row[0].to_i, author_name: user[:name], text: row[1], created_at: row[2])
-    user.increment_tweets
-    user.save
-  end
-
-  # To minimize table searches, consider parsing both CSV files row by row, if possible?
-  user = User.all[0]
-  CSV.foreach('./test/seed_data/follows.csv') do |row|
-    if row[0].to_i != user.id
-      user = User.where(id: row[0])[0]
+    # To minimize table searches, consider parsing both CSV files row by row, if possible?
+    user = User.all[0]
+    CSV.foreach('./test/seed_data/follows.csv') do |row|
+      if row[0].to_i != user.id
+        user = User.where(id: row[0])[0]
+      end
+      user.increment_following
+      user.save
+      User.where(id: row[1].to_i)[0].increment_followers
+      User.where(id: row[1].to_i)[0].save
+      Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
     end
-    user.increment_following
-    user.save
-    User.where(id: row[1].to_i)[0].increment_followers
-    User.where(id: row[1].to_i)[0].save
-    Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
-  end
+    }
+    t.abort_on_exception = true
 
-  final_status = get_status
-  compare_status(final_status, init_status).to_json
+    final_status = get_status
+    compare_status(final_status, init_status).to_json
 end
 
 get '/test/users/create?count=:count&tweets=:tweets' do # ?count=:count&tweets=:tweets
