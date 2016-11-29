@@ -62,13 +62,13 @@ end
 post '/login/submit' do
   successful_log_in = login(params)
 	if successful_log_in
-	   #u = User.where(email: params[:email], password: params[:password])
+	  #u = User.where(email: params[:email], password: params[:password])
 	  # @user = u[0] #in order to become the array of fields
-     session[:user_id] = @user.id
-     session[:expires_at] = Time.current + 10.minutes
-     redirect '/'
+    session[:user_id] = @user.id
+    session[:expires_at] = Time.current + 10.minutes
+    redirect '/'
   else
-     redirect '/registration'
+    redirect '/registration'
   end
 end
 
@@ -139,7 +139,7 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  t = TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
+  TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
   redirect '#';
 end
 
@@ -170,7 +170,7 @@ end
 
 post '/tweet/reply/:reply_id' do
 text = params[:tweet_text]
-t = TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
+TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
 redirect '/'
 end
 
@@ -183,9 +183,3 @@ end
 # post '/tweet/:tweet_id/unlike' do
 
 # end
-
-
-post '/ajax/test' do
-
-  "<p> Test paragraph</p>"
-end
