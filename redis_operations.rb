@@ -38,7 +38,7 @@ class RedisClass
 		users_ids.each do |id|
 			$redis.rpush("user:#{id}:mentions", tweet.to_json)
 		end
-	
+
 	end
 
 	def self.cache_tags(tag_names, tweet)
@@ -51,10 +51,10 @@ class RedisClass
 
 	def self.cache_likes(t_id, u_id, t) #we need to store likes so that a user cannot like the tweet two times
 	    if $redis.sismember("tweet:#{t_id}:likes", u_id) == false
-			$redis.sadd("tweet:#{t_id}:likes", u_id)
-			t.increase_likes
-			return true
-		end
+				$redis.sadd("tweet:#{t_id}:likes", u_id)
+				t.increase_likes
+				return true
+			end
 	end
 
 
@@ -75,7 +75,7 @@ class RedisClass
 
 	def self.access_hfeed(u_id)
 	    $redis.lrange("user:#{u_id}:hfeed",0, -1) #returns the unparsed tweets (in json format)
-		
+
 	end
 
 	def self.access_tag(name)
@@ -119,6 +119,6 @@ class RedisClass
 	end
 
 
-	
+
 
 end

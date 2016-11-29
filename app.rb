@@ -60,19 +60,21 @@ get '/login' do
 end
 
 post '/login/submit' do
+  #login handles session[:user_id] and expiration now
   successful_log_in = login(params)
 	if successful_log_in
-	   #ANNE CHANGE SO THAT IT WORKS WITH ENCRYPTED PASSWORDSS
-     u = User.where(email: params[:email], password_hash: params[:password])
-	   @user = u[0] #in order to become the array of fields
-     session[:user_id] = @user.id
-     session[:expires_at] = Time.current + 10.minutes
-     redirect '/'
+    redirect '/'
   else
-     redirect '/registration'
+    #This still needs to just create an error dialog instead of redirecting automatically to registration
+    redirect '/registration'
   end
 end
 
+#inline login
+get '/?user=:user_name&password=:password' do
+  login(params)
+  redirect '/'
+end
 
 get'/logout' do
     log_out_now
@@ -112,7 +114,7 @@ end
 
 
 post '/user/follow' do
-  
+
 
   follower = User.find(session[:user_id])#the person following
   followed = User.find_by_user_name(params[:user_name]) #the person being followed
@@ -137,14 +139,14 @@ post '/user/unfollow' do
   follower.decrement_followings
   followed.decrement_followers
   redirect '/user' + followed.user_name
-  
+
 end
 
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  t = TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
-  redirect '#'
+  TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
+  redirect '#';
 end
 
 
@@ -174,7 +176,7 @@ end
 
 post '/tweet/reply/:reply_id' do
 text = params[:tweet_text]
-t = TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
+TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
 redirect '/'
 end
 
@@ -195,9 +197,3 @@ end
 # post '/tweet/:tweet_id/unlike' do
 
 # end
-
-
-post '/ajax/test' do
-
-  "<p> Test paragraph</p>"
-end

@@ -1,13 +1,17 @@
 require 'typhoeus'
 require 'json'
+require 'byebug'
 
+#This variable does not seem to be available to api_call_no_body here
 uri = "#{ENV['SINATRA_ENV']}"
 
 def api_call_no_body(url_start, conditional, url_end)
+
+  uri = URI.parse("localhost:4567") #{}"#{ENV['SINATRA_ENV']}"
   response = Typhoeus::Request.post(
-    "#{base_uri}/#{url_start}/#{conditional}/#{url_end}")
+    "#{uri}/#{url_start}/#{conditional}/#{url_end}")
   if response.code == 200
-    JSON.parse(response.body)
+    return JSON.parse(response.body)
   elsif response.code == 404
     nil
   else
@@ -18,13 +22,13 @@ end
 # Get tweet by ID
 # api/v1/tweets/:tweet_id
 def get_tweet(tweet_id)
-  api_call_no_body("api/v1/tweets", tweet_id)
+  api_call_no_body("api/v1/tweets", tweet_id, "")
 end
 
 # Get usernames by ID
 # api/v1/users/:user_name
 def get_username(user_name)
-  api_call_no_body("api/v1/users", user_name)
+  return api_call_no_body("api/v1/users", user_name,"")
 end
 
 # Get tweet replies by original ID
@@ -37,7 +41,7 @@ end
 # Get tweets by username ID
 # api/v1/users/:user_name/tweets
 def get_user_tweets(user_name)
-  api_call_no_body("api/v1/users", user_name, "tweets")
+  return api_call_no_body("api/v1/users", user_name, "tweets")
 end
 
 # (This should be called with a JSON body)
