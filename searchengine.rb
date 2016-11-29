@@ -10,6 +10,7 @@ require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
 require 'json'
 require_relative 'api.rb'
+#This is hard >.<
 
 class SearchEngine
 

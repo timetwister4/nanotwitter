@@ -1,6 +1,7 @@
-require_relative '../app.rb'
+#require_relative '../app.rb'
 require 'csv'
 require 'faker'
+
 
 get '/test/reset/all' do
   init_status = get_status
@@ -33,9 +34,10 @@ end
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
-  byebug
+  #byebug
   init_status = get_status
   reset_all
+  #There HAS to be a faster way to do this. This has been running for ages now. 
   CSV.foreach('./test/seed_data/users.csv') do |row|
     User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
   end
@@ -45,6 +47,7 @@ get '/test/reset/standard' do
     if row[0].to_i != user.id
       user = User.where(id: row[0].to_i)[0]
     end
+
     # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
     # Alternatively, sort CSV by row[2] and *then* create tweets
     Tweet.create(author_id: row[0].to_i, author_name: user[:name], text: row[1], created_at: row[2])

@@ -1,6 +1,7 @@
 require_relative '../models/user.rb'
 require "byebug"
 
+#Weren't we supposed to use Rack::Auth? I think we forgot. Fix!
 def authenticate!
 	 #when we solve the require relative problem write the line: unless session[:user_id] && User.where(id: session[:user_id])
 
@@ -20,7 +21,7 @@ end
 
 
 def login (params)
-	byebug
+
 	u = nil
 	if params[:email]
 		u = User.find_by_email(params[:email])
