@@ -4,7 +4,9 @@ require 'faker'
 
 get '/test/reset/all' do
   init_status = get_status
-  reset_all
+  reset_all_database
+  reset_all_redis
+  create_test_user
   fin_status = get_status
   @message = {:init_status => init_status, :fin_status => fin_status}
   erb :test_page
@@ -17,7 +19,7 @@ end
 
 get '/test/reset/testuser' do
   init_status = get_status
-  reset_user
+  reset_test_user
   fin_status = get_status
   @message = {:init_status => init_status, :fin_status => fin_status}
   erb :test_page
@@ -69,7 +71,7 @@ get '/test/reset/standard' do
   compare_status(final_status, init_status).to_json
 end
 
-get '/test/users/create' do # ?count=:count&tweets=:tweets
+get '/test/users/create?count=:count&tweets=:tweets' do # ?count=:count&tweets=:tweets
   init_status = get_status
   params[:count].to_i.times do
     uname = Faker::Name.name
@@ -79,10 +81,12 @@ get '/test/users/create' do # ?count=:count&tweets=:tweets
     end
   end
   final_status = get_status
-  compare_status(final_status, init_status).to_json
+  @message = compare_status(final_status, init_status).to_json
+  erb :test_page
+
 end
 
-get '/test/user/:user_name/tweets' do # ?count=:count
+get '/test/user/:user_name/tweets?count=:count' do # 
   init_status = get_status
   user = User.where(user_name: params[:user_name])
   if user[0]
@@ -95,7 +99,7 @@ get '/test/user/:user_name/tweets' do # ?count=:count
   compare_status(final_status, init_status).to_json
 end
 
-get '/test/user/:user_name/follow' do # ?count=:count
+get '/test/user/:user_name/follow?count=:count' do # 
   user = User.where(user_name: params[:user_name])
   follows = Follow.where(followed: user)
   #Ensures user does not try to follow themself - should deny the creation, but would ultimately mean :count-1 follows
@@ -107,12 +111,13 @@ get '/test/user/:user_name/follow' do # ?count=:count
   end
 end
 
+
 #get '/test/user/follow?count=n' do
 #end
 
 
 def create_test_user
-   User.create(name: "TestUser", email: "Test@Test", user_name: "TestUser", password: "Test")
+   User.create(name: "testuser", email: "testuser@sample.com", user_name: "testuser", password: "password")
 
 end
 
@@ -126,33 +131,36 @@ def get_status
   {:time => time, :users => users, :tweets => tweets, :follows => follows}
 end
 
-def reset_all
+def reset_all_database
   User.destroy_all
   Tweet.destroy_all
   Follow.destroy_all
-  #Feed.delete_all
-  #Follow.delete_all
+
 end
 
-def reset_user(name)
-  user = User.where(user_name: "TestUser")
-  tweet = Tweet.where(author_name: "TestUser")
+def reset_all_redis
+  RedisClass.delete_keys
+
 end
 
-def reset_user(name)
-  user = User.where(user_name: name)
-  tweet = Tweet.where(author_name: user.user_name)
-  if tweet[0]
-    Tweet.delete(tweet.ids)
-  end
-  #followers = Follow.where(follows: user).delete
-  #following = Follow.where(following: user).delete
-  #feed = Feed.where(owner: user).delete
-  if user[0]
-    User.delete(user[0].id)
-  end
+
+def reset_test_user
+ delete_user_data(User.where(user_name: "testuser"))
+
 end
 
+#deletes all data related to a certain user
+def delete_user_data(user)
+  tweets = Tweet.where(author_name: user[0].user_name)
+  tweets.destroy_all
+  follows1 = Follow.where(follower: user)
+  follows1.destroy_all
+  follows2 = Follow.where(followed: user)
+  follows2.destroy_all
+  RedisClass.delete_user_keys(user[0].id)
+  RedisClass.delete_user_from_follows(user[0].id)
+
+end
   # if tweet[0]
   #   Tweet.delete(tweet.ids)
   # end

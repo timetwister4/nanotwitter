@@ -179,6 +179,14 @@ redirect '/'
 end
 
 
+
+get '/test' do
+
+  keys = RedisClass.number_of_keys
+  byebug
+
+end
+
 # post '/tweet/:tweet_id/like' do
 #   #need to keep track of which users like which tweets
 
