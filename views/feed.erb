@@ -1,8 +1,10 @@
+
+
   <% @tweets.each do |t| %>
           <% tweet = JSON.parse(t) %>
              <div class="panel panel-default">
                  <div class="panel panel-heading">
-                    <%=tweet["author_name"]%> tweeted at <%=tweet["created_at"]%> :
+                    <a href=<%="/user/"+tweet["author_name"]%>> <%=tweet["author_name"]%></a> tweeted at <%=tweet["created_at"]%> :
                   </div>
                   <div class ="panel panel-body">
                     <%= tweet["text"]%>
@@ -10,14 +12,14 @@
                   <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet["id"]%>>
                      <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
                           <i  class="fa fa-heart"> </i>
-                          <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
-                      </a> 
-                
-                      <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
-                          <i  class="fa fa-reply"></i>
-                     </a> 
+                          <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p>
+                      </a>
 
-                  </div> 
+                      <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> >
+                          <i  class="fa fa-reply"></i>
+                     </a>
+
+                  </div>
           </div>
-            
+
   <%end%>

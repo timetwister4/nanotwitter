@@ -3,7 +3,6 @@ require 'byebug'
 class Tweet <ActiveRecord::Base
    belongs_to :author, :class_name => "User"
      
-  #need to add character limit validation
   validates :text, presence: true, length: { maximum: 140 } #checks that the text is not empty
   validates :author, presence: true
 

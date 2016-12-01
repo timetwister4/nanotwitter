@@ -26,6 +26,8 @@ get '/api/v1/users/:user_name/tweets' do
 end
 
 
+
+
 get 'api/v1/tag/:tag_name' do
 	RedisClass.access_tag(params[:tag_name]).to_json
 end

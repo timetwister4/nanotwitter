@@ -30,40 +30,25 @@ get '/test/reset/testuser' do
 end
 
 get '/test/status' do
-  get_status.to_json
+r =   get_status.to_json
 end
 
 # CSV pulls from config.ru, not from test_interface.rb
 # id has to be overridden, else it increments past 1000 after table reset - alternatively, determine offset using User.all[0].id - 1, and add it to all ids
 get '/test/reset/standard' do
-  #byebug
-  init_status = get_status
-  reset_all_database
-  reset_all_redis
-  #There HAS to be a faster way to do this. This has been running for ages now.
-
-  CSV.foreach('./test/seed_data/users.csv') do |row|
-    User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
-  end
-
-  user = User.all[0]
-  CSV.foreach('./test/seed_data/tweets.csv') do |row|
-    if row[0].to_i != user.id
-      user = User.where(id: row[0].to_i)[0]
-init_status = get_status
-  t = Thread.new {
-    #byebug
-    reset_all_database
-    reset_all_redis
+    init_status = get_status
+    t = Thread.new {
+      reset_all_database
+      reset_all_redis
     #There HAS to be a faster way to do this. This has been running for ages now.
-    CSV.foreach('./test/seed_data/users.csv') do |row|
-      User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
-    end
-    user = User.all[0]
-    CSV.foreach('./test/seed_data/tweets.csv') do |row|
-      if row[0].to_i != user.id
-        user = User.where(id: row[0].to_i)[0]
+      CSV.foreach('./test/seed_data/users.csv') do |row|
+        User.create(id: row[0].to_i, name: row[1], email: "#{row[1]}@cosi105b.gov", user_name: row[1], password: "123")
       end
+      user = User.all[0]
+      CSV.foreach('./test/seed_data/tweets.csv') do |row|
+        if row[0].to_i != user.id
+          user = User.where(id: row[0].to_i)[0]
+        end
 
       # May need to properly parse created_at, plus the csv is not sorted by date - is it being sorted chronologically here?
       # Alternatively, sort CSV by row[2] and *then* create tweets
@@ -75,20 +60,24 @@ init_status = get_status
     # To minimize table searches, consider parsing both CSV files row by row, if possible?
     user = User.all[0]
     CSV.foreach('./test/seed_data/follows.csv') do |row|
+      byebug
       if row[0].to_i != user.id
         user = User.where(id: row[0])[0]
       end
-      user.increment_following
+      user.increment_followings
       user.save
-      User.where(id: row[1].to_i)[0].increment_followers
-      User.where(id: row[1].to_i)[0].save
+      followed_user = User.where(id: row[1].to_i)[0]
+      followed_user.increment_followers
+      followed_user.save
       Follow.create(follower_id: row[0].to_i, followed_id: row[1].to_i)
     end
     }
-    t.abort_on_exception = true
+    #This line caused the entire app to crash if you refreshed to status page.
+    #t.abort_on_exception = true
 
     final_status = get_status
-    compare_status(final_status, init_status).to_json
+    #redirect to another page so refreshing doesn't accidentally start the whole process again
+    redirect '/test/status'
 end
 
 get '/test/users/create?count=:count&tweets=:tweets' do # ?count=:count&tweets=:tweets
@@ -122,6 +111,7 @@ end
 get '/test/user/:user_name/follow?count=:count' do #
   user = User.where(user_name: params[:user_name])
   follows = Follow.where(followed: user)
+  #Note: There is a validator that prevents this already.
   #Ensures user does not try to follow themself - should deny the creation, but would ultimately mean :count-1 follows
   to_follow = User.where_not("id = ? or id = ?", follows.id, user.id).order("RANDOM()").first(params[:count])
   to_follow.each do |obj|
@@ -141,7 +131,7 @@ def create_test_user
 
 end
 
-
+# !!! With threading, this now crashes the whole site completely if the reset is in progress
 def get_status
   time = Time.now
   users = User.all.count

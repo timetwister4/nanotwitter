@@ -1,0 +1,14 @@
+Problems
+//Fixed1. Users tweets are not appearing on their profile page
+//Fixed2. Link to see one's own tweets on homepage no longer working
+//Fixed3. Test interface is not properly setting up follows
+//Fixed4. Was watching the test interface status. It quickly completed making 1000 users, then apparently deleted them all and started over
+
+
+
+Notes
+//Done1. Make it so you can click on a user name on a tweet and go to that user's profile
+//Done 2. Remove public display of email address
+3. Make it so that incorrect login information does not immediately send users to registration
+4. Cache needs to be updated occasionally, just in case something is missing.
+5. 

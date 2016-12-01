@@ -33,11 +33,10 @@
 
   </head>
   <body>
-  <script src="http://code.jquery.com/jquery-latest.min.js"> 
+  <script src="http://code.jquery.com/jquery-latest.min.js">
   </script>
 
 
-     <%= erb :navbar %>
 
 
   <div class="container">
@@ -57,16 +56,16 @@
                 <div class="panel panel-footer">
             <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet["id"]%> >
                 <i  class="fa fa-heart"> </i>
-                <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p> 
-            </a> 
-            
-            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> > 
+                <p class="heart2" data-tweet-likes= <%= tweet["likes"] %>> <%= tweet["likes"] %></p>
+            </a>
+
+            <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet["id"]%> >
             <i  class="fa fa-reply"></i>
-            </a> 
+            </a>
 
 
-        
-            </div> 
+
+            </div>
               </div>
               <br>
             <%end%>
@@ -76,25 +75,25 @@
 
 
 <script>
-    
-    
+
+
           $('a.heart').click(function(){
               $.ajax({
               url: "/tweet/like",
               type: "POST",
               data: {tweet_id: $('.heart').attr('data-tweet-id')},
-              success: function(){                                           
+              success: function(){
                         var likes = $('.heart2').attr('data-tweet-likes')
                         var likes = parseInt(likes) + 1
                         $('.heart2').text(likes.toString())
-                      } 
-          
+                      }
+
              })
           })
 
 
             $('a.reply').click(function(){
-              
+
 
 
               $.ajax({
@@ -122,7 +121,7 @@
           //     .appendTo('body')
           //     .fadeIn('slow');
 
-          // })         
+          // })
 
 </script>
 

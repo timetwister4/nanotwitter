@@ -20,11 +20,22 @@ class RedisClass
 		byebug
 	end
 
-	
+
 	def self.cache_tweet(tweet,user_id, tweet_id)
 		$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
 		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
-		followers = $redis.smembers("user:#{user_id}:follows")
+		followers = []
+		#if the cache is empty, check the database
+		if($redis.smembers("user:#{user_id}:follows")== [])
+			f = User.find(user_id).followers
+			f.each do |follow|
+				followers.push(follow.follower_id)
+				#since the cache is empty, update it
+				self.cache_follow(user_id, follow.follower_id)
+			end
+		else
+			followers = $redis.smembers("user:#{user_id}:follows")#with our test interface, these aren't cached (yet?)
+		end
 		followers.each do |f_id|
 			$redis.lpush("user:#{f_id}:hfeed", tweet.to_json)
 		end

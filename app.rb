@@ -14,6 +14,7 @@ require 'json'
 require 'redis'
 require 'redis-namespace'
 require_relative 'api.rb'
+require 'sinatra/content_for'
 require_relative 'test/test_interface.rb'
 
 
@@ -25,6 +26,7 @@ end
 get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
   "loaderio-97e86023c438b5621c512742d95a8419.txt"
 end
+
 #root
 get '/' do
   if authenticate!
@@ -188,7 +190,6 @@ end
 get '/test' do
 
   keys = RedisClass.number_of_keys
-  byebug
 
 end
 

@@ -11,12 +11,12 @@ class User <ActiveRecord::Base
   validates :name, presence: true
 
   has_many :tweets , :class_name => "Tweet",  :foreign_key => :author_id
-  
+
   has_many :followers, :class_name => "Follow",
-   :foreign_key => :follower_id
+   :foreign_key => :followed_id
 
   has_many :followed_users, :class_name => "Follow",
-    :foreign_key => :followed_id
+    :foreign_key => :follower_id
 
 
   def to_json
