@@ -60,7 +60,7 @@ get '/test/reset/standard' do
     # To minimize table searches, consider parsing both CSV files row by row, if possible?
     user = User.all[0]
     CSV.foreach('./test/seed_data/follows.csv') do |row|
-      byebug
+    
       if row[0].to_i != user.id
         user = User.where(id: row[0])[0]
       end
@@ -128,7 +128,6 @@ end
 
 def create_test_user
    User.create(name: "testuser", email: "testuser@sample.com", user_name: "testuser", password: "password")
-
 end
 
 # !!! With threading, this now crashes the whole site completely if the reset is in progress
@@ -156,7 +155,6 @@ end
 
 def reset_test_user
  delete_user_data(User.where(user_name: "testuser"))
-
 end
 
 #deletes all data related to a certain user

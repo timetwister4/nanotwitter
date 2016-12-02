@@ -16,17 +16,13 @@ get 'api/v1/users/:user_name' do
 end
 
 get 'api/v1/tweets/:tweet_id/replies' do
-
-  #I think this should be a database call, rather than a cache call. The cache should be for user timelines
+  # I think this should be a database call, rather than a cache call. The cache should be for user timelines
 	RedisClass.access_replies(params[:tweet_id]).to_json
 end
 
 get '/api/v1/users/:user_name/tweets' do
   User.where(user_name: params[:user_name])[0].tweets.to_json
 end
-
-
-
 
 get 'api/v1/tag/:tag_name' do
 	RedisClass.access_tag(params[:tag_name]).to_json

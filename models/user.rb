@@ -23,6 +23,8 @@ class User <ActiveRecord::Base
     super(:except => :password)
   end
 
+  # password encryption functions
+
   def password
     @password ||= Password.new(password_hash)
   end

@@ -22,7 +22,6 @@ describe "App" do
       )
     end
 
-    #create a before each thing to ensure that each test always has a user to log in
     it "can log a user in" do
       post '/login/submit',
       {:email => "teamthunderbeardev@gmail.com",
@@ -40,8 +39,6 @@ describe "App" do
       get '/'
       assert last_response.body.include?('<a class="btn btn-primary" href="/login">Login</a>')
     end
-
-    ##Problem: This test intermittently fails
 
     it "serves correct page if logged in" do
       post '/login/submit',
@@ -94,15 +91,19 @@ describe "App" do
   end
 
   describe "Tweeting" do
-  #  it "can save a tweet to the database" do
-  #    Tweet.create(text: "I am toast", author: User.find(1))
-      #byebug
-  #    assert (!(Tweet.find_by_text("I am toast") == nil))
-  #  end
+
+    before(:each)do
+      User.delete_all
+      User.create(name: "John", user_name: "TestUser2", email:"john@example.com", password: "strongpass")
+    end
+
+    it "can save a tweet to the database" do
+      Tweet.create(text: "I am toast", author: User.find_by_name("John"))
+      assert (!(Tweet.find_by_text("I am toast") == nil))
+    end
 
 
     it "can retrieve all tweets by a user" do
-    #  byebug
     #  tweets = Tweet.find_by_author_id(1)
 
     end
@@ -116,10 +117,5 @@ describe "App" do
     end
 
   end
-
-  describe "Feeds" do
-
-  end
-
 
 end

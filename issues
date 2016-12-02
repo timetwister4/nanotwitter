@@ -3,7 +3,7 @@ Problems
 //Fixed2. Link to see one's own tweets on homepage no longer working
 //Fixed3. Test interface is not properly setting up follows
 //Fixed4. Was watching the test interface status. It quickly completed making 1000 users, then apparently deleted them all and started over
-
+5. Make sure
 
 
 Notes
@@ -11,4 +11,9 @@ Notes
 //Done 2. Remove public display of email address
 3. Make it so that incorrect login information does not immediately send users to registration
 4. Cache needs to be updated occasionally, just in case something is missing.
-5. 
+5. ADD INDICES to database to improve searching
+
+The third URL
+
+The random tweet on
+Still the hopepage, displays the page for this user but in addition there is a 50/50 chance that it does one tweet with random text for that user before displaying that page.

@@ -13,6 +13,7 @@ def authenticate!
 		end
 end
 
+
 def current_user
 	current_user_id = session[:user_id]
 	return nil if current_user_id.nil?
@@ -21,7 +22,10 @@ end
 
 
 def login (params)
+
 	u = nil
+
+	# Allows for both login by username and login by email
 	if params[:email]
 		u = User.find_by_email(params[:email])
 	elsif params[:user_name]
@@ -29,6 +33,7 @@ def login (params)
 	else
 		return false
 	end
+
   if u && u.password == params[:password]
 	   session[:user_id] = u.id
      session[:expires_at] = Time.current + 10.minutes
@@ -38,13 +43,11 @@ def login (params)
   end
 end
 
+# logs current user out
 def log_out_now
 	session[:user_id] = nil
 end
-	def logged_in?
-		!session[:user_id].nil?
-	end
 
-	def redirect_to_original_request
-
-	end
+def logged_in?
+	!session[:user_id].nil?
+end

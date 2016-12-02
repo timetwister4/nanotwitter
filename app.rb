@@ -19,6 +19,8 @@ require_relative 'test/test_interface.rb'
 
 
 TweetFactory = TweetProcessor.new
+
+# loader.io access routes
 get '/loaderio-accded2323af55270a8895980c841782.txt' do
   send_file 'loaderio-accded2323af55270a8895980c841782.txt'
 end
@@ -27,38 +29,24 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
   "loaderio-97e86023c438b5621c512742d95a8419.txt"
 end
 
-#root
+# root
 get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
-    erb :my_home #personalized homepage
+    erb :my_home # personalized homepage
   else
     @tweets = Tweet.last(7)
-    erb :home #a generic homepage
+    erb :home # a generic homepage
   end
 end
 
-#in case a logged in user wants to see the general front page of nT
+# equivalent to logged out front page
 get '/front' do
   @tweets = Tweet.last(7)
   erb :home
 end
-
-
-get '/profile' do
-  if authenticate!
-    @user = User.find(session[:user_id])
-    #@user = u[0]
-    @tweets = RedisClass.access_pfeed(session[:user_id])
-    erb :profile
-  else
-    erb :error
-  end
-end
-
-
 
 # Login URLs #
 get '/login' do
@@ -76,7 +64,7 @@ post '/login/submit' do
   end
 end
 
-#inline login
+# inline login
 get '/?user=:user_name&password=:password' do
   login(params)
   redirect '/'
@@ -105,6 +93,17 @@ end
 
 # User Profile URLs and Functions #
 
+# Logged in user's profile
+get '/profile' do
+  if authenticate!
+    @user = User.find(session[:user_id])
+    @tweets = RedisClass.access_pfeed(session[:user_id])
+    erb :profile
+  else
+    erb :error
+  end
+end
+
 get '/user/:user_name' do
     if User.where(user_name: params[:user_name]).exists?
       u = User.where(user_name: params[:user_name])
@@ -120,29 +119,30 @@ end
 
 post '/user/follow' do
 
+  follower = User.find(session[:user_id])# the person following
+  followed = User.find_by_user_name(params[:user_name]) # the person being followed
 
-  follower = User.find(session[:user_id])#the person following
-  followed = User.find_by_user_name(params[:user_name]) #the person being followed
+  follower.increment_followings
+  followed.increment_followers
+  RedisClass.cache_follow(session[:user_id], followed.id)
+  f = Follow.create(follower: follower, followed: followed)
+  f.save # not necessary with the create command
+  redirect '/user' + followed.user_name
 
-    #follower.following_count += 1
-    follower.increment_followings
-    #followed.follower_count += 1
-    followed.increment_followers
-    RedisClass.cache_follow(session[:user_id], followed.id)
-    f = Follow.create(follower: follower, followed: followed)
-    f.save
-    redirect '/user' + followed.user_name
 end
 
 
 post '/user/unfollow' do
-  redirect '/registration'
-  follower = User.find(session[:user_id])#the person following
-  followed = User.find_by_user_name(params[:user_name]) #the person being followed
+
+  follower = User.find(session[:user_id])# the person following
+  followed = User.find_by_user_name(params[:user_name]) # the person being followed
+
   Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
   RedisClass.cache_unfollow(session[:user_id], followed.id)
+
   follower.decrement_followings
   followed.decrement_followers
+
   redirect '/user' + followed.user_name
 
 end
@@ -150,7 +150,7 @@ end
 # note the asterisk means that no matter what comes before this it will work
 post '*/tweet/new/submit' do
   text = params[:tweet_text]
-  TweetFactory.make_tweet(text, session[:user_id], nil)#Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
+  TweetFactory.make_tweet(text, session[:user_id], nil)# Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
   redirect '#';
 end
 

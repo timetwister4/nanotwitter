@@ -241,11 +241,4 @@ describe "Database" do
 
   end
 
-  describe "Mentions" do
-
-  end
-
-  describe "Tags" do
-
-  end
 end
