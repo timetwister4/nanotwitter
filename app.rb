@@ -15,7 +15,6 @@ require 'redis'
 require 'redis-namespace'
 require_relative 'api.rb'
 require 'sinatra/content_for'
-require_relative 'test/test_interface.rb'
 
 
 TweetFactory = TweetProcessor.new
