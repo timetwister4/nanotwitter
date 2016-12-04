@@ -47,7 +47,7 @@ class TweetProcessor
         name = w.partition("@")[2]
         u = User.where(user_name: name)
         if (u != [])
-          w.gsub!(w,"<a href=\"user/#{name}\">#{w}</a>")
+          w.gsub!(w,"<a href=\"/user/#{name}\">#{w}</a>")
           mentions.push(u)
         end
       elsif w[0] == "#"

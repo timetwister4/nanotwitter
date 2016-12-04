@@ -36,14 +36,13 @@ get '/' do
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
   else
-    @tweets = Tweet.last(7)
-    erb :home # a generic homepage
+    redirect '/front'
   end
 end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = Tweet.last(7)
+  @tweets = RedisClass.access_ffeed#Tweet.last(7)
   erb :home
 end
 

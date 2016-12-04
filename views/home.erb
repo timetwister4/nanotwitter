@@ -8,9 +8,10 @@
             <h1>Recent Tweets</h1>
             <br>
           <% @tweets.each do |tweet| %>
+            <% tweet = JSON.parse(tweet) %>
               <div class="panel panel-default">
                 <div class="panel panel-heading">
-                  <%=tweet["author_name"]%> tweeted at <%=tweet["created_at"]%> :
+                  <a href = <%="/user/"+ tweet["author_name"]%>><%=tweet["author_name"]%></a> tweeted at <%=tweet["created_at"]%> :
                 </div>
                 <div class ="panel panel-body">
                   <%= tweet["text"]%>
