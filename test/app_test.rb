@@ -37,7 +37,7 @@ describe "App" do
           :password => "strongpass"}
       get '/logout'
       get '/'
-      assert last_response.body.include?('<a class="btn btn-primary" href="/login">Login</a>')
+      assert !last_response.body.include?('<a class="btn btn-primary" href="/logout">Logout</a>')
     end
 
     it "serves correct page if logged in" do
