@@ -13,6 +13,9 @@ gem 'bcrypt'
 
 gem 'faker'
 
+gem 'bunny'
+
+
 group :development, :test do
   gem 'rake'
   gem 'sqlite3'

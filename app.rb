@@ -3,6 +3,7 @@ require 'sinatra/activerecord'
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
 require_relative 'config/initializers/redis'
+require_relative 'usr/bin/dev/send.rb'
 require 'byebug'
 require_relative 'helpers/authentication.rb'
 require_relative 'models/user.rb'
@@ -31,19 +32,20 @@ end
 # root
 get '/' do
   if authenticate!
+    byebug
     u = User.where(id: session[:user_id])
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
   else
-    @tweets = Tweet.last(7)
+    @tweets = Tweet.last(10)
     erb :home # a generic homepage
   end
 end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = Tweet.last(7)
+  @tweets = Tweet.last(10)
   erb :home
 end
 
@@ -68,6 +70,12 @@ get '/?user=:user_name&password=:password' do
   login(params)
   redirect '/'
 end
+
+get '/?user=:anotheruser&password=:password&randomtweet=50' do
+  login(params)
+
+end
+
 
 get'/logout' do
     log_out_now
@@ -120,7 +128,6 @@ post '/user/follow' do
 
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-
   follower.increment_followings
   followed.increment_followers
   RedisClass.cache_follow(session[:user_id], followed.id)
