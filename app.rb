@@ -36,7 +36,8 @@ get '/' do
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
   else
-    redirect '/front'
+    @tweets = RedisClass.access_ffeed
+    erb:home
   end
 end
 

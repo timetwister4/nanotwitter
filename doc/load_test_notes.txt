@@ -22,3 +22,10 @@ Success 	22685 	Timeout 	0
 400/500 	0 / 121 	Network 	0
 
 Notes: Should make accessing the front page feed a cache operation, this has a lot to do with expensive db calls
+
+Response Times
+Average 	8768 ms
+Min/Max 	67 / 18553 ms
+Response Counts
+Success 	2009 	Timeout 	557
+400/500 	0 / 0 	Network 	0
