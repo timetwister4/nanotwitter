@@ -3,16 +3,29 @@ Problems
 //Fixed2. Link to see one's own tweets on homepage no longer working
 //Fixed3. Test interface is not properly setting up follows
 //Fixed4. Was watching the test interface status. It quickly completed making 1000 users, then apparently deleted them all and started over
-5. Currently with the seed data, all tweets on the front page are by Ahmed.
+//Fixed5. Currently with the seed data, all tweets on the front page are by Ahmed.
+6. Problem with mentions, cause a redis error to do with tags
+//Fixed7. Current test interface seeding does not seed the cache,
+and since we rely exclusively on the cache for feeds,
+none of the seeded data is being propagated fully
+7a. Test interface is seeding the feeds, put in order that we "update" the records,
+not the date we supposedly "created" the tweets as stated in the csv files
+8. Mention links now going to user/user/:user_name, rather than just to user/:user_name.
+//Fixed9. Added a cache for the front page feed, need to seed it so that they are in date order, not creation order
 
 Notes
-//Done1. Make it so you can click on a user name on a tweet and go to that user's profile
-//Done 2. Remove public display of email address
+//DONE1. Make it so you can click on a user name on a tweet and go to that user's profile
 3. Make it so that incorrect login information does not immediately send users to registration
 4. Cache needs to be updated occasionally, just in case something is missing.
 5. ADD INDICES to database to improve searching
+//DONE6. Front page tweets should display in order newest first
+7. Reply tweets do not increase the tweet count of a user. Should they? They get displayed when you try to see a user's tweets
+//DONE8. Getting the homepage feed should be a cache operation.
+
+9. Make date display prettier
+10. Seeding the pfeed caches should happen after adding to database so that they will be cached in order by date
+
 
 The third URL
-
 The random tweet on
-Still the hopepage, displays the page for this user but in addition there is a 50/50 chance that it does one tweet with random text for that user before displaying that page.
+Still the homepage, displays the page for this user but in addition there is a 50/50 chance that it does one tweet with random text for that user before displaying that page.

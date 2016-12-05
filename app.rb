@@ -38,14 +38,15 @@ get '/' do
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
   else
-    @tweets = Tweet.last(10)
-    erb :home # a generic homepage
+    @tweets = RedisClass.access_ffeed
+    erb:home
+
   end
 end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = Tweet.last(10)
+  @tweets = RedisClass.access_ffeed
   erb :home
 end
 
@@ -58,10 +59,11 @@ post '/login/submit' do
   #login handles session[:user_id] and expiration now
   successful_log_in = login(params)
 	if successful_log_in
+    session[:error] = ""
     redirect '/'
   else
-    #This still needs to just create an error dialog instead of redirecting automatically to registration
-    redirect '/registration'
+    session[:error] = "Incorrect login information"#This still needs to just create an error dialog instead of redirecting automatically to registration
+    redirect '/login'
   end
 end
 

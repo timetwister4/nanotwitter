@@ -20,7 +20,7 @@ describe "Tweet Processor" do
     t = TweetProcessor.new
     u = User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
     processed_tweet = t.process_text("Test text @TestUser")
-    assert processed_tweet[0].include?("<a href=\"user/TestUser\">")
+    assert processed_tweet[0].include?("<a href=\"/user/TestUser\">")
   end
 
   it "does not replace mentions if the user does not exist" do
