@@ -55,10 +55,11 @@ post '/login/submit' do
   #login handles session[:user_id] and expiration now
   successful_log_in = login(params)
 	if successful_log_in
+    session[:error] = ""
     redirect '/'
   else
-    #This still needs to just create an error dialog instead of redirecting automatically to registration
-    redirect '/registration'
+    session[:error] = "Incorrect login information"#This still needs to just create an error dialog instead of redirecting automatically to registration
+    redirect '/login'
   end
 end
 

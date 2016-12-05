@@ -28,8 +28,8 @@ def login (params)
 	# Allows for both login by username and login by email
 	if params[:email]
 		u = User.find_by_email(params[:email])
-	elsif params[:user_name]
-		u = User.find_by_user_name(params[:user_name])
+	elsif params[:user]
+		u = User.find_by_user_name(params[:user])
 	else
 		return false
 	end
