@@ -42,7 +42,7 @@ end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = RedisClass.access_ffeed#Tweet.last(7)
+  @tweets = RedisClass.access_ffeed
   erb :home
 end
 
