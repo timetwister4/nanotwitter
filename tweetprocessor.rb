@@ -1,13 +1,14 @@
 require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
+
 require_relative 'models/tweet'
 require_relative 'models/user'
-#require_relative 'redis_operations.rb'
+
 
 class TweetProcessor
 
-  def make_tweet(text,id,reply_id) #add splash param for reply information
+  def make_tweet(text,id,reply_id)
     author = User.find(id)#get author for author fields
 
     #process text, get html text, list of tags, and list of mentions
@@ -77,7 +78,6 @@ class TweetProcessor
   # end
 
 
-  #make less hacky
   def search_tweets(keyword)
     query_tweets = []
     all_tweets = Tweet.order("created_at DESC")

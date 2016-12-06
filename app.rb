@@ -1,21 +1,26 @@
+require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'sinatra/content_for'
+require 'json'
+
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
 require_relative 'config/initializers/redis'
-require 'byebug'
+
 require_relative 'helpers/authentication.rb'
+
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
-#require_relative 'redis_operations.rb'
-require_relative 'RedisClass.rb'
-require 'json'
+
 require 'redis'
 require 'redis-namespace'
+require_relative 'RedisClass.rb'
+
 require_relative 'api.rb'
-require 'sinatra/content_for'
+
 
 
 TweetFactory = TweetProcessor.new
@@ -31,6 +36,7 @@ end
 
 # root
 get '/' do
+  byebug
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
@@ -38,7 +44,7 @@ get '/' do
     erb :my_home # personalized homepage
   else
     @tweets = RedisClass.access_ffeed
-    erb:home
+    erb :home
   end
 end
 
@@ -185,8 +191,6 @@ text = params[:tweet_text]
 TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
 redirect '/'
 end
-
-
 
 # post '/tweet/:tweet_id/like' do
 #   #need to keep track of which users like which tweets
