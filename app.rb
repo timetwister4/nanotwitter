@@ -72,9 +72,11 @@ get '/?user=:user_name&password=:password' do
 end
 
 get '/?user=:user_name&password=:password?randomtweet=:tweetprob' do
-  if login(params) && (rand < params[:tweetprob])
+  sess = login
+  if sess && (rand < params[:tweetprob])
     user = User.where(user_name: params[:user_name])[0]
-    Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
+    TweetFactory.make_tweet(Faker::Hacker.say_something_smart, sess[:user_id], nil)
+    #Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
     user.increment_tweets
   end
   redirect '/'
