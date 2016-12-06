@@ -22,6 +22,8 @@ Success 	22685 	Timeout 	0
 400/500 	0 / 121 	Network 	0
 
 Notes: Should make accessing the front page feed a cache operation, this has a lot to do with expensive db calls
+This was after a lot of changes to caching. The front feed is now cached, but tweets are stored in feeds as integers, rather than their text as they used to be.
+This decreased the amount of cached space used and increased our cache capacity, but decreased the speed of cache retrieval
 
 Response Times
 Average 	8768 ms
@@ -29,3 +31,38 @@ Min/Max 	67 / 18553 ms
 Response Counts
 Success 	2009 	Timeout 	557
 400/500 	0 / 0 	Network 	0
+
+This was after removing a redirect in the root page
+Average 	5783 ms
+Min/Max 	30 / 10002 ms
+Response Counts
+Success 	3717 	Timeout 	638
+400/500 	0 / 0 	Network 	0
+Bandwidth
+Sent 	2.79 MB
+Received 	26.03 MB
+Redirects
+Valid 	0
+Invalid 	0
+
+This is a test for the /front page, which does not check for authentication
+
+Response Times
+Average 	5681 ms
+Min/Max 	15 / 11000 ms
+Response Counts
+Success 	2870 	Timeout 	1506
+400/500 	0 / 0 	Network 	0
+Bandwidth
+Sent 	2.68 MB
+Received 	20.08 MB
+Redirects
+Valid 	0
+Invalid 	0
+AFter around 690 simultaneous clients, the site seems to reach its limit and everyone is timing out after 10 seconds
+Note: loader.io's interface keeps freezing while testing on my laptop. and it seems to happen around the time we have issues.
+Wonder if there is a causal relationship somewhere
+
+I Think that maybe some of this can be fixed by, rather than compressing the information stored in the whatever,
+
+Why are we storing each and every tweet? 
