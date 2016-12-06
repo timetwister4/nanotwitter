@@ -56,10 +56,10 @@ end
 post '/login/submit' do
   #login handles session[:user_id] and expiration now
   successful_log_in = login(params)
-	if successful_log_in
-    session[:error] = ""
-    redirect '/'
-  else
+    if successful_log_in
+      session[:error] = ""
+      redirect '/'
+    else
     session[:error] = "Incorrect login information"#This still needs to just create an error dialog instead of redirecting automatically to registration
     redirect '/login'
   end
@@ -187,12 +187,6 @@ redirect '/'
 end
 
 
-
-get '/test' do
-
-  keys = RedisClass.number_of_keys
-
-end
 
 # post '/tweet/:tweet_id/like' do
 #   #need to keep track of which users like which tweets

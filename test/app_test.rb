@@ -98,7 +98,7 @@ describe "App" do
     end
 
     it "can save a tweet to the database" do
-      Tweet.create(text: "I am toast", author: User.find_by_name("John"))
+      Tweet.create(text: "I am toast", author: User.find_by_name("John"), author_name: "John")
       assert (!(Tweet.find_by_text("I am toast") == nil))
     end
 

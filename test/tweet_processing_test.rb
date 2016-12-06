@@ -18,7 +18,7 @@ describe "Tweet Processor" do
 
   it "replaces mentions with user URLs" do
     t = TweetProcessor.new
-    u = User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
+    User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
     processed_tweet = t.process_text("Test text @TestUser")
     assert processed_tweet[0].include?("<a href=\"/user/TestUser\">")
   end

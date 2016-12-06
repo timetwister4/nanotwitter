@@ -7,7 +7,6 @@
     <div class= "col-md-6 col-md-offset-3" >
             <h1>Recent Tweets</h1>
             <br>
-            <%byebug%>
           <% @tweets.each do |tweet| %>
             <% tweet = JSON.parse(tweet) %>
               <div class="panel panel-default">

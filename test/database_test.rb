@@ -90,7 +90,7 @@ describe "Database" do
 
     it "can access a list of its tweets" do
       u = User.where(user_name: "thunderbear")[0]
-      t = Tweet.create(text: "test tweet", author: u)
+      t = Tweet.create(text: "test tweet", author: u, author_name: u.user_name)
       my_tweet = u.tweets[0]
       assert_equal(my_tweet, t)
     end
@@ -111,11 +111,11 @@ describe "Database" do
       Tweet.destroy_all
       User.destroy_all
       u = User.create(name: "Bjorn", user_name: "thunderbear", email: "teamthunderbeardev@gmail.com", password: "strongpass")
-      Tweet.create(text: "Test Text", author: u)
+      Tweet.create(text: "Test Text", author: u, author_name: u.user_name)
     end
 
     it "can store tweet to database" do
-        Tweet.create(text: "Test Text2", author: User.where(user_name: "thunderbear")[0])
+        Tweet.create(text: "Test Text2", author: User.where(user_name: "thunderbear")[0], author_name: "thunderbear")
         assert Tweet.where(text: "Test Text2").exists?
     end
 
@@ -160,7 +160,7 @@ describe "Database" do
 
     it "must not be over 140 characters" do
       t = "I am a string of over 140 characters.:) I am a string of over 140 characters.:) I am a string of over 140 characters.:) I am a string of over 140 characters.:)"
-      tweet = Tweet.create(text: t, author: User.find_by_name("Bjorn"), author_name: "Bjorn")
+      Tweet.create(text: t, author: User.find_by_name("Bjorn"), author_name: "Bjorn")
       assert !Tweet.where(text: t).exists?
     end
 
@@ -223,7 +223,7 @@ describe "Database" do
 
     it "must have a followed user" do
       u = User.where(name:"John")[0]
-      f = Follow.create(follower: nil, followed: u)
+      Follow.create(follower: nil, followed: u)
       assert !Follow.where(follower: nil).exists?
 
     end
