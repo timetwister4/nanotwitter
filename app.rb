@@ -17,8 +17,8 @@ require_relative 'tweetprocessor.rb'
 
 require 'redis'
 require 'redis-namespace'
-require_relative 'RedisClass.rb'
-
+#require_relative 'RedisClass.rb'
+require_relative 'redis_operations'
 require_relative 'api.rb'
 
 require 'faker'
@@ -43,8 +43,7 @@ get '/' do
     u = User.where(id: session[:user_id])
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
-    erb :my_home # personalized homepage
-    #Unsure if necessary, if scalability test tweets once per session
+        #Unsure if necessary, if scalability test tweets once per session
     if (rand < (params[:randomtweet].to_f / 100))
       user = User.where(user_name: params[:user])[0]
       TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
@@ -62,7 +61,7 @@ get '/' do
     end
     erb :my_home
   else
-    @tweets = RedisClass.access_ffeed
+    @tweets = Tweet.order(created_at: :desc).first(50)#RedisClass.access_ffeed
     erb :home
   end
 end
