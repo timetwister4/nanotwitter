@@ -50,6 +50,7 @@ get '/' do
       TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
       user.increment_tweets
     end
+    erb :my_home
   elsif (params[:user] || params[:email]) && params[:password]
     successful_log_in = login(params)
     if successful_log_in && params[:randomtweet]
@@ -59,7 +60,7 @@ get '/' do
         user.increment_tweets
       end
     end
-    redirect '/'
+    erb :my_home
   else
     @tweets = RedisClass.access_ffeed
     erb :home
