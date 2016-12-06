@@ -36,13 +36,18 @@ get '/' do
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
+    #Unsure if necessary, if scalability test tweets once per session
+    if (rand < (params[:randomtweet].to_f / 100))
+      user = User.where(user_name: params[:user])[0]
+      TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+      user.increment_tweets
+    end
   elsif (params[:user] || params[:email]) && params[:password]
     successful_log_in = login(params)
     if successful_log_in && params[:randomtweet]
-      if (rand < params[:randomtweet].to_i)
+      if (rand < (params[:randomtweet].to_f / 100))
         user = User.where(user_name: params[:user])[0]
         TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-        #Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
         user.increment_tweets
       end
     end
