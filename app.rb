@@ -39,7 +39,6 @@ end
 
 # root
 get '/' do
-  byebug
   if authenticate!
     u = User.where(id: session[:user_id])
     @user = u[0]
