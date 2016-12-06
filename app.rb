@@ -71,25 +71,34 @@ get '/?user=:user_name&password=:password' do
   redirect '/'
 end
 
+get '/?user=:user_name&password=:password?randomtweet=:tweetprob' do
+  if login(params) && (rand < params[:tweetprob])
+    user = User.where(user_name: params[:user_name])[0]
+    Tweet.create(author_id: user.id, author_name: user[:user_name], text: Faker::Hacker.say_something_smart)
+    user.increment_tweets
+  end
+  redirect '/'
+end
+
+
 get'/logout' do
-    log_out_now
-    redirect '/'
+  log_out_now
+  redirect '/'
 end
 
 # Account Registration URLs #
-
 get '/registration/?' do
   erb :registration
 end
 
 post '/registration/submit' do
-   u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-    if u.save
-      session[:user_id] = u.id
-      redirect '/'
-    else
-      redirect '/registration'
-    end
+  u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
+  if u.save
+    session[:user_id] = u.id
+    redirect '/'
+  else
+    redirect '/registration'
+  end
 end
 
 # User Profile URLs and Functions #
@@ -119,7 +128,6 @@ end
 
 
 post '/user/follow' do
-
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
 
@@ -134,7 +142,6 @@ end
 
 
 post '/user/unfollow' do
-
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
 
@@ -181,9 +188,9 @@ get '/tweet/replies' do  #This get block accesses all the replies of a certain t
 end
 
 post '/tweet/reply/:reply_id' do
-text = params[:tweet_text]
-TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
-redirect '/'
+  text = params[:tweet_text]
+  TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
+  redirect '/'
 end
 
 
