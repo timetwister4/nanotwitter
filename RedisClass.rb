@@ -1,15 +1,19 @@
 require 'redis'
 require 'sinatra'
 require 'sinatra/activerecord'
+
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
+require_relative 'models/follow.rb'
+
 require 'json'
 require 'byebug'
 
-
+# This class handles caching and cache management
 class RedisClass
 
-  #pfeeds get refreshed when you access and when tweets
+  # pfeed [Profile Feed] methods
+  # This is a collection of tweets by a single user
   def self.access_pfeed (user_id)
     pfeed = $redis.lrange("user:#{user_id}:pfeed", 0, -1)
     if pfeed == []
@@ -18,17 +22,39 @@ class RedisClass
     return pfeed
   end
 
-  #call this when you tweet to update a pfeed
   def self.update_pfeed(user_id)
     pfeed = User.find(user_id).tweets.order(created_at: :desc).first(50)
     pfeed.each do |tweet|
       $redis.rpush("user:#{user_id}:pfeed", tweet.to_json)
     end
+
     pfeed = $redis.lrange("user:#{user_id}:pfeed", 0, -1)
     $redis.expire("user:#{user_id}:pfeed", 5)#stays fresh in the cache for a full second
     return pfeed
   end
 
+  # hfeed [Home Feed] methods
+  # The hfeed is where a user's subscriptions are viewable
+  def self.access_hfeed(user_id)
+    hfeed = $redis.lrange("user:#{user_id}:hfeed", 0, -1)
+    if hfeed == []
+      hfeed = self.load_hfeed(user_id)
+      $redis.expire("user:#{user_id}:hfeed", 2)
+    end
+    return hfeed
+  end
+
+  def self.load_hfeed(user_id)
+    follows = self.access_followings(user_id)
+    tweets = Tweet.where(author_id = follows).order(created_at: :desc).first(50)
+    tweets.each do |tweet|
+      $redis.rpush("user:#{user_id}:hfeed", tweet.to_json)
+    end
+    return $redis.lrange("user:#{user_id}:hfeed", 0, -1)
+  end
+
+  # ffeed [Front Feed] methods
+  # this is the feed of tweets visible on the front page
   def self.access_ffeed
     ffeed = $redis.lrange("ffeed",0,-1)
     if ffeed == []
@@ -36,11 +62,12 @@ class RedisClass
       ffeed.each do |tweet|
         $redis.rpush("ffeed", tweet.to_json)
       end
-      $redis.expire("ffeed", 10)
+      $redis.expire("ffeed", 3)
     end
     return $redis.lrange("ffeed", 0, -1)
   end
 
+  # follow methods
   def self.cache_follow(user_id, person_followed)
 		$redis.sadd("user:#{user_id}:followings", person_followed)
 		$redis.sadd("user:#{person_followed}:followers", user_id)
@@ -87,21 +114,33 @@ class RedisClass
     return followers
   end
 
-  def self.access_hfeed(user_id)
-    hfeed = $redis.lrange("user:#{user_id}:hfeed", 0, -1)
-    if hfeed == []
-      hfeed = self.load_hfeed(user_id)
-      $redis.expire("user:#{user_id}:hfeed", 2)
-    end
-    return hfeed
+
+
+  def self.number_of_keys
+    $redis.dbsize
   end
 
-  def self.load_hfeed(user_id)
-    follows = self.access_followings(user_id)
-    tweets = Tweet.where(author_id = follows).order(created_at: :desc).first(50)
-    tweets.each do |tweet|
-      $redis.rpush("user:#{user_id}:hfeed", tweet.to_json)
-    end
-    return $redis.lrange("user:#{user_id}:hfeed", 0, -1)
+  def self.delete_keys
+    $redis.flushdb
   end
+
+  def self.delete_user_keys(user_id)
+    $redis.del("user:#{user_id}:hfeed")
+    $redis.del("user:#{user_id}:pfeed")
+    $redis.del("user:#{user_id}:followings")
+    $redis.del("user:#{user_id}:followings")
+  end
+
+  def self.delete_user_from_follows(user_id)
+    subscriptions = Follow.where(follower_id: user_id)
+    subscriptions.each do |follow|
+      $redis.smembers("user:#{follow.followed_id}:followers").delete(user_id)
+    end
+
+    subscribers = Follow.where(followed_id: user_id)
+    subscribers.each do |follow|
+      $redis.smembers("user:#{follow.follower_id}:followings").delete(user_id)
+    end
+  end
+
 end

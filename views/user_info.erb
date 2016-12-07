@@ -26,10 +26,9 @@
           <ul>
             <li> Username: <div id="user_name"><%= @user[:user_name]%></div>
             </li>
-            <li> Followers: <%= @user[:follower_count]%> </li>
-            <li> Follows: <%=@user[:following_count]%> </li>
-            <li> Number of tweets:<a id="ShowTweets"> <%=@user[:tweet_count]%> </a>
-            </li>
+            <li> Followers: <%= @followers%> </li>
+            <li> Follows: <%=@followings %></li>
+            <li> Number of tweets: <a id="ShowTweets"> </a> <%=@num_tweets %>  </li>
          </ul>
       </div>
    </div>

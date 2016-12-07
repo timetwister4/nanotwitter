@@ -13,9 +13,24 @@ class RedisClass
 		$redis.sadd("user:#{person_followed}:followers", user_id)
 	end
 
+	def self.count_followings(u_id)
+		f = $redis.smembers("user:#{u_id}:followings")
+		f.length
+	end
+
 	def self.cache_unfollow(user_id, person_unfollowed)
 		$redis.srem("user:#{user_id}:followings", person_unfollowed)
 		$redis.srem("user:#{person_unfollowed}:followers", user_id)
+	end
+
+	def self.count_followers(u_id)
+		f = $redis.smembers("user:#{u_id}:followers")
+		f.length
+	end
+
+	def self.count_tweets(u_id)
+		t = $redis.lrange("user:#{u_id}:pfeed", 0, -1)
+		t.length
 	end
 
 	def self.cache_tweet(tweet,user_id,tweet_id)

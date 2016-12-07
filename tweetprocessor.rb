@@ -1,27 +1,25 @@
 require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
+
 require_relative 'models/tweet'
 require_relative 'models/user'
 require_relative 'redis_operations.rb'
 
-#require_relative 'redis_operations.rb'
-
 class TweetProcessor
 
-  def make_tweet(text,id,reply_id) #add splash param for reply information
-    author = User.find(id)#get author for author fields
-
+  def make_tweet(text,id,reply_id)
+    user = User.find(id)#get author for author fields
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
     if reply_id.nil?
-      t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
+      t = Tweet.create(text: (processed[0]), author: user, author_name: user.user_name)
       t.save
-      tweet = [author_name, processed[0], t.created_at]
-      RedisClass.cache_tweet(tweet,author.id,t.id)
-      author.increment_tweets #check what each of the processed parameters are.
+      tweet = [user.user_name, processed[0], t.created_at, t.id]
+      RedisClass.cache_tweet(tweet,user.id,t.id)
+      #author.increment_tweets #check what each of the processed parameters are.
     else
-      t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name, reply_id: reply_id)
+      t = Tweet.create(text: (processed[0]), author: user, author_name: user.user_name, reply_id: reply_id)
       t.save
     end
 
@@ -30,8 +28,6 @@ class TweetProcessor
     #elsif processed[2].length > 0
     #   RedisClass.cache_tags(processed[2],t)
     #end
-
-    return t
   end
 
   def process_text(text)
@@ -40,7 +36,6 @@ class TweetProcessor
     tags = Array.new
     mentions = Array.new
     words = text.split
-
     words.each do |w|
       if w[0] == "@"
         name = w.partition("@")[2]
@@ -78,7 +73,6 @@ class TweetProcessor
   # end
 
 
-  #make less hacky
   def search_tweets(keyword)
     query_tweets = []
     all_tweets = Tweet.order("created_at DESC")
@@ -90,5 +84,5 @@ class TweetProcessor
     query_tweets
   end
 
-
 end
+

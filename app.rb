@@ -1,22 +1,28 @@
+require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'sinatra/content_for'
+require 'json'
+
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
 require_relative 'config/initializers/redis'
-require 'byebug'
+
 require_relative 'helpers/authentication.rb'
+
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
-#require_relative 'redis_operations.rb'
-require_relative 'RedisClass.rb'
-require 'json'
+
 require 'redis'
 require 'redis-namespace'
+#require_relative 'RedisClass.rb'
+require_relative 'redis_operations'
 require_relative 'api.rb'
-require 'sinatra/content_for'
+
 require 'faker'
+
 
 TweetFactory = TweetProcessor.new
 
@@ -26,8 +32,10 @@ get '/loaderio-accded2323af55270a8895980c841782.txt' do
 end
 
 get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
-  "loaderio-97e86023c438b5621c512742d95a8419.txt"
+  send_file 'loaderio-97e86023c438b5621c512742d95a8419.txt'
 end
+
+
 
 # root
 get '/' do
@@ -35,33 +43,36 @@ get '/' do
     u = User.where(id: session[:user_id])
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
-    erb :my_home # personalized homepage
-    #Unsure if necessary, if scalability test tweets once per session
-    if (rand < (params[:randomtweet].to_f / 100))
-      user = User.where(user_name: params[:user])[0]
-      TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-      user.increment_tweets
-    end
-  elsif (params[:user] || params[:email]) && params[:password]
-    successful_log_in = login(params)
-    if successful_log_in && params[:randomtweet]
-      if (rand < (params[:randomtweet].to_f / 100))
-        user = User.where(user_name: params[:user])[0]
-        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-        user.increment_tweets
-      end
-    end
-    redirect '/'
-  else
-    @tweets = RedisClass.access_ffeed
-    erb:home
+    @followings = RedisClass.count_followings(session[:user_id])
+    @followers = RedisClass.count_followers(session[:user_id])
+    @num_tweets = RedisClass.count_tweets(session[:user_id])
 
+    
+        #Unsure if necessary, if scalability test tweets once per session
+  #   if (rand < (params[:randomtweet].to_f / 100))
+  #     user = User.where(user_name: params[:user])[0]
+  #     TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+  #     user.increment_tweets
+  #   end
+  #   erb :my_home
+  # elsif (params[:user] || params[:email]) && params[:password]
+  #   successful_log_in = login(params)
+  #   if successful_log_in && params[:randomtweet]
+  #     if (rand < (params[:randomtweet].to_f / 100))
+  #       user = User.where(user_name: params[:user])[0]
+  #       TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+  #       user.increment_tweets
+  #     end
+   erb :my_home
+  else
+    @tweets = Tweet.order(created_at: :desc).first(50)#RedisClass.access_ffeed
+    erb :home
   end
 end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = RedisClass.access_ffeed
+  @tweets = @tweets = Tweet.order(created_at: :desc).first(50)
   erb :home
 end
 
@@ -201,8 +212,6 @@ post '/tweet/reply/:reply_id' do
   TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
   redirect '/'
 end
-
-
 
 # post '/tweet/:tweet_id/like' do
 #   #need to keep track of which users like which tweets
