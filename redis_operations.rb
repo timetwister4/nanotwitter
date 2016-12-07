@@ -18,26 +18,12 @@ class RedisClass
 		$redis.srem("user:#{person_unfollowed}:followers", user_id)
 	end
 
-
-	def self.cache_tweet(tweet,user_id, tweet_id)
+	def self.cache_tweet(tweet,user_id,tweet_id)
 		$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
-		#experiment line
-		$redis.lpush("ffeed", tweet_id)
 		$redis.lpush("user:#{user_id}:pfeed", tweet_id) #cache tweet for self
-		followers = []
-		#if the cache is empty, check the database
-		if($redis.smembers("user:#{user_id}:follows")== [])
-			f = User.find(user_id).followers
-			f.each do |follow|
-				followers.push(follow.follower_id)
-				#since the cache is empty, update it
-				self.cache_follow(user_id, follow.follower_id)
-			end
-		else
-			followers = $redis.smembers("user:#{user_id}:follows")#with our test interface, these aren't cached (yet?)
-		end
-		followers.each do |f_id|
-			$redis.lpush("user:#{f_id}:hfeed", tweet_id)
+		followings = $redis.smembers("user:#{user_id}followings")
+		followings.each do |following|
+			$redis.lpush("user:#{following}:hfeed", tweet_id)
 		end
 	end
 
@@ -70,12 +56,12 @@ class RedisClass
 
 	def self.access_pfeed(u_id)
 		ids = $redis.lrange("user:#{u_id}:pfeed", 0, -1) #return the unparsed tweets of your nt profile
-		tweets = []
-		ids.each do |id|
-			tweet = $redis.smembers("tweet:#{id}")
-			tweets.push(tweet)
-		end
-		return tweets
+		# tweets = []
+		# ids.each do |id|
+		# 	tweet = $redis.smembers("tweet:#{id}")
+		# 	tweets.push(tweet)
+		# end
+		# return tweets
 	end
 
 	def self.load_ffeed (tweets)

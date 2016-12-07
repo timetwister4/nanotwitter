@@ -3,6 +3,8 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/tweet'
 require_relative 'models/user'
+require_relative 'redis_operations.rb'
+
 #require_relative 'redis_operations.rb'
 
 class TweetProcessor
@@ -15,6 +17,8 @@ class TweetProcessor
     if reply_id.nil?
       t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name)
       t.save
+      tweet = [author_name, processed[0], t.created_at]
+      RedisClass.cache_tweet(tweet,author.id,t.id)
       author.increment_tweets #check what each of the processed parameters are.
     else
       t = Tweet.create(text: (processed[0]), author: author, author_name: author.user_name, reply_id: reply_id)
@@ -27,9 +31,6 @@ class TweetProcessor
     #   RedisClass.cache_tags(processed[2],t)
     #end
 
-    #FeedProcessor.feed_followers(author,t)
-    # make_tags(processed[1], t)
-    # make_mentions(processed[2], t)
     return t
   end
 

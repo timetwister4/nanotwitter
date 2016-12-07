@@ -16,7 +16,7 @@ require 'redis'
 require 'redis-namespace'
 require_relative 'api.rb'
 require 'sinatra/content_for'
-
+require 'faker'
 
 TweetFactory = TweetProcessor.new
 
@@ -36,6 +36,22 @@ get '/' do
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
     erb :my_home # personalized homepage
+    #Unsure if necessary, if scalability test tweets once per session
+    if (rand < (params[:randomtweet].to_f / 100))
+      user = User.where(user_name: params[:user])[0]
+      TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+      user.increment_tweets
+    end
+  elsif (params[:user] || params[:email]) && params[:password]
+    successful_log_in = login(params)
+    if successful_log_in && params[:randomtweet]
+      if (rand < (params[:randomtweet].to_f / 100))
+        user = User.where(user_name: params[:user])[0]
+        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+        user.increment_tweets
+      end
+    end
+    redirect '/'
   else
     @tweets = RedisClass.access_ffeed
     erb:home
@@ -66,6 +82,7 @@ post '/login/submit' do
   end
 end
 
+
 # inline login
 get '/?user=:user_name&password=:password' do
   login(params)
@@ -77,26 +94,24 @@ get '/?user=:anotheruser&password=:password&randomtweet=50' do
 
 end
 
-
 get'/logout' do
-    log_out_now
-    redirect '/'
+  log_out_now
+  redirect '/'
 end
 
 # Account Registration URLs #
-
 get '/registration/?' do
   erb :registration
 end
 
 post '/registration/submit' do
-   u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
-    if u.save
-      session[:user_id] = u.id
-      redirect '/'
-    else
-      redirect '/registration'
-    end
+  u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
+  if u.save
+    session[:user_id] = u.id
+    redirect '/'
+  else
+    redirect '/registration'
+  end
 end
 
 # User Profile URLs and Functions #
@@ -124,9 +139,7 @@ get '/user/:user_name' do
     end
 end
 
-
 post '/user/follow' do
-
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
   follower.increment_followings
@@ -138,9 +151,7 @@ post '/user/follow' do
 
 end
 
-
 post '/user/unfollow' do
-
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
 
@@ -160,7 +171,6 @@ post '*/tweet/new/submit' do
   TweetFactory.make_tweet(text, session[:user_id], nil)# Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
   redirect '#';
 end
-
 
 # Other #
 get '/search/?' do
@@ -187,9 +197,9 @@ get '/tweet/replies' do  #This get block accesses all the replies of a certain t
 end
 
 post '/tweet/reply/:reply_id' do
-text = params[:tweet_text]
-TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
-redirect '/'
+  text = params[:tweet_text]
+  TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
+  redirect '/'
 end
 
 
