@@ -59,7 +59,8 @@ get '/' do
   #     end
    erb :my_home
   else
-    @tweets = RedisClass.access_ffeed
+   @tweets = RedisClass.access_ffeed
+   erb :home
   end
 end
 
@@ -68,7 +69,6 @@ get '/front' do
   erb :home
 end
 
-# Login URLs #
 get '/login' do
   erb :login
 end
@@ -117,19 +117,6 @@ post '/registration/submit' do
     redirect '/registration'
   end
 end
-
-# User Profile URLs and Functions #
-
-# Logged in user's profile
-# get '/profile' do
-#   if authenticate!
-#     @user = User.find(session[:user_id])
-#     @tweets = RedisClass.access_pfeed(session[:user_id])
-#     erb :profile
-#   else
-#     erb :error
-#   end
-# end
 
 get '/user/:user_name' do
     if User.where(user_name: params[:user_name]).exists?
