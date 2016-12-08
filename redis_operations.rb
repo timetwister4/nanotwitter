@@ -11,6 +11,7 @@ class RedisClass
 	def self.cache_follow(user_id, person_followed)
 		$redis.sadd("user:#{user_id}:followings", person_followed)
 		$redis.sadd("user:#{person_followed}:followers", user_id)
+		byebug
 	end
 
 	def self.count_followings(u_id)
@@ -41,9 +42,10 @@ class RedisClass
 		   $redis.lpush("ffeed", tweet.to_json)
 		end
 		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
-		followings = $redis.smembers("user:#{user_id}followings")
-		followings.each do |following|
-			$redis.lpush("user:#{following}:hfeed", tweet.to_json)
+		followers = $redis.smembers("user:#{user_id}:followers")
+		followers.each do |follower|
+			byebug
+			$redis.lpush("user:#{follower}:hfeed", tweet.to_json)
 		end
 	end
 

@@ -44,7 +44,6 @@ get '/' do
     @followings = RedisClass.count_followings(session[:user_id])
     @followers = RedisClass.count_followers(session[:user_id])
     @num_tweets = RedisClass.count_tweets(session[:user_id])
-
     
         #Unsure if necessary, if scalability test tweets once per session
   #   if (rand < (params[:randomtweet].to_f / 100))
@@ -148,33 +147,26 @@ get '/user/:user_name' do
       @followers = RedisClass.count_followers(@user.id)
       @num_tweets = RedisClass.count_tweets(@user.id)
       erb :profile
+
     else
       erb :error
     end
 end
 
 post '/user/follow' do
-  byebug
-  follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
   RedisClass.cache_follow(session[:user_id], followed.id)
-  f = Follow.create(follower: follower, followed: followed)
+  f = Follow.create(follower_id: session[:user_id], followed_id: followed.id)
   f.save # not necessary with the create command
-  redirect '#';
+  redirect "user/" + params[:user_name]
 
 end
 
 post '/user/unfollow' do
-  follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-
-  Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
+  Follow.where(follower_id: session[:user_id], followed_id: followed.id).destroy_all
   RedisClass.cache_unfollow(session[:user_id], followed.id)
-
-  follower.decrement_followings
-  followed.decrement_followers
-
-  redirect '#';
+  redirect redirect "user/" + params[:user_name]
 
 end
 
@@ -213,6 +205,13 @@ post '/tweet/reply/:reply_id' do
   text = params[:tweet_text]
   TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
   redirect '/'
+end
+
+def delete_all
+  RedisClass.delete_keys
+  Tweet.delete_all
+  Follow.delete_all
+
 end
 
 # post '/tweet/:tweet_id/like' do
