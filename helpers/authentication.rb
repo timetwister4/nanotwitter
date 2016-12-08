@@ -36,6 +36,7 @@ def login (params)
 
   if u && u.password == params[:password]
 	   session[:user_id] = u.id
+	   session[:user_name]= u.user_name
      session[:expires_at] = Time.current + 10.minutes
      return session
   else

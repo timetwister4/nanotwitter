@@ -3,13 +3,10 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require 'sinatra/content_for'
 require 'json'
-
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
 require_relative 'config/initializers/redis'
-
 require_relative 'helpers/authentication.rb'
-
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
@@ -40,8 +37,9 @@ end
 # root
 get '/' do
   if authenticate!
-    u = User.where(id: session[:user_id])
-    @user = u[0]
+    # u = User.where(id: session[:user_id])
+    # @user = u[0]
+    @user_name = session[:user_name]
     @tweets = RedisClass.access_hfeed(session[:user_id])
     @followings = RedisClass.count_followings(session[:user_id])
     @followers = RedisClass.count_followers(session[:user_id])
@@ -65,14 +63,14 @@ get '/' do
   #     end
    erb :my_home
   else
-    @tweets = Tweet.order(created_at: :desc).first(50)#RedisClass.access_ffeed
+    @tweets = RedisClass.access_ffeed
     erb :home
   end
 end
 
 # equivalent to logged out front page
 get '/front' do
-  @tweets = @tweets = Tweet.order(created_at: :desc).first(50)
+  @tweets = RedisClass.access_ffeed
   erb :home
 end
 
@@ -119,6 +117,7 @@ post '/registration/submit' do
   u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
   if u.save
     session[:user_id] = u.id
+    session[:user_name] = u.user_name
     redirect '/'
   else
     redirect '/registration'
@@ -128,22 +127,26 @@ end
 # User Profile URLs and Functions #
 
 # Logged in user's profile
-get '/profile' do
-  if authenticate!
-    @user = User.find(session[:user_id])
-    @tweets = RedisClass.access_pfeed(session[:user_id])
-    erb :profile
-  else
-    erb :error
-  end
-end
+# get '/profile' do
+#   if authenticate!
+#     @user = User.find(session[:user_id])
+#     @tweets = RedisClass.access_pfeed(session[:user_id])
+#     erb :profile
+#   else
+#     erb :error
+#   end
+# end
 
 get '/user/:user_name' do
     if User.where(user_name: params[:user_name]).exists?
       u = User.where(user_name: params[:user_name])
       @user = u[0]
+      @user_name = @user.user_name
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
       @tweets = RedisClass.access_pfeed(@user.id)
+      @followings = RedisClass.count_followings(@user.id)
+      @followers = RedisClass.count_followers(@user.id)
+      @num_tweets = RedisClass.count_tweets(@user.id)
       erb :profile
     else
       erb :error
@@ -151,14 +154,13 @@ get '/user/:user_name' do
 end
 
 post '/user/follow' do
+  byebug
   follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-  follower.increment_followings
-  followed.increment_followers
   RedisClass.cache_follow(session[:user_id], followed.id)
   f = Follow.create(follower: follower, followed: followed)
   f.save # not necessary with the create command
-  redirect '/user' + followed.user_name
+  redirect '#';
 
 end
 
@@ -172,7 +174,7 @@ post '/user/unfollow' do
   follower.decrement_followings
   followed.decrement_followers
 
-  redirect '/user' + followed.user_name
+  redirect '#';
 
 end
 

@@ -8,7 +8,8 @@
                   <div class ="panel panel-body">
                     <%= tweet[1]%>
                   </div>
-                  <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet["id"]%>>
+                  <% if @followings %>
+                   <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet[3]%>>
                      <a style="padding-left:5px;"href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet[3]%> >
                           <i  class="fa fa-heart"> </i>
                           <p class="heart2" data-tweet-likes= <%= 0 %>> <%= 0 %></p>
@@ -19,6 +20,7 @@
                      </a>
 
                   </div>
+                 <% end %>
           </div>
 
   <%end%>

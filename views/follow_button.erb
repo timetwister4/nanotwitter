@@ -1,8 +1,8 @@
 <% if session[:user_id] && @user.id != session[:user_id]%>
       <%if @follow_status %>
-           <button id="unfollow" data-user-name= <%=@user.user_name %>
+           <button id="unfollow" data-user-name= <%=session[:user_name] %>
            class="btn btn-default">Unfollow</button>
        <%else%>
-           <button id="follow" data-user-name= <%=@user.user_name %>  class="btn btn-default">Follow</button>
+           <button id="follow" data-user-name= <%=session[:user_name] %>  class="btn btn-default">Follow</button>
        <% end %>
   <%end%>
