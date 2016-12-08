@@ -59,8 +59,7 @@ get '/' do
   #     end
    erb :my_home
   else
-    # @tweets = RedisClass.access_ffeed
-    erb :error
+    @tweets = RedisClass.access_ffeed
   end
 end
 
