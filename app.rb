@@ -67,7 +67,6 @@ get '/' do
   end
 end
 
-# equivalent to logged out front page
 get '/front' do
   @tweets = RedisClass.access_ffeed
   erb :home
