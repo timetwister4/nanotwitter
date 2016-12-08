@@ -32,9 +32,6 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
   send_file 'loaderio-97e86023c438b5621c512742d95a8419.txt'
 end
 
-
-
-# root
 get '/' do
   if authenticate!
     # u = User.where(id: session[:user_id])
