@@ -7,13 +7,14 @@ require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 
 require 'json'
-require 'byebug'
+require 'byebug'  
 
 # This class handles caching and cache management
 class RedisClass
 
   # pfeed [Profile Feed] methods
   # This is a collection of tweets by a single user
+
   def self.access_pfeed (user_id)
     pfeed = $redis.lrange("user:#{user_id}:pfeed", 0, -1)
     if pfeed == []
