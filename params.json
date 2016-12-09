@@ -1,0 +1,6 @@
+{
+  "name": "Nanotwitter",
+  "tagline": "Team Thunderbear's Nanotwitter Project",
+  "body": "### Assignment\r\nThe purpose of this project was to build a lightweight Twitter clone written in Ruby that was well engineered and scalable. Our goal was to create a service that could support thousands of users following one another and posting, liking, and replying to tweets. The resulting application is hosted [Heroku](http://secret-shelf-78111.herokuapp.com/front) and uses a Postgres database and a Redis cache provided by Heroku. \r\n\r\nTo run your own copy of our nanoTwitter service, all you need to do is clone the repository, push it to a Heroku application with a database and Redis set up, and perform the initial database rake. Enjoy!\r\n\r\n### Screenshots\r\n\r\n\r\n### Technology\r\nnanoTwitter is written in Ruby and utilizes a Sinatra framework, a more lightweight framework than Rails. \r\n\r\n\r\n\r\n### Authors and Contributors\r\nnanoTwitter was written by Anne Charnes (@timetwister4), Shaul Vin (@b7q), and Tristan Ramirez de Haro (@tristanibus) in the Fall of 2016. This project would not have been possible without the guidance and encouragement of our Professor, Pito Salas, and our teaching assistant, Karishma Khan.  \r\n\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
