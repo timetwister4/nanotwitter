@@ -39,7 +39,7 @@ get '/' do
       @user = u[0]
       @tweets = RedisClass.access_hfeed(session[:user_id])
       erb :my_home
-  elsif params[:user] && params[:password]) && login(params)
+  elsif params[:user] && params[:password] && login(params)
       user = User.where(user_name: params[:user])
       if params[:randomtweet] && (rand < (params[:randomtweet].to_f / 100))
         TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
