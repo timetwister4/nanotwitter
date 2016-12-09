@@ -1,5 +1,5 @@
 <% content_for :head do %>
-  <title><%=@user.user_name%>'s Homepage</title>
+  <title><%=@user[:user_name]%>'s Homepage</title>
 <% end %>
 
 <div class="container">
@@ -8,7 +8,7 @@
       <%= erb :write_tweet%>
       <div class= "col-md-6" id = "tweet_feed">
 
-          Tweets by People <%= @user[:name] %> Follows:
+       <h3> Tweets by people <%= @user[:user_name] %> follows: </h3>
           <br>
           <%= erb :feed %>
       </div>

@@ -3,13 +3,10 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require 'sinatra/content_for'
 require 'json'
-
 require_relative 'config/environments'
 require_relative 'config/config_sinatra'
 require_relative 'config/initializers/redis'
-
 require_relative 'helpers/authentication.rb'
-
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
@@ -35,44 +32,43 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
   send_file 'loaderio-97e86023c438b5621c512742d95a8419.txt'
 end
 
-
-
-# root
 get '/' do
   if authenticate!
     u = User.where(id: session[:user_id])
+    @home = true #in order for the user_info erb to differentiate between my_home and profile
     @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
+    # @followings = RedisClass.count_followings(session[:user_id])
+    # @followers = RedisClass.count_followers(session[:user_id])
+    # @num_tweets = RedisClass.count_tweets(session[:user_id])
+
         #Unsure if necessary, if scalability test tweets once per session
-    if (rand < (params[:randomtweet].to_f / 100))
-      user = User.where(user_name: params[:user])[0]
-      TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-      user.increment_tweets
-    end
-    erb :my_home
-  elsif (params[:user] || params[:email]) && params[:password]
-    successful_log_in = login(params)
-    if successful_log_in && params[:randomtweet]
-      if (rand < (params[:randomtweet].to_f / 100))
-        user = User.where(user_name: params[:user])[0]
-        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-        user.increment_tweets
-      end
-    end
-    erb :my_home
+  #   if (rand < (params[:randomtweet].to_f / 100))
+  #     user = User.where(user_name: params[:user])[0]
+  #     TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+  #     user.increment_tweets
+  #   end
+  #   erb :my_home
+  # elsif (params[:user] || params[:email]) && params[:password]
+  #   successful_log_in = login(params)
+  #   if successful_log_in && params[:randomtweet]
+  #     if (rand < (params[:randomtweet].to_f / 100))
+  #       user = User.where(user_name: params[:user])[0]
+  #       TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+  #       user.increment_tweets
+  #     end
+   erb :my_home
   else
-    @tweets = Tweet.order(created_at: :desc).first(50)#RedisClass.access_ffeed
-    erb :home
+   @tweets = RedisClass.access_ffeed
+   erb :home
   end
 end
 
-# equivalent to logged out front page
 get '/front' do
   @tweets = RedisClass.access_ffeed
   erb :home
 end
 
-# Login URLs #
 get '/login' do
   erb :login
 end
@@ -84,9 +80,21 @@ post '/login/submit' do
       session[:error] = ""
       redirect '/'
     else
-    session[:error] = "Incorrect login information"#This still needs to just create an error dialog instead of redirecting automatically to registration
+    session[:error] = "Incorrect login information"
     redirect '/login'
   end
+end
+
+
+# inline login
+get '/?user=:user_name&password=:password' do
+  login(params)
+  redirect '/'
+end
+
+get '/?user=:anotheruser&password=:password&randomtweet=50' do
+  login(params)
+
 end
 
 get'/logout' do
@@ -103,22 +111,10 @@ post '/registration/submit' do
   u = User.create(name: params[:name], email: params[:email], user_name: params[:user_name], password: params[:password])
   if u.save
     session[:user_id] = u.id
+    session[:user_name] = u.user_name
     redirect '/'
   else
     redirect '/registration'
-  end
-end
-
-# User Profile URLs and Functions #
-
-# Logged in user's profile
-get '/profile' do
-  if authenticate!
-    @user = User.find(session[:user_id])
-    @tweets = RedisClass.access_pfeed(session[:user_id])
-    erb :profile
-  else
-    erb :error
   end
 end
 
@@ -135,29 +131,24 @@ get '/user/:user_name' do
 end
 
 post '/user/follow' do
-  follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-
-  follower.increment_followings
-  followed.increment_followers
-  RedisClass.cache_follow(session[:user_id], followed.id)
-  f = Follow.create(follower: follower, followed: followed)
+  #RedisClass.cache_follow(session[:user_id], followed.id)
+  f = Follow.create(follower_id: session[:user_id], followed_id: followed.id)
   f.save # not necessary with the create command
-  redirect '/user' + followed.user_name
-
+  user = User.find(session[:user_id])
+  user.increment_followings
+  followed.increment_followers
+  redirect "user/" + params[:user_name]
 end
 
 post '/user/unfollow' do
-  follower = User.find(session[:user_id])# the person following
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-
-  Follow.where(follower: User.find(session[:user_id]),followed_id: User.find_by_user_name(params[:user_name])).destroy_all
-  RedisClass.cache_unfollow(session[:user_id], followed.id)
-
-  follower.decrement_followings
+  Follow.where(follower_id: session[:user_id], followed_id: followed.id).destroy_all
+  user = User.find(session[:user_id])
+  user.decrement_followings
   followed.decrement_followers
-
-  redirect '/user' + followed.user_name
+  #RedisClass.cache_unfollow(session[:user_id], followed.id)
+  redirect redirect "user/" + params[:user_name]
 
 end
 
@@ -196,6 +187,13 @@ post '/tweet/reply/:reply_id' do
   text = params[:tweet_text]
   TweetFactory.make_tweet(text, session[:user_id], params[:reply_id])
   redirect '/'
+end
+
+def delete_all
+  RedisClass.delete_keys
+  Tweet.delete_all
+  Follow.delete_all
+
 end
 
 # post '/tweet/:tweet_id/like' do

@@ -13,6 +13,7 @@ gem 'bcrypt'
 
 gem 'faker'
 
+
 group :development, :test do
   gem 'rake'
   gem 'sqlite3'

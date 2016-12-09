@@ -1,8 +1,13 @@
 <% if session[:user_id] && @user.id != session[:user_id]%>
       <%if @follow_status %>
-           <button id="unfollow" data-user-name= <%=@user.user_name %>
-           class="btn btn-default">Unfollow</button>
+        <form action="/user/follow" method="POST">
+           <input type="hidden", name="user_name" value='<%=@user[:user_name]%>'> 
+            <input type="submit" value="Unfollow"= class="btn btn-default">	   
+        </form>
        <%else%>
-           <button id="follow" data-user-name= <%=@user.user_name %>  class="btn btn-default">Follow</button>
+       	<form action="/user/follow" method="POST">
+           <input type="hidden", name="user_name" value='<%=@user[:user_name]%>'> 
+            <input type="submit" value="Follow"= class="btn btn-default">
+        </form>
        <% end %>
   <%end%>

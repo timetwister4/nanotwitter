@@ -1,9 +1,8 @@
 require_relative '../models/user.rb'
 require "byebug"
 
-#Weren't we supposed to use Rack::Auth? I think we forgot. Fix!
+
 def authenticate!
-	 #when we solve the require relative problem write the line: unless session[:user_id] && User.where(id: session[:user_id])
 
 		if session[:user_id] && User.where(id: session[:user_id]).exists? #if the user id saved in session does not belong to any user, also direct to general homepage
 			true
@@ -36,6 +35,7 @@ def login (params)
 
   if u && u.password == params[:password]
 	   session[:user_id] = u.id
+	   session[:user_name]= u.user_name
      session[:expires_at] = Time.current + 10.minutes
      return session
   else
@@ -46,6 +46,7 @@ end
 # logs current user out
 def log_out_now
 	session[:user_id] = nil
+	session[:user_name] = nil
 end
 
 def logged_in?

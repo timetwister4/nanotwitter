@@ -3,42 +3,52 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
+require_relative 'models/follow.rb'
 require 'json'
 require 'byebug'
 
 class RedisClass
 
-	def self.cache_follow(user_id, person_followed)
-		$redis.sadd("user:#{user_id}:followings", person_followed)
-		$redis.sadd("user:#{person_followed}:followers", user_id)
-	end
+	# def self.cache_follow(user_id, person_followed)
+	# 	$redis.sadd("user:#{user_id}:followings", person_followed)
+	# 	$redis.sadd("user:#{person_followed}:followers", user_id)
+	# 	byebug
+	# end
 
-	def self.cache_unfollow(user_id, person_unfollowed)
-		$redis.srem("user:#{user_id}:followings", person_unfollowed)
-		$redis.srem("user:#{person_unfollowed}:followers", user_id)
-	end
+	# def self.count_followings(u_id)
+	# 	$redis.smembers("user:#{u_id}:followings").length
+	# end
 
+	# def self.cache_unfollow(user_id, person_unfollowed)
+	# 	$redis.srem("user:#{user_id}:followings", person_unfollowed)
+	# 	$redis.srem("user:#{person_unfollowed}:followers", user_id)
+	# end
+
+	# def self.count_followers(u_id)
+	# 	$redis.smembers("user:#{u_id}:followers").length
+		
+	# end
+
+	def self.count_tweets(u_id)
+		$redis.lrange("user:#{u_id}:pfeed", 0, -1).length
+	
+	end
 
 	def self.cache_tweet(tweet,user_id, tweet_id)
-		$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
-		#experiment line
-		$redis.lpush("ffeed", tweet_id)
-		$redis.lpush("user:#{user_id}:pfeed", tweet_id) #cache tweet for self
-		followers = []
-		#if the cache is empty, check the database
-		if($redis.smembers("user:#{user_id}:follows")== [])
-			f = User.find(user_id).followers
-			f.each do |follow|
-				followers.push(follow.follower_id)
-				#since the cache is empty, update it
-				self.cache_follow(user_id, follow.follower_id)
-			end
+		#$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
+		
+		if $redis.lrange("ffeed", 0, -1).length == 50
+		   $redis.rpop("ffeed")
+		   $redis.lpush("ffeed", tweet.to_json)
 		else
-			followers = $redis.smembers("user:#{user_id}:follows")#with our test interface, these aren't cached (yet?)
+		   $redis.lpush("ffeed", tweet.to_json)
 		end
-		followers.each do |f_id|
-			$redis.lpush("user:#{f_id}:hfeed", tweet_id)
+		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
+		followers = Follow.where(followed_id: user_id)
+		followers.each do |follow|
+			$redis.lpush("user:#{follow.follower_id}:hfeed", tweet.to_json)
 		end
+
 	end
 
 	def self.cache_reply(reply, tweet_id)
@@ -69,30 +79,33 @@ class RedisClass
 
 
 	def self.access_pfeed(u_id)
-		ids = $redis.lrange("user:#{u_id}:pfeed", 0, -1) #return the unparsed tweets of your nt profile
-		tweets = []
-		ids.each do |id|
-			tweet = $redis.smembers("tweet:#{id}")
-			tweets.push(tweet)
-		end
-		return tweets
+		$redis.lrange("user:#{u_id}:pfeed", 0, -1) #return the unparsed tweets of your nt profile
+		# tweets = []
+		# ids.each do |id|
+		# 	tweet = $redis.smembers("tweet:#{id}")
+		# 	tweets.push(tweet)
+		# end
+		# return tweets
 	end
 
-	def self.load_ffeed (tweets)
-		self.delete_ffeed
-		tweets.each do |tweet|
-			$redis.rpush("ffeed", tweet.id)
-		end
+	def self.access_hfeed(u_id)
+		$redis.lrange("user:#{u_id}:hfeed", 0, -1) #return the unparsed tweets of your nt profile
+		# tweets = []
+		# ids.each do |id|
+		# 	tweet = $redis.smembers("tweet:#{id}")
+		# 	tweets.push(tweet)
+		# end
+		# return tweets
 	end
-	#experiment
+	# def self.load_ffeed (tweets)
+	# 	self.delete_ffeed
+	# 	tweets.each do |tweet|
+	# 		$redis.rpush("ffeed", tweet.id)
+	# 	end
+	# end
+	# #experiment
 	def self.access_ffeed
-		ids = $redis.lrange("ffeed", 0, 7)
-		tweets = []
-		ids.each do |id|
-			tweet = $redis.smembers("tweet:#{id}")
-			tweets.push(tweet)
-		end
-		return tweets
+		$redis.lrange("ffeed",0,-1)
 	end
 	#access the ids of all the people that the person with the given id (u_id) follows
 	def self.access_followings(u_id)
@@ -103,15 +116,6 @@ class RedisClass
 		$redis.smembers("user:#{u_id}:followers")
 	end
 
-	def self.access_hfeed(u_id)
-		ids = $redis.lrange("user:#{u_id}:hfeed", 0, -1) #return the unparsed tweets of your nt profile
-		tweets = []
-		ids.each do |id|
-			tweet = $redis.smembers("tweet:#{id}")
-			tweets.push(tweet)
-		end
-		return tweets
-	end
 
 
 	def self.access_tag(name)
