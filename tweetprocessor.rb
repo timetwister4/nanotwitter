@@ -9,7 +9,8 @@ require_relative 'redis_operations.rb'
 class TweetProcessor
 
   def make_tweet(text,id,reply_id)
-    user = User.find(id)#get author for author fields
+    user = User.find(id)
+    user.increment_tweets#get author for author fields
     #process text, get html text, list of tags, and list of mentions
     processed = process_text(text)
     if reply_id.nil?

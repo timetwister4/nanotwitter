@@ -21,22 +21,22 @@
 <div class="col-md-4">
     <div class="panel panel-default">
        <div class="panel-body">
-          <% condition = session[:user_name] == @user_name %>
+          <% condition = session[:user_name] == @user[:user_name] %>
           <% if condition  %>
-          <h1 style="color:black"> Welcome <%= @user_name %> </h1> 
+          <h1 style="color:black"> Welcome <%= @user[:user_name] %> </h1> 
           <% else %>
-          <h1 style="color:black"><%= @user_name %>'s Profile </h1>
+          <h1 style="color:black"><%= @user[:user_name] %>'s Profile </h1>
           <%end %>
 
           <h3> User Info: </h3>
           <ul>
-            <li> Followers: <%= @followers%> </li>
-            <li> Follows: <%=@followings %></li>
-            <li> Number of tweets: <%=@num_tweets %>  </li>
-            <% if @user && condition  %>
-            <li> <a href="/"> home </a> </li>
+            <li> Followers: <%= @user[:follower_count]%> </li>
+            <li> Follows: <%=@user[:following_count]%></li>
+            <li> Number of tweets: <%=@user[:tweet_count]%>  </li>
+            <% if @home && condition  %>
+            <li> <a href=<%="/user/"+ @user[:user_name] %> > profile </a> </li>
             <% elsif condition %>
-            <li> <a href=<%="/user/"+ @user_name %> > profile </a> </li>
+            <li> <a href="/"> home </a> </li>
             <% end %>
             
          </ul>

@@ -34,13 +34,13 @@ end
 
 get '/' do
   if authenticate!
-    # u = User.where(id: session[:user_id])
-    # @user = u[0]
-    @user_name = session[:user_name]
+    u = User.where(id: session[:user_id])
+    @home = true #in order for the user_info erb to differentiate between my_home and profile
+    @user = u[0]
     @tweets = RedisClass.access_hfeed(session[:user_id])
-    @followings = RedisClass.count_followings(session[:user_id])
-    @followers = RedisClass.count_followers(session[:user_id])
-    @num_tweets = RedisClass.count_tweets(session[:user_id])
+    # @followings = RedisClass.count_followings(session[:user_id])
+    # @followers = RedisClass.count_followers(session[:user_id])
+    # @num_tweets = RedisClass.count_tweets(session[:user_id])
     
         #Unsure if necessary, if scalability test tweets once per session
   #   if (rand < (params[:randomtweet].to_f / 100))
@@ -122,14 +122,9 @@ get '/user/:user_name' do
     if User.where(user_name: params[:user_name]).exists?
       u = User.where(user_name: params[:user_name])
       @user = u[0]
-      @user_name = @user.user_name
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
       @tweets = RedisClass.access_pfeed(@user.id)
-      @followings = RedisClass.count_followings(@user.id)
-      @followers = RedisClass.count_followers(@user.id)
-      @num_tweets = RedisClass.count_tweets(@user.id)
       erb :profile
-
     else
       erb :error
     end
@@ -137,17 +132,22 @@ end
 
 post '/user/follow' do
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
-  RedisClass.cache_follow(session[:user_id], followed.id)
+  #RedisClass.cache_follow(session[:user_id], followed.id)
   f = Follow.create(follower_id: session[:user_id], followed_id: followed.id)
   f.save # not necessary with the create command
+  user = User.find(session[:user_id])
+  user.increment_followings
+  followed.increment_followers
   redirect "user/" + params[:user_name]
-
 end
 
 post '/user/unfollow' do
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
   Follow.where(follower_id: session[:user_id], followed_id: followed.id).destroy_all
-  RedisClass.cache_unfollow(session[:user_id], followed.id)
+  user = User.find(session[:user_id])
+  user.decrement_followings
+  followed.decrement_followers
+  #RedisClass.cache_unfollow(session[:user_id], followed.id)
   redirect redirect "user/" + params[:user_name]
 
 end

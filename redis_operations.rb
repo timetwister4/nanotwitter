@@ -3,30 +3,31 @@ require 'sinatra'
 require 'sinatra/activerecord'
 require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
+require_relative 'models/follow.rb'
 require 'json'
 require 'byebug'
 
 class RedisClass
 
-	def self.cache_follow(user_id, person_followed)
-		$redis.sadd("user:#{user_id}:followings", person_followed)
-		$redis.sadd("user:#{person_followed}:followers", user_id)
-		byebug
-	end
+	# def self.cache_follow(user_id, person_followed)
+	# 	$redis.sadd("user:#{user_id}:followings", person_followed)
+	# 	$redis.sadd("user:#{person_followed}:followers", user_id)
+	# 	byebug
+	# end
 
-	def self.count_followings(u_id)
-		$redis.smembers("user:#{u_id}:followings").length
-	end
+	# def self.count_followings(u_id)
+	# 	$redis.smembers("user:#{u_id}:followings").length
+	# end
 
-	def self.cache_unfollow(user_id, person_unfollowed)
-		$redis.srem("user:#{user_id}:followings", person_unfollowed)
-		$redis.srem("user:#{person_unfollowed}:followers", user_id)
-	end
+	# def self.cache_unfollow(user_id, person_unfollowed)
+	# 	$redis.srem("user:#{user_id}:followings", person_unfollowed)
+	# 	$redis.srem("user:#{person_unfollowed}:followers", user_id)
+	# end
 
-	def self.count_followers(u_id)
-		$redis.smembers("user:#{u_id}:followers").length
+	# def self.count_followers(u_id)
+	# 	$redis.smembers("user:#{u_id}:followers").length
 		
-	end
+	# end
 
 	def self.count_tweets(u_id)
 		$redis.lrange("user:#{u_id}:pfeed", 0, -1).length
@@ -35,6 +36,7 @@ class RedisClass
 
 	def self.cache_tweet(tweet,user_id, tweet_id)
 		#$redis.sadd("tweet:#{tweet_id}", tweet.to_json)
+		
 		if $redis.lrange("ffeed", 0, -1).length == 50
 		   $redis.rpop("ffeed")
 		   $redis.lpush("ffeed", tweet.to_json)
@@ -42,11 +44,11 @@ class RedisClass
 		   $redis.lpush("ffeed", tweet.to_json)
 		end
 		$redis.lpush("user:#{user_id}:pfeed", tweet.to_json) #cache tweet for self
-		followers = $redis.smembers("user:#{user_id}:followers")
-		followers.each do |follower|
-			byebug
-			$redis.lpush("user:#{follower}:hfeed", tweet.to_json)
+		followers = Follow.where(followed_id: user_id)
+		followers.each do |follow|
+			$redis.lpush("user:#{follow.follower_id}:hfeed", tweet.to_json)
 		end
+
 	end
 
 	def self.cache_reply(reply, tweet_id)
