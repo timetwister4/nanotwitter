@@ -32,7 +32,6 @@ def login (params)
 	else
 		return false
 	end
-
   if u && u.password == params[:password]
 	   session[:user_id] = u.id
 	   session[:user_name]= u.user_name
