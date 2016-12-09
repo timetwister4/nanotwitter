@@ -1,0 +1,7 @@
+exclude_paths:
+- "public/css/*"
+- "public/fonts/*"
+- "public/js/bootstrap.js"
+- "public/js/bootstrap.min.js"
+- "public/js/npm.js"
+- "redis-stable/*"
