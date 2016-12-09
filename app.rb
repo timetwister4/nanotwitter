@@ -87,7 +87,7 @@ end
 
 
 # inline login
-get '/?user=:user_name&password=:password' do
+get '/user=:user_name&password=:password' do
   login(params)
   redirect '/'
 end
