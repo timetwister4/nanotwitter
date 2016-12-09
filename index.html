@@ -5,7 +5,12 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Nanotwitter : Team Thunderbear&#39;s Nanotwitter Project">
-
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <style>
+      .mySlides {display:none}
+      .w3-left, .w3-right, .w3-badge {cursor:pointer}
+      .w3-badge {height:13px;width:13px;padding:0}
+    </style>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Nanotwitter</title>
@@ -34,17 +39,100 @@
         <h3>
 <a id="assignment" class="anchor" href="#assignment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Assignment</h3>
 
-<p>The purpose of this project was to build a lightweight Twitter clone written in Ruby that was well engineered and scalable. Our goal was to create a service that could support thousands of users following one another and posting, liking, and replying to tweets. The resulting application is hosted <a href="http://secret-shelf-78111.herokuapp.com/front">Heroku</a> and uses a Postgres database and a Redis cache provided by Heroku. </p>
+<p>The purpose of this project was to build a lightweight Twitter clone written in Ruby that was well engineered and scalable. Our goal was to create a service that could support thousands of users following one another and posting, liking, and replying to tweets. The resulting application is hosted on <a href="http://secret-shelf-78111.herokuapp.com/front">Heroku</a> and uses a Postgres database and a Redis cache provided by Heroku. </p>
 
 <p>To run your own copy of our nanoTwitter service, all you need to do is clone the repository, push it to a Heroku application with a database and Redis set up, and perform the initial database rake. Enjoy!</p>
 
 <h3>
 <a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Screenshots</h3>
 
+<div class="w3-content w3-display-container" style="max-width:800px">
+  <img class="mySlides" src="images/slideshow_1.png" style="width:100%">
+  <img class="mySlides" src="images/slideshow_2.png" style="width:100%">
+  <img class="mySlides" src="images/slideshow_3.png" style="width:100%">
+  <img class="mySlides" src="images/slideshow_4.png" style="width:100%">
+  <img class="mySlides" src="images/slideshow_5.png" style="width:100%">
+  <img class="mySlides" src="images/slideshow_6.png" style="width:100%">
+  <div class="w3-center w3-section w3-large w3-text-white w3-display-bottommiddle" style="width:100%">
+    <div class="w3-left w3-padding-left w3-hover-text-blue" onclick="plusDivs(-1)">&#10094;</div>
+    <div class="w3-right w3-padding-right w3-hover-text-blue" onclick="plusDivs(1)">&#10095;</div>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(1)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(2)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(3)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(4)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(5)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="currentDiv(6)"></span>
+    </div>
+</div>
+
+<script src="javascripts/slideshow.js" type="text/javascript"></script>
+
 <h3>
 <a id="technology" class="anchor" href="#technology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Technology</h3>
 
 <p>nanoTwitter is written in Ruby and utilizes a Sinatra framework, a more lightweight framework than Rails. </p>
+
+<h3><a id="load-tests" class="anchor" href="#load-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Load Tests</h3>
+
+<h4>/front</h4>
+<div style="width: %100;">
+<iframe width='600' height='300' frameborder='0' src='http://share.loader.io/reports/5df3732e8cb236fb79f0b69c0867077d/widget/results/c5cdf5fe627b1160178f7d46f964b38b'></iframe>
+<div style="width: 100%; text-align: right;">
+<a href="http://loader.io/reports/5df3732e8cb236fb79f0b69c0867077d/results/c5cdf5fe627b1160178f7d46f964b38b" target="_blank" style="padding: 0 10px 10px 0; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px;">View on loader.io</a>
+</div></div>
+<div class="results-summary">
+  <div class="responses" style="float: left;">
+    <div>
+      <h5>Response Times</h5>
+      <table>
+        <tbody><tr>
+          <th>Average</th>
+          <td><span>5932</span> ms</td>
+        </tr>
+        <tr>
+          <th>Min/Max</th>
+          <td><span>49 / 10010</span> ms</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="errors" style="float: right; margin: 0px 40px;">
+    <div>
+      <h5 style="text-align: right;">Response Counts</h5>
+      <table>
+        <tbody><tr>
+          <th>Success</th>
+          <td>2836</td>
+          <th>Timeout</th>
+          <td>1406</td>
+        </tr>
+        <tr>
+          <th>400/500</th>
+          <td>0 / 0</td>
+          <th>Network</th>
+          <td>0</td>
+        </tr>
+        <tr>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="activity" style="clear: both;">
+    <div>
+      <h5>Bandwidth</h5>
+      <table>
+        <tbody><tr>
+          <th>Sent</th>
+          <td>2.62  MB</td>
+        </tr>
+        <tr>
+          <th>Received</th>
+          <td>19.86  MB</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
