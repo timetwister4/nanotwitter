@@ -34,24 +34,28 @@ end
 
 get '/' do
   if authenticate!
-      u = User.where(id: session[:user_id])
-      @home = true #in order for the user_info erb to differentiate between my_home and profile
-      @user = u[0]
-      @tweets = RedisClass.access_hfeed(session[:user_id])
-      erb :my_home
-  elsif params[:user] && params[:password] && login(params)
-      user = User.where(user_name: params[:user])
-      if params[:randomtweet] && (rand < (params[:randomtweet].to_f / 100))
-        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-        user.increment_tweets
-      end
-      @home
-      @user = user[0]
-      @tweets = RedisClass.access_hfeed(session[:user_id])
-      erb :my_home
+       home_page(User.where(id: session[:user_id]))
+  elsif test_2_or_3?(params)
+       home_page(User.where(user_name: params[:user]))
   else
      @tweets = RedisClass.access_ffeed
      erb :home
+  end
+end
+
+def home_page(user)
+   @home = true #in order for the user_info erb to differentiate between my_home and profile
+   @user = user[0]
+   @tweets = RedisClass.access_hfeed(session[:user_id])
+   erb :my_home
+end
+
+def test_2_or_3?(params)
+  if params[:user] && params[:password] && login(params)
+     if params[:randomtweet] && (rand < (params[:randomtweet].to_f / 100))
+        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+     end
+     return true
   end
 end
 
@@ -76,17 +80,6 @@ post '/login/submit' do
   end
 end
 
-
-# inline login
-get '/?user=:user_name&password=:password' do
-  login(params)
-  redirect '/'
-end
-
-get '/?user=:anotheruser&password=:password&randomtweet=50' do
-  login(params)
-
-end
 
 get'/logout' do
   log_out_now
@@ -184,8 +177,9 @@ def delete_all
   RedisClass.delete_keys
   Tweet.delete_all
   Follow.delete_all
-
 end
+
+
 
 # post '/tweet/:tweet_id/like' do
 #   #need to keep track of which users like which tweets

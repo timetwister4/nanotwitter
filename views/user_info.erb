@@ -34,9 +34,9 @@
             <li> Follows: <%=@user[:following_count]%></li>
             <li> Number of tweets: <%=@user[:tweet_count]%>  </li>
             <% if @home && condition  %>
-            <li> <a href=<%="/user/"+ @user[:user_name] %> > profile </a> </li>
+            <li> <a href=<%="/user/"+ @user[:user_name] %> > Profile </a> </li>
             <% elsif condition %>
-            <li> <a href="/"> home </a> </li>
+            <li> <a href="/"> Home </a> </li>
             <% end %>
             
          </ul>
