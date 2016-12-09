@@ -21,10 +21,6 @@ end
 
 
 def login (params)
-
-	u = nil
-
-	# Allows for both login by username and login by email
 	if params[:email]
 		u = User.find_by_email(params[:email])
 	elsif params[:user]
@@ -32,14 +28,13 @@ def login (params)
 	else
 		return false
 	end
-  if u && u.password == params[:password]
-	   session[:user_id] = u.id
-	   session[:user_name]= u.user_name
-     session[:expires_at] = Time.current + 10.minutes
-     return session
-  else
-    return nil
-  end
+	if u && u.password == params[:password]
+		session[:user_id] = u.id
+		session[:user_name]= u.user_name
+	    return session
+	else
+	    return nil
+    end
 end
 
 # logs current user out

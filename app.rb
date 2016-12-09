@@ -34,36 +34,24 @@ end
 
 get '/' do
   if authenticate!
-    u = User.where(id: session[:user_id])
-    @home = true #in order for the user_info erb to differentiate between my_home and profile
-    @user = u[0]
-    @tweets = RedisClass.access_hfeed(session[:user_id])
-    # @followings = RedisClass.count_followings(session[:user_id])
-    # @followers = RedisClass.count_followers(session[:user_id])
-    # @num_tweets = RedisClass.count_tweets(session[:user_id])
-
-        #Unsure if necessary, if scalability test tweets once per session
-  #   if (rand < (params[:randomtweet].to_f / 100))
-  #     user = User.where(user_name: params[:user])[0]
-  #     TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-  #     user.increment_tweets
-  #   end
-    erb :my_home
-elsif ((params[:user] || params[:email]) && params[:password])
-     successful_log_in = login(params)
-     @user = User.where(user_name: params[:user])[0]
-     if successful_log_in && params[:randomtweet]
-       if (rand < (params[:randomtweet].to_f / 100))
-         #user = User.where(user_name: params[:user])[0]
-         TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
-         user.increment_tweets
-       end
-     end
-     @tweets = RedisClass.access_hfeed(session[:user_id])
-   erb :my_home
+      u = User.where(id: session[:user_id])
+      @home = true #in order for the user_info erb to differentiate between my_home and profile
+      @user = u[0]
+      @tweets = RedisClass.access_hfeed(session[:user_id])
+      erb :my_home
+  elsif params[:user] && params[:password]) && login(params)
+      user = User.where(user_name: params[:user])
+      if params[:randomtweet] && (rand < (params[:randomtweet].to_f / 100))
+        TweetFactory.make_tweet(Faker::Hacker.say_something_smart, session[:user_id], nil)
+        user.increment_tweets
+      end
+      @home
+      @user = user[0]
+      @tweets = RedisClass.access_hfeed(session[:user_id])
+      erb :my_home
   else
-   @tweets = RedisClass.access_ffeed
-   erb :home
+     @tweets = RedisClass.access_ffeed
+     erb :home
   end
 end
 
@@ -90,13 +78,14 @@ end
 
 
 # inline login
-get '/user=:user_name&password=:password' do
+get '/?user=:user_name&password=:password' do
   login(params)
   redirect '/'
 end
 
-get '/?user=:user&password=:password&randomtweet=50' do
+get '/?user=:anotheruser&password=:password&randomtweet=50' do
   login(params)
+
 end
 
 get'/logout' do
