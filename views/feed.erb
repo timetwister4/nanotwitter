@@ -1,26 +1,27 @@
-  
-  <% @tweets.each do |tweet| %>
-        <% if !@keyword %> 
-          <% tweet = JSON.parse(tweet) %>
-        <%end %>
-       <div class="panel panel-default">
-             <div class="panel panel-heading">
+<% @tweets.each do |tweet| %>
+    <% if !@keyword %> 
+      <% tweet = JSON.parse(tweet) %>
+    <%end %>
+   <div class="panel panel-default">
+         <div class="panel panel-heading">
               <a href=<%="/user/"+ tweet[0]%>> <%=tweet[0]%></a> tweeted at <%=tweet[2]%> :
-             </div>
-             <div class ="panel panel-body">
+         </div>
+         <div class ="panel panel-body">
               <%= tweet[1]%>
+         </div>
+         <% if !@ffeed %>
+              <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet[3]%>>
+                    <div>
+                        <% if !@keyword && session[:user_name] != tweet[0] %>
+                             <a href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet[3]%> >
+                                 <i  class="fa fa-heart"> </i>
+                             </a>
+                        <% end %>
+                    </div>
+                       <a style="padding-right:15px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet[3]%> >
+                                <i  class="fa fa-reply"></i>
+                       </a>
              </div>
-             <% if !@ffeed %>
-             <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet[3]%>>
-              <% if !@keyword && session[:user_name] != tweet[0] %>
-                <a href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet[3]%> >
-                  <i  class="fa fa-heart"> </i>
-                </a>
-              <% end %>
-              <a style="padding-right:5px;" href='javascript:;' class='reply' title='reply' data-tweet-id= <%=tweet[3]%> >
-                  <i  class="fa fa-reply"></i>
-              </a>
-            </div>
-            <% end %>
-        </div>
-  <%end%>
+       <% end %>
+   </div>
+<%end%>

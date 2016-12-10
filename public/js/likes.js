@@ -4,13 +4,16 @@
           type: "POST",
           data: {tweet_id: $(this).attr('data-tweet-id')},
           success: function(data){
+                 debugger
                  if (data.charAt(1) == 'a'){
-                    var num = data.substring(2,data.length-1)
-                   $(event.target).parent().append("  tweet already liked (current likes = "+num+") ")
+                   var num = data.substring(2,data.length-1)
+                    $(event.target).parent().parent().text(" tweet already liked (current likes = "+num+") ")
                  }else {
-                    $(event.target).parent().append("  1 more like! total = " + data + "  " ) 
+                   $(event.target).parent().parent().text(" 1 more like! total = " + data + "  " )
                  }                                  
           } 
   
       })
  })
+
+

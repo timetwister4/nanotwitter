@@ -8,11 +8,11 @@
       <%= erb :write_tweet%>
       <div class= "col-md-6" id = "tweet_feed">
 
-       <h3> Tweets by people <%= @user[:user_name] %> follows: </h3>
+          <h3> <%= @user[:user_name] %>'s Wall: </h3>
           <br>
           <%= erb :feed %>
       </div>
-    </div>
   </div>
+</div>
 
-<script src= "/js/likes.js"></script>
+

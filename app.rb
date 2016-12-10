@@ -28,7 +28,6 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
 end
 
 get '/' do
-  byebug
   if authenticate!
        home_page(User.where(id: session[:user_id]))
   elsif test_2_or_3?(params)
@@ -98,7 +97,7 @@ post '/registration/submit' do
 end
 
 get '/user/:user_name' do
-    if User.where(user_name: params[:user_name]).exists?
+    if User.where(user_name: params[:user_name]).exists? && logged_in?
       u = User.where(user_name: params[:user_name])
       @user = u[0]
       @follow_status = Follow.where(follower_id: session[:user_id], followed_id: @user.id).exists?
@@ -121,23 +120,26 @@ end
 post '/user/unfollow' do
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
   Follow.where(follower_id: session[:user_id], followed_id: followed.id).destroy_all
-  User.find(session[:user_id]).user.decrement_followings
+  user = User.find(session[:user_id])
+  user.decrement_followings
   followed.decrement_followers
   redirect redirect "user/" + params[:user_name]
 end
 
 # note the asterisk means that no matter what comes before this it will work
-post '*/tweet/new/submit' do
+post '/tweet/new/submit' do
   text = params[:tweet_text]
   TweetFactory.make_tweet(text, session[:user_id], nil)# Tweet.create(text: text, author: author, author_name: author.user_name) and calls the feed processor
-  redirect '#';
+  redirect "user/" + session[:user_name]
 end
 
 # Other #
 get '/search/?' do
-  @keyword = params[:keyword] 
-  @tweets = TweetFactory.search_tweets(@keyword)
-  erb :search
+  if logged_in?
+    @keyword = params[:keyword] 
+    @tweets = TweetFactory.search_tweets(@keyword)
+    erb :search
+  end
 end
 
 post '/tweet/like' do
@@ -146,23 +148,25 @@ post '/tweet/like' do
     tweet.increment_likes
     RedisClass.cache_likes(session[:user_id],tweet.id)
     tweet.likes.to_json
-  end
+  else
     "a#{tweet.likes}".to_json
+  end
 end
 
 
 get '/tag/:name' do
-  @tag_name = params[:name]
-  @tweets = RedisClass.access_tag(@tag_name)
-  erb :tag
+ if logged_in?
+    @tag = params[:name]
+    @tweets = RedisClass.access_tag(@tag)
+    erb :tag
+ end
 
 end
 
 get '/tweet/replies' do  #This get block accesses all the replies of a certain tweet stored in redis
-  a = ["paco","caca", "culo","1"].to_json
-  b = ["pepe","caca", "culo","1"].to_json
-  [a,b].to_json
- # RedisClass.access_pfeed(params[:tweet_id]).to_json #this is to test how would we unparse the text
+ #replies = [["paco","caca", "culo","1"].to_json ,["pepe","caca", "culo","1"].to_json]
+replies = RedisClass.access_replies(params[:tweet_id])
+replies.to_json
 end
 
 post '/tweet/reply/:reply_id' do
@@ -175,6 +179,13 @@ def delete_all
   RedisClass.delete_keys
   Tweet.delete_all
   Follow.delete_all
+  users = User.all
+  users.each do |u|
+    u.follower_count = 0
+    u.following_count = 0
+    u.tweet_count = 0
+    u.save
+  end
 end
 
 

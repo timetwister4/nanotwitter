@@ -44,5 +44,9 @@ def log_out_now
 end
 
 def logged_in?
-	!session[:user_id].nil?
+	if !session[:user_id].nil?
+		return true
+	else
+		redirect '/'
+	end
 end

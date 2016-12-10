@@ -2,16 +2,16 @@
   <title><%=@user[:user_name] %>'s Profile</title>
 <% end %>
 
-    <div class="container">
-      <div class="row" background-color>
-        <%= erb :user_info %>
-        <%= erb :follow_button %>
-          <div class= "col-md-6">
+<div class="container">
+  <div class="row" background-color>
+      <%= erb :user_info %>
+      <%= erb :follow_button %>
+      <div class= "col-md-6">
 
-           <h3> <%=@user[:user_name] %>'s Tweets: </h3>
-            <%= erb :feed %>
+         <h3> <%=@user[:user_name] %>'s Tweets: </h3>
+          <%= erb :feed %>
 
-          </div>
       </div>
-    </div>
+  </div>
+</div>
     

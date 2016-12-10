@@ -1,45 +1,25 @@
- <script>
-//       $(document).ready(function(){
-//         $("#ShowTweets").click(function(){
-//           var url = "api/v1/users/" + document.getElementById("user_name").innerHTML + "/tweets";
-//           //$("#TESTSECTION").empty().append("JQuery is working");
-//           $.get(url, function(result){
-//             var tweets = JSON.parse(result);
-//             $("#tweet_feed").html("Your Tweets: <br>");
-//             for(i = 0; i<tweets.length; i++){
-//               t = tweets[tweets.length-i-1];
-//               $("#tweet_feed").append(
-//                 "<div class='panel panel-deault'>\n<div class = 'panel panel-heading'>\n" +
-//                  t.author_name + " tweeted at " + t.created_at + ":\n</div>" +
-//                  "<div class='panel panel-body'>\n" + t.text +"\n</div>\n</div>\n<br>");
-//                };
-//         });
-//     });
-//   });
-// </script>
-
 <div class="col-md-4">
     <div class="panel panel-default">
-       <div class="panel-body">
-          <% condition = session[:user_name] == @user[:user_name] %>
-          <% if condition  %>
-          <h1 style="color:black"> Welcome <%= @user[:user_name] %> </h1> 
-          <% else %>
-          <h1 style="color:black"><%= @user[:user_name] %>'s Profile </h1>
-          <%end %>
+         <div class="panel-body">
+            <% condition = session[:user_name] == @user[:user_name] %>
+            <% if condition  %>
+                <h1 style="color:black"> Welcome <%= @user[:user_name] %> </h1> 
+                <% else %>
+                <h1 style="color:black"><%= @user[:user_name] %>'s Profile </h1>
+            <%end %>
 
-          <h3> User Info: </h3>
-          <ul>
-            <li> Followers: <%= @user[:follower_count]%> </li>
-            <li> Follows: <%=@user[:following_count]%></li>
-            <li> Number of tweets: <%=@user[:tweet_count]%>  </li>
-            <% if @home && condition  %>
-            <li> <a href=<%="/user/"+ @user[:user_name] %> > Profile </a> </li>
-            <% elsif condition %>
-            <li> <a href="/"> Home </a> </li>
-            <% end %>
-            
-         </ul>
-      </div>
-   </div>
- </div>
+            <h3> User Info: </h3>
+            <ul>
+                <li> Followers: <%= @user[:follower_count]%> </li>
+                <li> Follows: <%=@user[:following_count]%></li>
+                <li> Tweets Written by <%= @user[:user_name] %> : <%=@user[:tweet_count]%>  </li>
+                <% if @home && condition  %>
+                <li> <a href=<%="/user/"+ @user[:user_name] %> > Profile </a> </li>
+                <% elsif condition %>
+                <li> <a href="/"> Home </a> </li>
+                <% end %>
+              
+           </ul>
+        </div>
+    </div>
+</div>
