@@ -18,4 +18,11 @@ class Tweet <ActiveRecord::Base
     self.save
   end
 
+  def decrement_likes
+    if self.likes > 0
+      self.likes -= 1
+      self.save
+    end
+  end
+  
 end
