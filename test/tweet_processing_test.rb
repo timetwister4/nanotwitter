@@ -16,25 +16,25 @@ describe "Tweet Processor" do
     User.destroy_all
   end
 
-  it "replaces mentions with user URLs" do
-    t = TweetProcessor.new
-    User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
-    processed_tweet = t.process_text("Test text @TestUser")
-    assert processed_tweet[0].include?("<a href=\"/user/TestUser\">")
-  end
+  # it "replaces mentions with user URLs" do
+  #   t = TweetProcessor.new
+  #   User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
+  #   processed_tweet = t.process_text("Test text @TestUser")
+  #   assert processed_tweet[0].include?("<a href=\"/user/TestUser\">")
+  # end
 
-  it "does not replace mentions if the user does not exist" do
-    t = TweetProcessor.new
-    user_exists = User.where(user_name: "RubyHater").exists?
-    processed_tweet = t.process_text("No one hates ruby, @RubyHater")
-    assert !user_exists && !processed_tweet[0].include?("a href=\"user/RubyHater\">")
-  end
+  # it "does not replace mentions if the user does not exist" do
+  #   t = TweetProcessor.new
+  #   user_exists = User.where(user_name: "RubyHater").exists?
+  #   processed_tweet = t.process_text("No one hates ruby, @RubyHater")
+  #   assert !user_exists && !processed_tweet[0].include?("a href=\"user/RubyHater\">")
+  # end
 
-  it "replaces tags with tag search URLs" do
-    t = TweetProcessor.new
-    processed_tweet = t.process_text("I love Ruby #Ruby")
-    assert processed_tweet[0].include?("<a href=\"search/tag=Ruby\">")
-  end
+  # it "replaces tags with tag search URLs" do
+  #   t = TweetProcessor.new
+  #   processed_tweet = t.process_text("I love Ruby #Ruby")
+  #   assert processed_tweet[0].include?("<a href=\"search/tag=Ruby\">")
+  # end
 
   #it "creates mentions for all mentioned users" do
   #  u = User.create(name: "Mary", user_name: "TestUser", email: "mary@example.com", password: "strongpass")
