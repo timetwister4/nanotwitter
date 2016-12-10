@@ -27,6 +27,10 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
   send_file 'loaderio-97e86023c438b5621c512742d95a8419.txt'
 end
 
+get '/gh-page' do
+  send_file 'github_page/gh-page.html'
+end
+
 get '/' do
   if authenticate!
        home_page(User.where(id: session[:user_id]))
@@ -81,7 +85,7 @@ get'/logout' do
 end
 
 # Account Registration URLs #
-get '/registration/?' do
+get '/registration' do
   erb :registration
 end
 
