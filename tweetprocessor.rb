@@ -1,7 +1,6 @@
 require 'byebug'
 require 'sinatra'
 require 'sinatra/activerecord'
-
 require_relative 'models/tweet'
 require_relative 'models/user'
 require_relative 'redis_operations.rb'
@@ -9,81 +8,67 @@ require_relative 'redis_operations.rb'
 class TweetProcessor
 
   def make_tweet(text,id,reply_id)
+    init = Time.now
     user = User.find(id)
-    user.increment_tweets#get author for author fields
-    #process text, get html text, list of tags, and list of mentions
+    user.increment_tweets
     processed = process_text(text)
-    if reply_id.nil?
-      t = Tweet.create(text: (processed[0]), author: user, author_name: user.user_name)
-      t.save
-      tweet = [user.user_name, processed[0], t.created_at, t.id]
-      RedisClass.cache_tweet(tweet,user.id,t.id)
-      #author.increment_tweets #check what each of the processed parameters are.
-    else
-      t = Tweet.create(text: (processed[0]), author: user, author_name: user.user_name, reply_id: reply_id)
-      t.save
-    end
-
-    #if processed[1].length > 0
-    #   RedisClass.cache_mentions(processed[1][:id], t)
-    #elsif processed[2].length > 0
-    #   RedisClass.cache_tags(processed[2],t)
-    #end
-  end
-
-  def process_text(text)
-
-    name = String.new
-    tags = Array.new
-    mentions = Array.new
-    words = text.split
-    words.each do |w|
-      if w[0] == "@"
-        name = w.partition("@")[2]
-        u = User.where(user_name: name)
-        if (u != [])
-          w.gsub!(w,"<a href=\"/user/#{name}\">#{w}</a>")
-          mentions.push(u)
+    Thread.new {
+        t = Tweet.create(text: (processed.value[0]), author: user, author_name: user.user_name)
+        tweet = [user.user_name, processed.value[0], t.created_at, t.id]
+        if reply_id.nil?
+          RedisClass.cache_tweet(tweet,user.id,t.id)
+        else
+          RedisClass.cache_reply(tweet,reply_id)
         end
-      elsif w[0] == "#"
-        name = w.partition("#")[2]
-        w.gsub!(w, "<a href=\"search/tag=#{name}\">#{w}</a>")
-        tags.push(name)
-      end
-    end
-
-    text = words.join(" ")
-
-    return text, tags, mentions
-
+        if processed[1].length > 0
+           RedisClass.cache_mentions(processed[1][:id], t)
+        elsif processed[2].length > 0
+           RedisClass.cache_tags(processed[2],t)
+        end
+    }
+   
   end
 
-  #####issues that we need to deal with: ######
-  #how do we do so that a tweet doesn't get duplicated when you mention someone that is also following you?
-
-
-
-
-  # def make_tags (tag_list, tweet)
-  #   return "Not yet implemented"
-  # end
-
-  # def make_mentions (mention_list, tweet)
-  #   m = mention_list.map{|u| {user: u, tweet: tweet} }
-  #   Mention.create(m)
-  # end
+  def process_text(text) #checks to see if there any tags or mentions, and if there are, it makes a link out of them.
+     Thread.new {
+          name = String.new
+          tags = Array.new
+          mentions = Array.new
+          words = text.split
+          words.each do |w|
+            if w[0] == "@"
+              name = w.partition("@")[2]
+              u = User.where(user_name: name)
+              if (u != [])
+                w.gsub!(w,"<a href=\"/user/#{name}\">#{w}</a>")
+                mentions.push(u)
+              end
+            elsif w[0] == "#"
+              name = w.partition("#")[2]
+              w.gsub!(w, "<a href=\"search/tag=#{name}\">#{w}</a>")
+              tags.push(name)
+            end
+          end
+          text = words.join(" ")
+          [text,mentions,tags]
+      }
+  end
 
 
   def search_tweets(keyword)
-    query_tweets = []
-    all_tweets = Tweet.order("created_at DESC")
-    all_tweets.each do |tweet|
-      if tweet.author_name == keyword  || tweet.text.include?(keyword)
-          query_tweets << tweet
-      end
-    end
-    query_tweets
+      thr = Thread.new{
+        query_tweets = []
+            all_tweets = Tweet.order("created_at DESC")
+            all_tweets.each do |t|
+              if t.author_name == keyword  || t.text.include?(keyword)
+                  query_tweets << [t.author_name,t.text,t.created_at,t.id,t.likes]
+              end
+            end
+            query_tweets
+    
+      }
+      thr.value
   end
-
+    
 end
 

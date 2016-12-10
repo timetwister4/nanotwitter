@@ -69,12 +69,13 @@ class RedisClass
 
 	end
 
-	def self.cache_likes(t_id, u_id, t) #we need to store likes so that a user cannot like the tweet two times
-	    if $redis.sismember("tweet:#{t_id}:likes", u_id) == false
-				$redis.sadd("tweet:#{t_id}:likes", u_id)
-				t.increase_likes
-				return true
-			end
+
+	def self.cache_likes(u_id,t_id) #we need to store likes so that a user cannot like the tweet two times
+	 	$redis.sadd("tweet:#{t_id}:likes", u_id)
+	end
+
+	def self.liked_before?(u_id, t_id)
+		$redis.sismember("tweet:#{t_id}:likes", u_id)
 	end
 
 
@@ -126,6 +127,7 @@ class RedisClass
 	def self.access_replies(tweet_id)
 		$redis.lrange("tweet:#{tweet_id}:replies", 0, -1)
 	end
+
 
 	def self.access_likes(tweet_id)
 		$redis.smembers("tweet:#{tweet_id}:likes")

@@ -15,16 +15,7 @@ class Tweet <ActiveRecord::Base
 
   def increment_likes
     self.likes += 1
-  end
-
-  def decrement_likes
-    if self.likes >0
-      self.likes -= 1
-    end
-  end
-
-  def is_reply?
-    self.reply
+    self.save
   end
 
 end

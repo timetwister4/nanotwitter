@@ -11,15 +11,10 @@ require_relative 'models/user.rb'
 require_relative 'models/tweet.rb'
 require_relative 'models/follow.rb'
 require_relative 'tweetprocessor.rb'
-
 require 'redis'
-require 'redis-namespace'
-#require_relative 'RedisClass.rb'
 require_relative 'redis_operations'
 require_relative 'api.rb'
-
 require 'faker'
-
 
 TweetFactory = TweetProcessor.new
 
@@ -33,12 +28,14 @@ get '/loaderio-97e86023c438b5621c512742d95a8419.txt' do
 end
 
 get '/' do
+  byebug
   if authenticate!
        home_page(User.where(id: session[:user_id]))
   elsif test_2_or_3?(params)
        home_page(User.where(user_name: params[:user]))
   else
      @tweets = RedisClass.access_ffeed
+     @ffeed = true
      erb :home
   end
 end
@@ -69,9 +66,7 @@ get '/login' do
 end
 
 post '/login/submit' do
-  #login handles session[:user_id] and expiration now
-  successful_log_in = login(params)
-    if successful_log_in
+    if login(params)
       session[:error] = ""
       redirect '/'
     else
@@ -115,10 +110,8 @@ get '/user/:user_name' do
 end
 
 post '/user/follow' do
-  followed = User.find_by_user_name(params[:user_name]) # the person being followed
-  #RedisClass.cache_follow(session[:user_id], followed.id)
-  f = Follow.create(follower_id: session[:user_id], followed_id: followed.id)
-  f.save # not necessary with the create command
+  followed = User.find_by_user_name(params[:user_name])
+  Follow.create(follower_id: session[:user_id], followed_id: followed.id)
   user = User.find(session[:user_id])
   user.increment_followings
   followed.increment_followers
@@ -128,12 +121,9 @@ end
 post '/user/unfollow' do
   followed = User.find_by_user_name(params[:user_name]) # the person being followed
   Follow.where(follower_id: session[:user_id], followed_id: followed.id).destroy_all
-  user = User.find(session[:user_id])
-  user.decrement_followings
+  User.find(session[:user_id]).user.decrement_followings
   followed.decrement_followers
-  #RedisClass.cache_unfollow(session[:user_id], followed.id)
   redirect redirect "user/" + params[:user_name]
-
 end
 
 # note the asterisk means that no matter what comes before this it will work
@@ -145,14 +135,19 @@ end
 
 # Other #
 get '/search/?' do
-  keyword = params[:keyword]
-  @tweets = TweetFactory.search_tweets(keyword)
+  @keyword = params[:keyword] 
+  @tweets = TweetFactory.search_tweets(@keyword)
   erb :search
 end
 
 post '/tweet/like' do
   tweet = Tweet.find(params[:tweet_id])
-  RedisClass.cache_likes(tweet.id, session[:user_id], tweet).to_json
+  if !RedisClass.liked_before?(session[:user_id],tweet.id)
+    tweet.increment_likes
+    RedisClass.cache_likes(session[:user_id],tweet.id)
+    tweet.likes.to_json
+  end
+    "a#{tweet.likes}".to_json
 end
 
 
@@ -164,7 +159,10 @@ get '/tag/:name' do
 end
 
 get '/tweet/replies' do  #This get block accesses all the replies of a certain tweet stored in redis
-  {:id => params[:tweet_id], :replies => RedisClass.access_pfeed(1)}.to_json #this is to test how would we unparse the text
+  a = ["paco","caca", "culo","1"].to_json
+  b = ["pepe","caca", "culo","1"].to_json
+  [a,b].to_json
+ # RedisClass.access_pfeed(params[:tweet_id]).to_json #this is to test how would we unparse the text
 end
 
 post '/tweet/reply/:reply_id' do
