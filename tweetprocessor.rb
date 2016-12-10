@@ -29,7 +29,7 @@ class TweetProcessor
   end
 
   def process_text(text) #checks to see if there any tags or mentions, and if there are, it makes a link out of them.
-     Thread.new {
+     #Thread.new {
           name = String.new
           tags = Array.new
           mentions = Array.new
@@ -50,9 +50,9 @@ class TweetProcessor
           end
           text = words.join(" ")
           [text,mentions,tags]
-      }
-      t.join
-      t[:output]
+      #}
+      #t.join
+      #t[:output]
   end
 
 

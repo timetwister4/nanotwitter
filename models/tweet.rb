@@ -16,12 +16,14 @@ class Tweet <ActiveRecord::Base
   def increment_likes
     self.likes += 1
     self.save
+    return self.likes
   end
 
   def decrement_likes
     if self.likes > 0
       self.likes -= 1
       self.save
+      return self.likes
     end
   end
   
