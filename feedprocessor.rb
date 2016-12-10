@@ -13,7 +13,6 @@ def self.get_myhome_feed(u_id) #creates the home feed for the logged in user
 
   	  u = User.find(u_id)
       #t= Tweet.order(:created_at).where(author: u).last(10)
-      byebug
       f = HomeFeed.where(user: u)
       tweets = []
       tweet_nums = f.map {|record| record.tweet_id}
