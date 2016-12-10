@@ -26,7 +26,6 @@ class TweetProcessor
            RedisClass.cache_tags(processed[2],t)
         end
     }
-   
   end
 
   def process_text(text) #checks to see if there any tags or mentions, and if there are, it makes a link out of them.
@@ -52,6 +51,7 @@ class TweetProcessor
           text = words.join(" ")
           [text,mentions,tags]
       }
+      thr.value
   end
 
 
