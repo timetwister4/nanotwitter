@@ -51,7 +51,8 @@ class TweetProcessor
           text = words.join(" ")
           [text,mentions,tags]
       }
-      thr.value
+      t.join
+      t[:output]
   end
 
 
