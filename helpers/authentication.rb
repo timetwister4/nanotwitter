@@ -3,13 +3,12 @@ require "byebug"
 
 
 def authenticate!
-
-		if session[:user_id] && User.where(id: session[:user_id]).exists? #if the user id saved in session does not belong to any user, also direct to general homepage
-			true
-		else
-			session[:original_request] = request.path_info
-			false
-		end
+	if session[:user_id] && User.where(id: session[:user_id]).exists? #if the user id saved in session does not belong to any user, also direct to general homepage
+		true
+	else
+		session[:original_request] = request.path_info
+		false
+	end
 end
 
 

@@ -17,29 +17,3 @@ $('a.reply').one("click",function(event){
    })
 })
 
-
-// function reparse_input(input){
-//   replies = [] 
-//   for (i= 0; i< input.length; i++) {
-
-//       for (j= 0; j< input[i].length; j++) {
-
-//         }
-
-//   }                  
-//        while (str.length != 0){  
-//           if (str.charAt(str.indexOf(':')+1) == '"'){
-//             hash[str.substring(1,str.indexOf(':')-1)] = str.substring(str.indexOf(':')+2, str.indexOf(',')-1)
-//           } else {
-//             hash[str.substring(1,str.indexOf(':')-1)] = str.substring(str.indexOf(':')+1, str.indexOf(','))
-//           }
-//           str = str.substring(str.indexOf(',')+1, str.length)
-                                     
-//        }
-
-//        replies.push(hash)
-//   }
-
-//   return replies
-              
-// }

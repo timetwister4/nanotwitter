@@ -9,6 +9,7 @@
             <%=yield_content :head%>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
           <!-- Bootstrap -->
+          
           <link href="/css/bootstrap.min.css" rel="stylesheet">
 
           <style>
@@ -28,15 +29,15 @@
         <%= erb :navbar %>
         <%= yield %>
         <!-- jQuery via Google + local fallback --> 
+       
         <script src="/js/replies.js"></script>
         <script src= "/js/likes.js"></script>
         
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/jquery-1.7.1.min.js"><\/script>')</script>
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js"></script>
 
-
+        <script src="/js/bootstrap.min.js"></script>
 
         <!--Bootstrap jQuery Plugins, compiled and minified -->
-        <script src="/js/bootstrap.min.js"></script>
+        
     </body>
-</html>
+</html> 
