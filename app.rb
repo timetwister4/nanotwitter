@@ -173,7 +173,7 @@ post '/tweet/reply/:reply_id' do
     redirect '/'
 end
 
-get '/gh-pages' do
+get '/gh-page' do
   erb :gh_page
 end
 

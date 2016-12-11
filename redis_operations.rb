@@ -51,7 +51,6 @@ class RedisClass
 
 	def self.cache_mentions(ids,tweet, user_id)
 		followers = Follow.where(followed_id: user_id)
-		byebug
 		followers.each do |follow| #This is to prevent a tweet of replicating itself in a persons wall
 			if ids.include?(follow.follower_id)
 			   ids.delete(follow.follower_id)
@@ -64,7 +63,7 @@ class RedisClass
 
 	def self.cache_all_tags(tags, tweet)
 		tags.each do |t|
-			$redis.rpush("tag:#{t}", tweet.to_json)
+			$redis.lpush("tag:#{t}", tweet.to_json)
 		end
 	end
 	

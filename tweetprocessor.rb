@@ -8,12 +8,11 @@ require_relative 'redis_operations.rb'
 class TweetProcessor
 
   def make_tweet(text,id,reply_id)
-      init = Time.now
       user = User.find(id)
       processed = process_text(text)
       Thread.new {
             t = Tweet.create(text: (processed.value[0]), author: user, author_name: user.user_name)
-            tweet = [user.user_name, processed.value[0], t.created_at, t.id]
+            tweet = [user.user_name, processed.value[0], t.created_at , t.id]
             if reply_id.nil?
                 user.increment_tweets
                 RedisClass.cache_tweet(tweet,user.id,t.id)
