@@ -13,7 +13,7 @@ function handleReplyClick(event){
   $.ajax({
     url: "/tweet/replies",
     type: "GET",
-    data: {tweet_id: $(this).attr('data-tweet-id')},
+    data: {tweet_id: $(event.currentTarget.parentElement).attr('data-tweet-id')},
     success: function(data){
       var input = JSON.parse(data)
       if (input.length == 0) {
