@@ -1,26 +1,26 @@
-var slideIndex = 1;
-showDivs(slideIndex);
+var n = $(".mySlides").length;
+var slideIndex = 1; 
 
-function plusDivs(n) {
-  showDivs(slideIndex += n);
+function changeTo(i) {
+  // hide(slideIndex);
+  $(".mySlides:eq("+(slideIndex-1)+")").css("display", "none");
+  $(".w3-badge:eq("+(slideIndex-1)+")")
+    .toggleClass("w3-blue", false)
+    .toggleClass("w3-transparent", true);
+  slideIndex = i;
+  // show(slideIndex);
+  $(".mySlides:eq("+(slideIndex-1)+")").css("display", "block");
+  $(".w3-badge:eq("+(slideIndex-1)+")")
+    .toggleClass("w3-blue", true)
+    .toggleClass("w3-transparent", false);
 }
 
-function currentDiv(n) {
-  showDivs(slideIndex = n);
+function showPrevious() {
+  var i = (slideIndex + 1 - n) % n;
+  changeTo(i);
 }
 
-function showDivs(n) {
-  var i;
-  var x = document.getElementsByClassName("mySlides");
-  var dots = document.getElementsByClassName("demo");
-  if (n > x.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = x.length}
-  for (i = 0; i < x.length; i++) {
-     x[i].style.display = "none";  
-  }
-  for (i = 0; i < dots.length; i++) {
-     dots[i].className = dots[i].className.replace(" w3-blue", "");
-  }
-  x[slideIndex-1].style.display = "block";  
-  dots[slideIndex-1].className += " w3-blue";
+function showNext() {
+  var i = (slideIndex + 1) % n;
+  changeTo(i);
 }

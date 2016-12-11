@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Nanotwitter : Team Thunderbear&#39;s Nanotwitter Project">
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <style>
+      .mySlides {display:none}
+      .w3-left, .w3-right, .w3-badge {cursor:pointer}
+      .w3-badge {height:13px;width:13px;padding:0}
+      .navbar {display: none;}
+    </style>
+    <link rel="stylesheet" type="text/css" media="screen" href="/css/stylesheet.css">
+
+    <title>Nanotwitter</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/timetwister4/nanotwitter">View on GitHub</a>
+
+          <h1 id="project_title">Nanotwitter</h1>
+          <h2 id="project_tagline">Team Thunderbear&#39;s Nanotwitter Project</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/timetwister4/nanotwitter/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/timetwister4/nanotwitter/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a id="assignment" class="anchor" href="#assignment" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Assignment</h3>
+
+<p>The purpose of this project was to build a lightweight Twitter clone written in Ruby that was well engineered and scalable. Our goal was to create a service that could support thousands of users following one another and posting, liking, and replying to tweets. The resulting application is hosted on <a href="http://secret-shelf-78111.herokuapp.com/front">Heroku</a> and uses a Postgres database and a Redis cache provided by Heroku. </p>
+
+<p>To run your own copy of our nanoTwitter service, all you need to do is clone the repository, push it to a Heroku application with a database and Redis set up, and perform the initial database rake. Enjoy!</p>
+
+<h3>
+<a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Screenshots</h3>
+
+<div class="w3-content w3-display-container" style="max-width:800px">
+  <img class="mySlides" src="/images/slideshow_1.png" style="display:block">
+  <img class="mySlides" src="/images/slideshow_2.png">
+  <img class="mySlides" src="/images/slideshow_3.png">
+  <img class="mySlides" src="/images/slideshow_4.png">
+  <img class="mySlides" src="/images/slideshow_5.png">
+  <img class="mySlides" src="/images/slideshow_6.png">
+  <div class="w3-center w3-section w3-large w3-text-white w3-display-bottommiddle">
+    <div class="w3-left w3-padding-left w3-hover-text-blue" onclick="showPrevious()">&#10094;</div>
+    <div class="w3-right w3-padding-right w3-hover-text-blue" onclick="showNext()">&#10095;</div>
+    <span class="w3-badge demo w3-border w3-blue w3-hover-blue" onclick="changeTo(1)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="changeTo(2)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="changeTo(3)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="changeTo(4)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="changeTo(5)"></span>
+    <span class="w3-badge demo w3-border w3-transparent w3-hover-blue" onclick="changeTo(6)"></span>
+    </div>
+</div>
+
+<h3>
+<a id="technology" class="anchor" href="#technology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Technology</h3>
+
+<p>nanoTwitter is written in Ruby and utilizes a Sinatra framework, a more lightweight framework than Rails. It relies extensively on Redis, which handles every feed including the front page. </p>
+
+<h3><a id="load-tests" class="anchor" href="#load-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Load Tests</h3>
+
+<h4>GET http://secret-shelf-78111.herokuapp.com/</h4>
+<div style="width: 600px;">
+<iframe width='600' height='300' frameborder='0' src='http://share.loader.io/reports/e2f30e5332395e53242ed35716e40eb6/widget/results/4836285c2a60d0bc8a029177841fba8d'></iframe>
+<div style="width: 100%; text-align: right;">
+<a href="http://loader.io/reports/e2f30e5332395e53242ed35716e40eb6/results/4836285c2a60d0bc8a029177841fba8d" target="_blank" style="padding: 0 10px 10px 0; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px;">View on loader.io</a>
+</div></div>
+<div class="results-summary">
+  <div class="responses" style="float: left;">
+    <div>
+      <h5>Response Times</h5>
+      <table>
+        <tbody><tr>
+          <th>Average</th>
+          <td><span>3444</span> ms</td>
+        </tr>
+        <tr>
+          <th>Min/Max</th>
+          <td><span>17 / 7430</span> ms</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="errors" style="float: right; margin: 0px 40px;">
+    <div>
+      <h5 style="text-align: right;">Response Counts</h5>
+      <table>
+        <tbody><tr>
+          <th>Success</th>
+          <td>7800</td>
+          <th>Timeout</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>400/500</th>
+          <td>0 / 0</td>
+          <th>Network</th>
+          <td>0</td>
+        </tr>
+        <tr>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="activity" style="clear: both;">
+    <div>
+      <h5>Bandwidth</h5>
+      <table>
+        <tbody><tr>
+          <th>Sent</th>
+          <td>5.02  MB</td>
+        </tr>
+        <tr>
+          <th>Received</th>
+          <td>191.32  MB</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<h4>GET http://secret-shelf-78111.herokuapp.com/?user=Verda&password=123</h4>
+<div style="width: 600px;">
+<iframe width='600' height='300' frameborder='0' src='http://share.loader.io/reports/95c40a6608b8dbee7022d0852e17cc88/widget/results/2341153cc7c72c414d27fcfb4935e37f'></iframe>
+<div style="width: 100%; text-align: right;">
+<a href="http://loader.io/reports/95c40a6608b8dbee7022d0852e17cc88/results/2341153cc7c72c414d27fcfb4935e37f" target="_blank" style="padding: 0 10px 10px 0; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px;">View on loader.io</a>
+</div></div>
+<div class="results-summary">
+  <div class="responses" style="float: left;">
+    <div>
+      <h5>Response Times</h5>
+      <table>
+        <tbody><tr>
+          <th>Average</th>
+          <td><span>2260</span> ms</td>
+        </tr>
+        <tr>
+          <th>Min/Max</th>
+          <td><span>13 / 8989</span> ms</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="errors" style="float: right; margin: 0px 40px;">
+    <div>
+      <h5 style="text-align: right;">Response Counts</h5>
+      <table>
+        <tbody><tr>
+          <th>Success</th>
+          <td>3010</td>
+          <th>Timeout</th>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>400/500</th>
+          <td>0 / 121</td>
+          <th>Network</th>
+          <td>0</td>
+        </tr>
+        <tr>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="activity" style="clear: both;">
+    <div>
+      <h5>Bandwidth</h5>
+      <table>
+        <tbody><tr>
+          <th>Sent</th>
+          <td>2.25  MB</td>
+        </tr>
+        <tr>
+          <th>Received</th>
+          <td>59.79  MB</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<h4>GET http://secret-shelf-78111.herokuapp.com/?user=Verda&password=123?randomtweet=50</h4>
+<div style="width: 600px;">
+<iframe width='600' height='300' frameborder='0' src='http://share.loader.io/reports/6ef9170cb621439404acb9944fa5a08a/widget/results/808cd02e0a65f89f55d0ae2008828fa9'></iframe>
+<div style="width: 100%; text-align: right;">
+<a href="http://loader.io/reports/6ef9170cb621439404acb9944fa5a08a/results/808cd02e0a65f89f55d0ae2008828fa9" target="_blank" style="padding: 0 10px 10px 0; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 14px;">View on loader.io</a>
+</div></div>
+<div class="results-summary">
+  <div class="responses" style="float: left;">
+    <div>
+      <h5>Response Times</h5>
+      <table>
+        <tbody><tr>
+          <th>Average</th>
+          <td><span>6718</span> ms</td>
+        </tr>
+        <tr>
+          <th>Min/Max</th>
+          <td><span>17 / 10008</span> ms</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="errors" style="float: right; margin: 0px 40px;">
+    <div>
+      <h5 style="text-align: right;">Response Counts</h5>
+      <table>
+        <tbody><tr>
+          <th>Success</th>
+          <td>1229</td>
+          <th>Timeout</th>
+          <td>659</td>
+        </tr>
+        <tr>
+          <th>400/500</th>
+          <td>0 / 44</td>
+          <th>Network</th>
+          <td>0</td>
+        </tr>
+        <tr>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="activity" style="clear: both;">
+    <div>
+      <h5>Bandwidth</h5>
+      <table>
+        <tbody><tr>
+          <th>Sent</th>
+          <td>1.37  MB</td>
+        </tr>
+        <tr>
+          <th>Received</th>
+          <td>24.53  MB</td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>nanoTwitter was written by Tristan Ramirez de Haro (<a href="https://github.com/tristanibus" class="user-mention">@tristanibus</a>), Anne Charnes (<a href="https://github.com/timetwister4" class="user-mention">@timetwister4</a>) and Shaul Vin (<a href="https://github.com/b7q" class="user-mention">@b7q</a>) in the Fall of 2016. This project would not have been possible without the guidance and encouragement of our Professor, Pito Salas, and our teaching assistant, Karishma Khan.  </p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Nanotwitter maintained by <a href="https://github.com/timetwister4">timetwister4</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+<script src="/js/jquery.js"></script>
+<script src="/js/slideshow.js"></script>
+
+</body>
+</html>

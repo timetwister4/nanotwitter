@@ -173,6 +173,10 @@ post '/tweet/reply/:reply_id' do
     redirect '/'
 end
 
+get '/gh-pages' do
+  erb :gh_page
+end
+
 def delete_all
   RedisClass.delete_keys
   Tweet.delete_all
