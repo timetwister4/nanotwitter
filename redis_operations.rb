@@ -57,7 +57,7 @@ class RedisClass
 			end 
 		end
 		ids.each do |id|
-			$redis.rpush("user:#{id}:hfeed", tweet.to_json)
+			$redis.lpush("user:#{id}:hfeed", tweet.to_json)
 		end
 	end
 
