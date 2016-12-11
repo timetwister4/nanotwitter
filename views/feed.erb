@@ -12,7 +12,7 @@
          <% if !@ffeed %>
               <div class="panel panel-footer" id="footer" data-tweet-id= <%=tweet[3]%>>
                     <div>
-                        <% if !@keyword && session[:user_name] != tweet[0] %>
+                        <% if session[:user_name] != tweet[0] %>
                              <a href='javascript:;' class='heart' title='like' data-tweet-id= <%=tweet[3]%> >
                                  <i  class="fa fa-heart"> </i>
                              </a>

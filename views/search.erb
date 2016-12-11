@@ -1,11 +1,11 @@
 <% content_for :head do %>
   <title>Seach Query</title>
 <% end %> 
-  <h4> These are the search results for '<%=@keyword%>'</h4>
     <div class="container">
       <div class="row" background-color>
-          <div class= "col-md-6">
-           <%= erb :feed %> 
+		  <div class= "col-md-6">
+			 <h3>  <%=@total_num %> results for '<%=@keyword%>' : </h3> <br>
+              <%= erb :feed %> 
           </div>
       </div>
     </div>

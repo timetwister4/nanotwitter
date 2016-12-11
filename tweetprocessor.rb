@@ -62,7 +62,7 @@ class TweetProcessor
             all_tweets = Tweet.order("created_at DESC")
             all_tweets.each do |t|
                 if t.author_name == keyword  || t.text.include?(keyword)
-                      query_tweets << [t.author_name,t.text,t.created_at,t.id,t.likes]
+                      query_tweets << [t.author_name,t.text,t.created_at,t.id]
                 end
             end
             query_tweets

@@ -138,6 +138,7 @@ get '/search/?' do
     if logged_in?
       @keyword = params[:keyword] 
       @tweets = TweetFactory.search_tweets(@keyword)
+      @total_num = @tweets.length
       erb :search
     end
 end
