@@ -95,14 +95,6 @@ describe "Database" do
       assert_equal(my_tweet, t)
     end
 
-    it "can access a list of its followers" do
-
-    end
-
-    it "can access a list of users it follows" do
-
-    end
-
   end
 
   describe "Tweets" do
@@ -164,19 +156,6 @@ describe "Database" do
       assert !Tweet.where(text: t).exists?
     end
 
-    describe "replies" do
-      it "is a reply" do
-
-      end
-
-      it "connects to what it replies to" do
-
-      end
-
-      it "initializes replies to false if not a reply" do
-
-      end
-    end
 
 
   end
@@ -236,9 +215,6 @@ describe "Database" do
 
   end
 
-  describe "Feeds" do
 
-
-  end
 
 end

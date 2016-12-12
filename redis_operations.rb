@@ -9,7 +9,7 @@ require 'byebug'
 
 class RedisClass
 	
-	def self.cache_tweet(tweet,user_id, tweet_id)
+	def self.cache_tweet(tweet,user_id)
 		if $redis.lrange("ffeed", 0, -1).length == 50
 		   $redis.rpop("ffeed")
 		   $redis.lpush("ffeed", tweet.to_json)

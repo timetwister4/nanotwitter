@@ -3,7 +3,7 @@ require 'byebug'
 class Tweet <ActiveRecord::Base
    belongs_to :author, :class_name => "User"
 
-  validates :text, presence: true, length: { maximum: 140 }
+  validates :text, presence: true, length: { minimum:1, maximum: 140 }
   validates :author, presence: true
   validates :author_name, presence: true
 

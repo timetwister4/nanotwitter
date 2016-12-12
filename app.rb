@@ -178,18 +178,6 @@ get '/gh-page' do
   erb :gh_page
 end
 
-def delete_all
-  RedisClass.delete_keys
-  Tweet.delete_all
-  Follow.delete_all
-  users = User.all
-  users.each do |u|
-    u.follower_count = 0
-    u.following_count = 0
-    u.tweet_count = 0
-    u.save
-  end
-end
 
 
 

@@ -15,7 +15,7 @@ class TweetProcessor
             tweet = [user.user_name, processed.value[0], t.created_at , t.id]
             if reply_id.nil?
                 user.increment_tweets
-                RedisClass.cache_tweet(tweet,user.id,t.id)
+                RedisClass.cache_tweet(tweet,user.id)
             else
                 RedisClass.cache_reply(tweet,reply_id)
             end
