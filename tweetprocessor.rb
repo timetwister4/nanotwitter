@@ -22,7 +22,7 @@ class TweetProcessor
             if processed.value[1].length > 0
                RedisClass.cache_mentions(processed.value[1],tweet,id)
             elsif processed.value[2].length > 0
-               RedisClass.cache_all_tags(processed.value[2],tweet)
+               RedisClass.cache_tags(processed.value[2],tweet)
             end
       }
    

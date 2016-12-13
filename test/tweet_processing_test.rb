@@ -12,38 +12,62 @@ describe "Tweet Processor" do
     Sinatra::Application
   end
 
-  before(:each) do
-    User.destroy_all
-  end
+    before(:each) do
+      User.destroy_all
+      @processor = TweetProcessor.new
+      @john= User.create(name: "John", email: "john@example.com", user_name: "TestUser1", password: "strongpass")
+    end
 
-  # it "replaces mentions with user URLs" do
-  #   t = TweetProcessor.new
-  #   User.create(name: "John", email: "john@example.com", user_name: "TestUser", password: "strongpass")
-  #   processed_tweet = t.process_text("Test text @TestUser")
-  #   assert processed_tweet[0].include?("<a href=\"/user/TestUser\">")
-  # end
+    it "replaces mentions with user URLs" do
+      processed = @processor.process_text("Test text @TestUser1").value
+      assert processed[0].include?("<a href=\"/user/TestUser1\">")
+    end
 
-  # it "does not replace mentions if the user does not exist" do
-  #   t = TweetProcessor.new
-  #   user_exists = User.where(user_name: "RubyHater").exists?
-  #   processed_tweet = t.process_text("No one hates ruby, @RubyHater")
-  #   assert !user_exists && !processed_tweet[0].include?("a href=\"user/RubyHater\">")
-  # end
+    it "does not replace mentions if the user does not exist" do
+       processed = @processor.process_text("Test text @user").value
+       assert !processed[0].include?("a href=\"user/u\">")
+     end
 
-  # it "replaces tags with tag search URLs" do
-  #   t = TweetProcessor.new
-  #   processed_tweet = t.process_text("I love Ruby #Ruby")
-  #   assert processed_tweet[0].include?("<a href=\"search/tag=Ruby\">")
-  # end
+    it "replaces tags with tag search URLs" do
+      processed = @processor.process_text("Test text #mike").value
+      assert processed[0].include?("<a href=\"/tag/mike\">")
+    end
 
-  #it "creates mentions for all mentioned users" do
-  #  u = User.create(name: "Mary", user_name: "TestUser", email: "mary@example.com", password: "strongpass")
-  #  v = User.create(name: "John", user_name: "TestUser2", email: "john@example.com", password: "strongpass")
-  #  t = TweetProcessor.new
-  #  tweet = t.make_tweet("Thanks for Beta Testing! @TestUser and @TestUser2", u.id)
-  #  assert Mention.where(user: u).exists? && Mention.where(user: v).exists?
-  #end
+    it "creates mentions for all mentioned users" do
+     User.create(name: "Mary", user_name: "TestUser2", email: "mary@example.com", password: "strongpass")
+     processed = @processor.process_text("Thanks for Beta Testing! @TestUser1 and @TestUser2").value
+     assert processed[0].include?("<a href=\"/user/TestUser1\">")
+     assert processed[0].include?("<a href=\"/user/TestUser2\">")
+    end
 
-  #it "creates tags for all tags in the tweet"
+    it "searches a tweet by text correctly and orders them by date correctly" do
+      Tweet.delete_all
+      Tweet.create(text: "1st tweet", author: @john , author_name: "TestUser1")
+      Tweet.create(text: "2nd tweet", author: @john , author_name: "TestUser1")
+      Tweet.create(text: "3rd tweet", author: @john , author_name: "TestUser1")
+      search =@processor.search_tweets("tweet")
+      assert_equal search.length , 3
+      assert search[0][1].include?("3rd")
+      assert search[2][1].include?("1st") 
+   end
+
+
+
+    it "searches a tweet by user_name correctly and orders them by date correctly" do
+      Tweet.delete_all
+      Tweet.create(text: "1st tweet", author: @john , author_name: "TestUser1")
+      Tweet.create(text: "2nd tweet", author: @john , author_name: "TestUser1")
+      Tweet.create(text: "3rd tweet", author: @john , author_name: "TestUser1")
+      search =@processor.search_tweets("TestUser1")
+      assert_equal search.length , 3
+      assert search[0][1].include?("3rd")
+      assert search[2][1].include?("1st") 
+   end
+
+
+
+
+
+  # it "creates tags for all tags in the tweet"
 
 end

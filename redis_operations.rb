@@ -61,7 +61,7 @@ class RedisClass
 		end
 	end
 
-	def self.cache_all_tags(tags, tweet)
+	def self.cache_tags(tags, tweet)
 		tags.each do |t|
 			$redis.lpush("tag:#{t}", tweet.to_json)
 		end
