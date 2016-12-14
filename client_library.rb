@@ -76,12 +76,13 @@ class ClientLibrary
 	def commands
 		puts "(note: the words after the '+' sign stand for parameters)" 
 		puts 'command 1: 	login (logs you into your nanotwitter account)'
-		puts 'command 2: 	timeline (shows the feed of tweets in the unlogged-in homepage) '
-		puts 'command 3:	tweet + text  (if you are logged in you can tweet by doing this command'
+		puts 'command 2: 	feed front (shows the feed of tweets in the unlogged-in homepage) '
+		puts 'command 3:	tweet new + text (if you are logged in you can tweet by doing this command'
+	    puts 'command 4:	tweet id (if you are logged in you can tweet by doing this command'
 		puts 'command 4: 	search + string (searches for tweets that include a certain string)' 
-		puts 'command 5:    profile (if logged in this shows your twitter profile feed) '
-		puts 'command 6:    home (if logged in this shows your twitter home feed)'
-		puts 'command 7:    profile + username (returns the profile feed of certain user)'
+		puts 'command 5:    feed profile (if logged in this shows your twitter profile feed) '
+		puts 'command 6:    feed home (if logged in this shows your twitter home feed)'
+		puts 'command 7:    feed profile + username (returns the profile feed of certain user)'
 		puts 'command 8:    info (if logged in, returns the number of tweets, followers and followings'
 		puts 'command 9:    info + username (returns the number of tweets, followers and followings of a certain user)'
 		puts 'command 10:   followers (if logged in, returns the username of all that follow you)'
@@ -89,7 +90,7 @@ class ClientLibrary
 		puts 'command 12:   followings (if logged in, returns the username of all that you follow)'
 		puts 'command 13:   followings + username (retuns the username of all the peope that a certain username follows'
 		puts 'command 14:   exit (exits the program)'
-		puts 'command 15:   tweet + number (searches a tweet with a specific id)'
+		
 
 	end
 
@@ -100,22 +101,14 @@ class ClientLibrary
 				login
 			when @input[0] == 'help' 
 				 commands
-			when @input[0] == 'timeline' 
-				 timeline
+			when @input[0] == 'feed' 
+				 feed
 			when @input[0] == 'search'
 				 search
-			when @input[0] == 'profile' && @user
-				 profile
-			when @input[0] == 'home' && @user
-				 home
-			when @input[0] == 'profile' && @input[1]
-				 user_profile
-			when @input[0] == 'feed'		
-				 user_feed
 			when @input[0] == 'tweet'
-				 conditional("make_tweet", "find_tweet") 
+				 tweet
 		    when @input[0] == 'info'
-				conditional("print_info", "user_info")
+				 info
 			when @input[0] ==  'followers'
 				conditional("print_followers", "user_followers")
 			when @input[0] == 'followings'
@@ -131,11 +124,29 @@ class ClientLibrary
 	#these method takes a key word and the name of two methods (in a string). In this way we can make the analayze input method more condenesed)
 	def conditional(method1, method2)
 			if @user
+
 				send(method1,@user) #takes the string with the name of the method and turns it into a method call
 			else
 				send(method2)
 			end 
 	end
+
+	def feed
+		if @input[1] == "profile"
+		   if @input[2]
+		   		print_tweets(api_get_call("/users/#{@input2}/profile-feed"))
+		   elsif @user
+		   		print_tweets(api_get_call("/users/#{@user}/profile-feed"))
+		   end
+		elsif @input[1] == "home" && @user
+			  print_tweets(api_get_call("/users/#{@user}/home-feed"))
+		elsif @input[1] == "front" 
+			  print_tweets(api_get_call("/front-feed"))
+		else
+			puts "command after \"feed\" incorrect (see help for instructions)"
+		end
+	end
+			
 
 	def login
 		print "username: "
@@ -144,29 +155,11 @@ class ClientLibrary
 		password = gets.chomp
 		if api_post_call("/login", {:user_name => user_name, :password => password}) != "null"
 		   puts "#{user_name} logged in"
-		   @user = true
+		   @user = user_name
 		else
 		   puts "incorrect login information"
 		end
 	end
-
-
-		# unless User.where(user_name: @input[1]).exists?
-		# 	puts "username does not exists"
-		#  else 
-		#  	u = User.where(user_name: @input[1])[0]
-		#  	print "password: "
-		#  	input = 
-		#  	while u.password != input && input != "exit"
-		# 		   puts "incorrect password, try again (or press exit)"
-		# 	  	   print 'password: '
-		# 	  	   input = gets.chomp
-		#   	end
-		#   	if input == "exit"
-		#   		exit
-		# 	end
-		#    		@user = User.where(user_name: @input[1])	
-		#  end
    
 
 	def timeline
@@ -259,6 +252,7 @@ class ClientLibrary
 
 
 	def print_tweets(tweets)
+		byebug
 		if tweets[0].class == Hash 
 			   tweets.each do |tweet|
 				   puts "\"#{tweet["text"]}\""
