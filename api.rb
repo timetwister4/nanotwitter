@@ -2,9 +2,12 @@ require_relative "app.rb"
 
 get '/api/v1/tweets/:tweet_id' do
 	if Tweet.where(id: params[:tweet_id].to_i).exists?
+	   @first = Tweet.first.id
 	   @data = Tweet.find(params[:tweet_id].to_i).to_json
 	   erb :test
 	else 
+	   @first = Tweet.first.id
+	   @second = Tweet.second.id
 	   @data = "	no data"
 	   erb :test
 	end
