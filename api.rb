@@ -1,7 +1,7 @@
 require_relative "app.rb"
 
 get '/api/v1/tweets/:tweet_id' do
-	Tweet.find(params[:tweet_id]).to_json
+	puts "tweeet #{params[:tweet_id]}" + Tweet.find(params[:tweet_id]).to_json
 end
 
 get '/api/v1/tweets/front_feed' do

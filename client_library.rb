@@ -27,10 +27,9 @@ class ClientLibrary
 
 
 	#This variable does not seem to be available to api_call_no_body here
-	uri = "https://secret-shelf-78111.herokuapp.com/"
 
 	def api_call_no_body(url_start, conditional, url_end)
-	  uri = URI.parse("localhost:4567") #{}"#{ENV['SINATRA_ENV']}"
+	  uri = URI.parse("https://secret-shelf-78111.herokuapp.com") #{}"#{ENV['SINATRA_ENV']}"
 	  response = Typhoeus::Request.get(
 	    "#{uri}/#{url_start}/#{conditional}/#{url_end}")
 	  	 byebug
