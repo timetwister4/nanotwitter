@@ -164,5 +164,49 @@ describe "App" do
    end
 
 
+   describe "liking and repliying" do
+
+      before(:each)do
+        User.delete_all
+        Tweet.delete_all
+        @tris = User.create(name: "Tristan", user_name: "Tristan", email:"tris@example.com", password: "strongpass")
+        @tweet = Tweet.create(text: "1st tweet", author: @tris , author_name: "Tristan")
+        post '/login/submit',
+        {:email => "tris@example.com",
+            :password => "strongpass"}
+      end
+
+      it "likes a tweet with 0 likes correctly " do
+             post '/tweet/like', {:tweet_id => @tweet.id}
+             assert_equal "1" , last_response.body
+      end
+
+
+     it "A tweet cannot be liked by the same user more than once" do
+           post '/tweet/like', {:tweet_id => @tweet.id}
+           post '/tweet/like', {:tweet_id => @tweet.id}
+           assert_equal "a1".to_json , last_response.body
+     end
+
+     it "A tweet liked by two different user receives two likes" do
+           post '/tweet/like', {:tweet_id => @tweet.id}
+           User.create(name: "Mike", user_name: "Mike", email:"mike@example.com", password: "strongpass")
+           post '/login/submit',
+           {:email => "mike@example.com",
+            :password => "strongpass"}
+           post '/tweet/like', {:tweet_id => @tweet.id}
+           assert_equal "2" , last_response.body
+     end
+
+
+     it "processes and stores a reply succesfuly" do
+        post "/tweet/reply/#{@tweet.id}" , {:tweet_text => "response"}
+        assert_equal last_response.status, 302
+        get '/tweet/replies', {:tweet_id => @tweet.id}
+        assert_equal JSON.parse(last_response.body)[0][1], "response"
+     end
+
+  end
+
 
 end

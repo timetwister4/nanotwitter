@@ -1,22 +1,14 @@
-require 'sinatra'
-require 'sinatra/activerecord'
-require_relative 'config/environments'
-require_relative 'config/config_sinatra'
-require_relative 'config/initializers/redis'
+require_relative 'app.rb'
 require 'byebug'
-require_relative 'models/user.rb'
-require_relative 'models/tweet.rb'
-require_relative 'models/follow.rb'
-require_relative 'tweetprocessor.rb'
-require_relative 'redis_operations.rb'
-require 'json'
-
+require 'typhoeus'
 
 
 class ClientLibrary
 
+
+
 	def initialize 
-		@TweetFactory = TweetProcessor.new
+		#@TweetFactory = TweetProcessor.new
 		@input = ''
 		@user = nil
 		puts "welcome to nanotwitter's client libray"
@@ -31,6 +23,24 @@ class ClientLibrary
 			analyze_input
 		end
 		puts "thanks for using nanotwitter's client library"
+	end
+
+
+	#This variable does not seem to be available to api_call_no_body here
+	uri = "https://secret-shelf-78111.herokuapp.com/"
+
+	def api_call_no_body(url_start, conditional, url_end)
+	  uri = URI.parse("localhost:4567") #{}"#{ENV['SINATRA_ENV']}"
+	  response = Typhoeus::Request.get(
+	    "#{uri}/#{url_start}/#{conditional}/#{url_end}")
+	  	 byebug
+	  if response.code == 200
+	    return JSON.parse(response.body)
+	  elsif response.code == 404
+	    nil
+	  else
+	    raise response.body
+	  end
 	end
 
 	def commands
@@ -49,6 +59,7 @@ class ClientLibrary
 		puts 'command 12:   followings (if logged in, returns the username of all that you follow)'
 		puts 'command 13:   followings + username (retuns the username of all the peope that a certain username follows'
 		puts 'command 14:   exit (exits the program)'
+		puts 'command 15:   tweet + number (searches a tweet with a specific id)'
 
 	end
 
@@ -63,8 +74,6 @@ class ClientLibrary
 				 timeline
 			when @input[0] == 'search'
 				 search
-			when @input[0] == 'tweet' && @user 
-				 tweet
 			when @input[0] == 'profile' && @user
 				 profile
 			when @input[0] == 'home' && @user
@@ -73,7 +82,9 @@ class ClientLibrary
 				 user_profile
 			when @input[0] == 'feed'		
 				 user_feed
-			when @input[0] == 'info'
+			when @input[0] == 'tweet'
+				 conditional("make_tweet", "find_tweet") 
+		    when @input[0] == 'info'
 				conditional("print_info", "user_info")
 			when @input[0] ==  'followers'
 				conditional("print_followers", "user_followers")
@@ -97,41 +108,35 @@ class ClientLibrary
 	end
 
 	def login
-		if  User.where(user_name: @input[1]).exists?
-
-			@user = User.where(user_name: @input[1])
-			
-		end
-
-		# unless User.where(user_name: @input[1]).exists?
-		# 	puts "username does not exists"
-		# else 
-		# 	#ANNE PLEASE FIX THIS CODE SO THAT A USER CAN TYPE IN THEIR PASSWORD AND BYCRYPT WILL NOW IF THAT ITS HIS
-		# 	# u = User.where(user_name: @input[1])
-		# 	# input = '' 
-		# 	# while input != u.password || input != 'exit'
-		# 	#  puts "incorrect password, try again"
-		# 	#  print 'password: '
-		# 	#  input = gets.chomp
-		# 	# end 
-		# 	# if input != exit
-		# 	# 	@user = u
-		# 	# end
-		# 	@user = User.where(user_name: @input[1])
-
-		# end
-
-	end
+		unless User.where(user_name: @input[1]).exists?
+			puts "username does not exists"
+		 else 
+		 	u = User.where(user_name: @input[1])[0]
+		 	print "password: "
+		 	input = gets.chomp
+		 	while u.password != input && input != "exit"
+				   puts "incorrect password, try again (or press exit)"
+			  	   print 'password: '
+			  	   input = gets.chomp
+		  	end
+		  	if input == "exit"
+		  		exit
+			end
+		   		@user = User.where(user_name: @input[1])	
+		 end
+    end
 
 	def timeline
-		tweets = Tweet.last(7)
-		print_tweets(tweets)
-
+		
 	end
 
-	def tweet
-		@TweetFactory.make_tweet(@input[1], @user[0].id, nil)
+	def make_tweet(user)
+		
+	end
 
+	def find_tweet
+		tweets =api_call_no_body("api/v1/tweets", @input[1], "")
+		byebug
 	end
 
 	def search
