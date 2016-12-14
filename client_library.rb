@@ -59,7 +59,9 @@ class ClientLibrary
 		  end
 	end
 
-
+	def error(word)	
+		puts "command after \"#{word}\" incorrect (see help for instructions)"
+    end
 
 
 	  #   "#{uri}/#{url_start}/#{conditional}/#{url_end}")
@@ -143,10 +145,66 @@ class ClientLibrary
 		elsif @input[1] == "front" 
 			  print_tweets(api_get_call("/front-feed"))
 		else
-			puts "command after \"feed\" incorrect (see help for instructions)"
+			error(@input[0])
 		end
 	end
+
+
+	def info
+		if @input[1]
+		   print_info(api_get_call("/users/#{@input[1]}"))
+		elsif @user
+		   print_info(api_get_call("/users/#{@user}"))
+		end
+	end 
+
+
+	def print_info(info)
+		byebug
+		if info
+		   puts "username:        		   #{info[0]["user_name"]} "
+		   puts "tweet count:      		   #{info[0]["tweet_count"]}"
+		   puts "# of followers:           #{info[0]["follower_count"]}"
+		   puts "# of people following:    #{info[0]["following_count"]}"
+		else
+		   error[@input[0]]
+		end
+    end
 			
+
+
+	def tweet 
+		if @input[1] = "new"
+				print "tweet text: "
+				text = gets.chomp
+				if api_post_call("/users/#{@user}/new-tweet", {:text => text})
+				   puts "tweet made succesfully"
+				end
+		elsif @input[1].to_i != 0
+			print_tweets(api_get_call("/tweets/#{@input[1]}"))
+		else
+			error(@input[0])
+		end
+    end
+
+
+	def print_tweets(tweets)
+	    byebug
+		if tweets[0].class == Hash 
+			   tweets.each do |tweet|
+				   puts "\"#{tweet["text"]}\""
+				   puts "--#{tweet["author_name"]} (#{tweet["created_at"]}) "
+			   	   puts 
+			   end
+		else
+			tweets.each do |tweet|
+			   t = JSON.parse(tweet)
+			   puts "\"#{t[1]}\""
+			   puts "--#{t[0]} (#{t[2]})"
+			   puts 
+			end
+		end
+	end
 
 	def login
 		print "username: "
@@ -251,23 +309,7 @@ class ClientLibrary
 
 
 
-	def print_tweets(tweets)
-		byebug
-		if tweets[0].class == Hash 
-			   tweets.each do |tweet|
-				   puts "\"#{tweet["text"]}\""
-				   puts "--#{tweet["author_name"]} (#{tweet["created_at"]}) "
-			   	   puts 
-			   end
-		else
-			tweets.each do |tweet|
-			   t = JSON.parse(tweet)
-			   puts "\"#{t[1]}\""
-			   puts "--#{t[0]} (#{t[2]})"
-			   puts 
-			end
-		end
-	end
+	
 		# tweets.each do |t|
 		# 	 t = JSON.parse(t)
 	 #   		puts "#{t["created_at"]}: #{t["text"]} , #{t["author_name"]}"
