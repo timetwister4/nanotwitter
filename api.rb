@@ -23,6 +23,10 @@ get '/api/v1/users/:user_name' do
 
 end
 
+post '/api/v1/login' do
+ 	  login(params).to_json
+end
+
 get '/api/v1/tweets/:tweet_id/replies' do
     RedisClass.access_replies(params[:tweet_id]).to_json
 end

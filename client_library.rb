@@ -28,23 +28,54 @@ class ClientLibrary
 
 	#This variable does not seem to be available to api_call_no_body here
 
-	def api_call_no_body(url_start, conditional, url_end)
-	  uri = URI.parse("https://secret-shelf-78111.herokuapp.com") #{}"#{ENV['SINATRA_ENV']}"
-	  response = Typhoeus::Request.get(
-	    "#{uri}/#{url_start}/#{conditional}/#{url_end}")
-	  	 byebug
-	  if response.code == 200
-	    return JSON.parse(response.body)
-	  elsif response.code == 404
-	    nil
-	  else
-	    raise response.body
-	  end
+	def api_get_call(url_cont)
+		  uri = "https://secret-shelf-78111.herokuapp.com/api/v1" #{}"#{ENV['SINATRA_ENV']}"
+		  response = Typhoeus::Request.get(
+		  	uri+"#{url_cont}"
+		  )
+		  if response.code == 200
+		    return JSON.parse(response.body)
+		  elsif response.code == 404
+		    nil
+		  else
+		    raise response.body
+		  end
 	end
+
+
+	def api_post_call(url_cont, params)
+		 uri = "https://secret-shelf-78111.herokuapp.com/api/v1" #{}"#{ENV['SINATRA_ENV']}"
+		  response = Typhoeus::Request.post(
+		  	uri+"#{url_cont}",
+		  	params: params
+		  )
+		  byebug
+		  if response.code == 200
+		    return JSON.parse(response.body)
+		  elsif response.code == 404
+		    nil
+		  else
+		    raise response.body
+		  end
+	end
+
+
+
+
+	  #   "#{uri}/#{url_start}/#{conditional}/#{url_end}")
+	  # 	 byebug
+	  # if response.code == 200
+	  #   return JSON.parse(response.body)
+	  # elsif response.code == 404
+	  #   nil
+	  # else
+	  #   raise response.body
+	  # end
+
 
 	def commands
 		puts "(note: the words after the '+' sign stand for parameters)" 
-		puts 'command 1: 	login + username (logs you into your nanotwitter account)'
+		puts 'command 1: 	login (logs you into your nanotwitter account)'
 		puts 'command 2: 	timeline (shows the feed of tweets in the unlogged-in homepage) '
 		puts 'command 3:	tweet + text  (if you are logged in you can tweet by doing this command'
 		puts 'command 4: 	search + string (searches for tweets that include a certain string)' 
@@ -107,26 +138,34 @@ class ClientLibrary
 	end
 
 	def login
-		unless User.where(user_name: @input[1]).exists?
-			puts "username does not exists"
-		 else 
-		 	u = User.where(user_name: @input[1])[0]
-		 	print "password: "
-		 	input = gets.chomp
-		 	while u.password != input && input != "exit"
-				   puts "incorrect password, try again (or press exit)"
-			  	   print 'password: '
-			  	   input = gets.chomp
-		  	end
-		  	if input == "exit"
-		  		exit
-			end
-		   		@user = User.where(user_name: @input[1])	
-		 end
+		print "username: "
+		user_name = gets.chomp
+		print "password: "
+		password = gets.chomp
+		a = api_post_call("/login", {user_name: => user_name, password: => password})
+		byebug
+
+
+		# unless User.where(user_name: @input[1]).exists?
+		# 	puts "username does not exists"
+		#  else 
+		#  	u = User.where(user_name: @input[1])[0]
+		#  	print "password: "
+		#  	input = 
+		#  	while u.password != input && input != "exit"
+		# 		   puts "incorrect password, try again (or press exit)"
+		# 	  	   print 'password: '
+		# 	  	   input = gets.chomp
+		#   	end
+		#   	if input == "exit"
+		#   		exit
+		# 	end
+		#    		@user = User.where(user_name: @input[1])	
+		#  end
     end
 
 	def timeline
-		
+	   print_tweets(api_get_call("/front-feed"))
 	end
 
 	def make_tweet(user)
@@ -134,8 +173,7 @@ class ClientLibrary
 	end
 
 	def find_tweet
-		tweets =api_call_no_body("api/v1/tweets", @input[1], "")
-		byebug
+		print_tweets(api_get_call("/tweets/#{@input[1]}"))
 	end
 
 	def search
@@ -216,13 +254,26 @@ class ClientLibrary
 
 
 	def print_tweets(tweets)
-		tweets.each do |t|
-			 t = JSON.parse(t)
-	   		puts "#{t["created_at"]}: #{t["text"]} , #{t["author_name"]}"
-			
+		if tweets[0].class == Hash 
+			   tweets.each do |tweet|
+				   puts "\"#{tweet["text"]}\""
+				   puts "--#{tweet["author_name"]} (#{tweet["created_at"]}) "
+			   	   puts 
+			   end
+		else
+			tweets.each do |tweet|
+			   t = JSON.parse(tweet)
+			   puts "\"#{t[1]}\""
+			   puts "--#{t[0]} (#{t[2]})"
+			   puts 
+			end
 		end
-
 	end
+		# tweets.each do |t|
+		# 	 t = JSON.parse(t)
+	 #   		puts "#{t["created_at"]}: #{t["text"]} , #{t["author_name"]}"
+			
+		# end
 
 end
 
