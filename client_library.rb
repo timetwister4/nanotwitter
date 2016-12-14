@@ -142,8 +142,13 @@ class ClientLibrary
 		user_name = gets.chomp
 		print "password: "
 		password = gets.chomp
-		a = api_post_call("/login", {user_name: => user_name, password: => password})
-		byebug
+		if api_post_call("/login", {:user_name => user_name, :password => password}) != "null"
+		   puts "#{user_name} logged in"
+		   @user = true
+		else
+		   puts "incorrect login information"
+		end
+	end
 
 
 		# unless User.where(user_name: @input[1]).exists?
@@ -162,7 +167,7 @@ class ClientLibrary
 		# 	end
 		#    		@user = User.where(user_name: @input[1])	
 		#  end
-    end
+   
 
 	def timeline
 	   print_tweets(api_get_call("/front-feed"))
