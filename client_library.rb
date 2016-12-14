@@ -17,7 +17,7 @@ class ClientLibrary
 			unless @user
 			   print 'nt>' 
 			else
-			   print "nt #{@user[0].user_name}>"
+			   print "nt #{@user}>"
 			end
 			@input = gets.chomp 
 			analyze_input
@@ -60,7 +60,8 @@ class ClientLibrary
 	end
 
 	def error(word)	
-		puts "command after \"#{word}\" incorrect (see help for instructions)"
+		puts "command after \"#{word}\" incorrect or invalid for a logged out user"
+		puts "(use the \"help\" command for instructions)"
     end
 
 
@@ -174,7 +175,7 @@ class ClientLibrary
 
 
 	def tweet 
-		if @input[1] = "new"
+		if @input[1] == "new" && @user
 				print "tweet text: "
 				text = gets.chomp
 				if api_post_call("/users/#{@user}/new-tweet", {:text => text})
@@ -212,7 +213,7 @@ class ClientLibrary
 		print "password: "
 		password = gets.chomp
 		if api_post_call("/login", {:user_name => user_name, :password => password}) != "null"
-		   puts "#{user_name} logged in"
+		   puts "Welcome #{user_name}, you are now logged in to nanotwitter"
 		   @user = user_name
 		else
 		   puts "incorrect login information"
@@ -220,17 +221,17 @@ class ClientLibrary
 	end
    
 
-	def timeline
-	   print_tweets(api_get_call("/front-feed"))
-	end
+	# def timeline
+	#    print_tweets(api_get_call("/front-feed"))
+	# end
 
-	def make_tweet(user)
+	# def make_tweet(user)
 		
-	end
+	# end
 
-	def find_tweet
-		print_tweets(api_get_call("/tweets/#{@input[1]}"))
-	end
+	# def find_tweet
+	# 	print_tweets(api_get_call("/tweets/#{@input[1]}"))
+	# end
 
 	def search
 		tweets = @TweetFactory.search_tweets(@input.delete_at(0))
@@ -238,43 +239,43 @@ class ClientLibrary
 
 	end
 
-	def profile
-		tweets = RedisClass.access_pfeed(@user[0].id)
-		puts "#{@user[0].user_name}'s profile feed:"
-		print_tweets(tweets)
+	# def profile
+	# 	tweets = RedisClass.access_pfeed(@user[0].id)
+	# 	puts "#{@user[0].user_name}'s profile feed:"
+	# 	print_tweets(tweets)
 
-	end
+	# end
 
-	def home
-		tweets = RedisClass.access_hfeed(@user[0].id)
-		puts "#{@user[0].user_name}'s home feed:"
-		print_tweets(tweets)
+	# def home
+	# 	tweets = RedisClass.access_hfeed(@user[0].id)
+	# 	puts "#{@user[0].user_name}'s home feed:"
+	# 	print_tweets(tweets)
 
-	end
+	# end
 
-	def user_profile
-		if User.where(user_name: @input[1]).exists?
-			u = User.where(user_name: @input[1])
-			tweets = RedisClass.access_pfeed(u[0].id)
-			puts "#{u[0].user_name}'s profile feed:"
-			print_tweets(tweets)
-		end
-	end
+	# def user_profile
+	# 	if User.where(user_name: @input[1]).exists?
+	# 		u = User.where(user_name: @input[1])
+	# 		tweets = RedisClass.access_pfeed(u[0].id)
+	# 		puts "#{u[0].user_name}'s profile feed:"
+	# 		print_tweets(tweets)
+	# 	end
+	# end
 
 	
-	def user_info
-		if User.where(user_name: @input[1]).exists?
-			print_info(User.where(user_name: @input[1]))
-		else
-			puts "username does not exist"
-		end
-	end
+	# def user_info
+	# 	if User.where(user_name: @input[1]).exists?
+	# 		print_info(User.where(user_name: @input[1]))
+	# 	else
+	# 		puts "username does not exist"
+	# 	end
+	# end
 
-	def print_info(user)
-			puts "# of people #{user[0].user_name} follows: #{user[0].follower_count}"
-			puts "# of people following #{user[0].user_name}: #{user[0].following_count}"
-			puts "# of tweets #{user[0].user_name} has: #{user[0].tweet_count}"
-	end
+	# def print_info(user)
+	# 		puts "# of people #{user[0].user_name} follows: #{user[0].follower_count}"
+	# 		puts "# of people following #{user[0].user_name}: #{user[0].following_count}"
+	# 		puts "# of tweets #{user[0].user_name} has: #{user[0].tweet_count}"
+	# end
 	
 	#THE 4 METHODS THAM COME NOW NEED TO BE CONDENSED INTO TWO METHODS
 	def print_followers(user)
