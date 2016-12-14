@@ -4,9 +4,11 @@ default = "no_data".to_json
 
 get '/api/v1/tweets/:tweet_id' do
 	if Tweet.where(id: params[:tweet_id].to_i).exists?
-	   Tweet.where(id: params[:tweet_id].to_i).to_json
+	   @data = Tweet.where(id: params[:tweet_id].to_i).to_json
+	   erb :test
 	else
-		default
+		@data = default
+		erb :test
 	end
 end
 
