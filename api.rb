@@ -1,7 +1,15 @@
 require_relative "app.rb"
 
 get '/api/v1/tweets/:tweet_id' do
-	puts "tweeet #{params[:tweet_id]}" + Tweet.find(params[:tweet_id]).to_json
+	if Tweet.where(id: params[:tweet_id].to_i).exists?
+	   @data = Tweet.find(params[:tweet_id].to_i).to_json
+	   erb :test
+	else 
+	   @data = "	no data"
+	   erb :test
+	end
+
+	
 end
 
 get '/api/v1/tweets/front_feed' do
