@@ -199,7 +199,7 @@ describe "App" do
      end
 
 
-     it "processes and stores a reply succesfuly" do
+     it "processes and stores a reply succesfully" do
         post "/tweet/reply/#{@tweet.id}" , {:tweet_text => "response"}
         assert_equal last_response.status, 302
         get '/tweet/replies', {:tweet_id => @tweet.id}
