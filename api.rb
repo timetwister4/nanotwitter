@@ -23,7 +23,7 @@ post '/api/v1/login' do
  	  login(params).to_json
 end
 
-post 'api/v1/new-tweet' do
+post '/api/v1/users/:user_name/new-tweet' do
 	  TweetFactory = TweetProcessor.new
 	  id = User.where(user_name: params[:user_name])[0].id
 	  TweetFactory.make_tweet(params[:text],id,nil)

@@ -182,7 +182,7 @@ class ClientLibrary
 		if @input[1] == "new" && @user
 				print "tweet text: "
 				text = gets.chomp
-				if api_post_call("/new-tweet", {:text => text, :user_name => @user})
+				if api_post_call("/users/#{@user}/new-tweet", {:text => text})
 				   puts "tweet made succesfully"
 				end
 		elsif @input[1].to_i != 0
