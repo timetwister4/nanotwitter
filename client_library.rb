@@ -33,12 +33,11 @@ class ClientLibrary
 		  response = Typhoeus::Request.get(
 		  	uri+"#{url_cont}"
 		  )
-		  if response.code == 200
-		    return JSON.parse(response.body)
-		  elsif response.code == 404
-		    nil
+		  byebug
+		  if response.code == 200 && validate_response(response.body)
+			  return JSON.parse(response.body)
 		  else
-		    raise response.body
+		  	  return nil 
 		  end
 	end
 
@@ -50,16 +49,19 @@ class ClientLibrary
 		  	params: params
 		  )
 		  byebug
-		  if response.code == 200
+		  if response.code == 200 && validate_response(response.body)
 		    return JSON.parse(response.body)
-		  elsif response.code == 404
-		    nil
-		  else
-		    raise response.body
+		  else 
+		       return nil
 		  end
 	end
 
-	def error(word)	
+
+	def validate_response(body)
+		body.length != 0 && body != "null"
+	end
+
+	def give_error(word)	
 		puts "command after \"#{word}\" incorrect or invalid for a logged out user"
 		puts "(use the \"help\" command for instructions)"
     end
@@ -137,16 +139,18 @@ class ClientLibrary
 	def feed
 		if @input[1] == "profile"
 		   if @input[2]
-		   		print_tweets(api_get_call("/users/#{@input2}/profile-feed"))
+		   		print_tweets(api_get_call("/users/#{@input[2]}/profile-feed"))
 		   elsif @user
 		   		print_tweets(api_get_call("/users/#{@user}/profile-feed"))
+		   else
+		   		give_error(@input[0])
 		   end
 		elsif @input[1] == "home" && @user
 			  print_tweets(api_get_call("/users/#{@user}/home-feed"))
 		elsif @input[1] == "front" 
 			  print_tweets(api_get_call("/front-feed"))
 		else
-			error(@input[0])
+			give_error(@input[0])
 		end
 	end
 
@@ -168,7 +172,7 @@ class ClientLibrary
 		   puts "# of followers:           #{info[0]["follower_count"]}"
 		   puts "# of people following:    #{info[0]["following_count"]}"
 		else
-		   error[@input[0]]
+		   give_error[@input[0]]
 		end
     end
 			
@@ -178,20 +182,21 @@ class ClientLibrary
 		if @input[1] == "new" && @user
 				print "tweet text: "
 				text = gets.chomp
-				if api_post_call("/users/#{@user}/new-tweet", {:text => text})
+				if api_post_call("/new-tweet", {:text => text, :user_name => @user})
 				   puts "tweet made succesfully"
 				end
 		elsif @input[1].to_i != 0
 			print_tweets(api_get_call("/tweets/#{@input[1]}"))
 		else
-			error(@input[0])
+			give_error(@input[0])
 		end
     end
 
 
 	def print_tweets(tweets)
-	    byebug
-		if tweets[0].class == Hash 
+	   	if tweets.nil?
+	   	    return puts "incorrect search query"
+	    elsif tweets[0].class == Hash 
 			   tweets.each do |tweet|
 				   puts "\"#{tweet["text"]}\""
 				   puts "--#{tweet["author_name"]} (#{tweet["created_at"]}) "
@@ -212,7 +217,7 @@ class ClientLibrary
 		user_name = gets.chomp
 		print "password: "
 		password = gets.chomp
-		if api_post_call("/login", {:user_name => user_name, :password => password}) != "null"
+		if api_post_call("/login", {:user_name => user_name, :password => password}) 
 		   puts "Welcome #{user_name}, you are now logged in to nanotwitter"
 		   @user = user_name
 		else
