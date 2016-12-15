@@ -33,11 +33,10 @@ class ClientLibrary
 		  response = Typhoeus::Request.get(
 		  	uri+"#{url_cont}"
 		  )
-		  byebug
 		  if response.code == 200 && validate_response(response.body)
-			  return JSON.parse(response.body)
+		    return JSON.parse(response.body)
 		  else
-		  	  return nil 
+		  	nil
 		  end
 	end
 
@@ -51,20 +50,20 @@ class ClientLibrary
 		  byebug
 		  if response.code == 200 && validate_response(response.body)
 		    return JSON.parse(response.body)
-		  else 
-		       return nil
+		  else
+		  	nil
 		  end
 	end
 
-
-	def validate_response(body)
-		body.length != 0 && body != "null"
-	end
-
-	def give_error(word)	
+	def error(word)	
 		puts "command after \"#{word}\" incorrect or invalid for a logged out user"
 		puts "(use the \"help\" command for instructions)"
     end
+
+
+    def validate_response(body)
+    	body.length != 0 && body != "null"
+	end
 
 
 	  #   "#{uri}/#{url_start}/#{conditional}/#{url_end}")
@@ -142,15 +141,13 @@ class ClientLibrary
 		   		print_tweets(api_get_call("/users/#{@input[2]}/profile-feed"))
 		   elsif @user
 		   		print_tweets(api_get_call("/users/#{@user}/profile-feed"))
-		   else
-		   		give_error(@input[0])
 		   end
 		elsif @input[1] == "home" && @user
 			  print_tweets(api_get_call("/users/#{@user}/home-feed"))
 		elsif @input[1] == "front" 
 			  print_tweets(api_get_call("/front-feed"))
 		else
-			give_error(@input[0])
+			error(@input[0])
 		end
 	end
 
@@ -164,15 +161,14 @@ class ClientLibrary
 	end 
 
 
-	def print_info(info)
-		byebug
-		if info
-		   puts "username:        		   #{info[0]["user_name"]} "
-		   puts "tweet count:      		   #{info[0]["tweet_count"]}"
-		   puts "# of followers:           #{info[0]["follower_count"]}"
-		   puts "# of people following:    #{info[0]["following_count"]}"
-		else
-		   give_error[@input[0]]
+	def print_info(data)
+		if data.nil?
+			return puts "\"#{input}\" does not exist in our system"
+    	else 
+		   puts "username:        		   #{data["user_name"]} "
+		   puts "tweet count:      		   #{data["tweet_count"]}"
+		   puts "# of followers:           #{data["follower_count"]}"
+		   puts "# of people following:    #{data["following_count"]}"
 		end
     end
 			
@@ -188,61 +184,67 @@ class ClientLibrary
 		elsif @input[1].to_i != 0
 			print_tweets(api_get_call("/tweets/#{@input[1]}"))
 		else
-			give_error(@input[0])
+			error(@input[0])
 		end
     end
 
 
 	def print_tweets(tweets)
-	   	if tweets.nil?
-	   	    return puts "incorrect search query"
-	    elsif tweets[0].class == Hash 
-			   tweets.each do |tweet|
+	    if tweets == nil
+	    	return puts "incorrect search query"
+	    elsif tweets == []
+	    	return nil
+	   	elsif tweets[0].class == Hash 
+			 print_hash(tweets)
+		else
+			 print_array(tweets)
+		end
+	end
+
+		def print_hash(tweets)
+			  tweets.each do |tweet|
 				   puts "\"#{tweet["text"]}\""
 				   puts "--#{tweet["author_name"]} (#{tweet["created_at"]}) "
 			   	   puts 
 			   end
-		else
+		end
+
+		def print_array(tweets)
 			tweets.each do |tweet|
-			   t = JSON.parse(tweet)
-			   puts "\"#{t[1]}\""
-			   puts "--#{t[0]} (#{t[2]})"
-			   puts 
+				if tweet.class == String
+            		tweet = JSON.parse(tweet)
+                end
+				puts "\"#{tweet[1]}\""
+				puts "--#{tweet[0]} (#{tweet[2]})"
+				puts 
 			end
 		end
-	end
+	
 
 	def login
 		print "username: "
 		user_name = gets.chomp
 		print "password: "
 		password = gets.chomp
-		if api_post_call("/login", {:user_name => user_name, :password => password}) 
+		if api_post_call("/login", {:user_name => user_name, :password => password})
 		   puts "Welcome #{user_name}, you are now logged in to nanotwitter"
 		   @user = user_name
 		else
 		   puts "incorrect login information"
 		end
 	end
-   
-
-	# def timeline
-	#    print_tweets(api_get_call("/front-feed"))
-	# end
-
-	# def make_tweet(user)
-		
-	# end
-
-	# def find_tweet
-	# 	print_tweets(api_get_call("/tweets/#{@input[1]}"))
-	# end
 
 	def search
-		tweets = @TweetFactory.search_tweets(@input.delete_at(0))
-		print_tweets(tweets)
-
+		print "search text: "
+		search = gets.chomp
+		if print_tweets(api_get_call("/tweets/#{search}/search")).nil?
+			puts "no seach results for the query \"#{search}\""
+		end
 	end
+
+		
+
+	
 
 	# def profile
 	# 	tweets = RedisClass.access_pfeed(@user[0].id)

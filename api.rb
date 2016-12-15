@@ -26,7 +26,8 @@ end
 post '/api/v1/users/:user_name/new-tweet' do
 	  TweetFactory = TweetProcessor.new
 	  id = User.where(user_name: params[:user_name])[0].id
-	  TweetFactory.make_tweet(params[:text],id,nil)
+	  TweetFactory.make_tweet(params[:text],id,nil)	
+	  "success".to_json  
 end
 
 get '/api/v1/tweets/:tweet_id/replies' do
@@ -64,19 +65,39 @@ end
 
 
 get '/api/v1/follows/:user_name/followings' do
-	if User.where(user_name: params[:user_name]).exists?
-	   u = User.where(:user_name => params[:user_name])
-	   Follow.where(follower: u).to_json
-	end
-	
+	find_follows(params[:user_name], false)
 end
 
 get '/api/v1/follows/:user_name/followers' do
-	if User.where(user_name: params[:user_name]).exists?
-	   u = User.where(:user_name => params[:user_name])
-	   Follow.where(followed: u).to_json
-  	end
+	find_follows(params[:user_name],true)
 end
+
+
+	
+def find_follows(user_name, followers)
+    if User.where(user_name: params[:user_name]).exists?
+	   	u = User.where(:user_name => params[:user_name])
+	    if followers
+	    	get_names(Follow.where(followed: u),true, [])
+	    else
+	        get_names(Follow.where(follower: u), false, [])		        	
+	    end
+	end
+end
+
+def get_names(list,followers, names)
+    if folllowers
+    	list.each do |item| 
+    		names << User.find(item.follower_id).user_name
+    	end
+   	else
+   		list.each do |item|
+   			names << User.find(item.followed_id).user_name
+   		end
+   	end
+   	names
+ end
+
 
 get '/api/v1/tweets/:tweet_id/likes' do
     RedisClass.access_likes(params[:tweet_id]).to_json
