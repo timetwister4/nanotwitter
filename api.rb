@@ -86,7 +86,7 @@ def find_follows(user_name, followers)
 end
 
 def get_names(list,followers, names)
-    if folllowers
+    if followers
     	list.each do |item| 
     		names << User.find(item.follower_id).user_name
     	end

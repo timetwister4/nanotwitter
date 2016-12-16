@@ -33,6 +33,7 @@ class ClientLibrary
 		  response = Typhoeus::Request.get(
 		  	uri+"#{url_cont}"
 		  )
+		  byebug
 		  if response.code == 200 && validate_response(response.body)
 		    return JSON.parse(response.body)
 		  else
@@ -55,8 +56,8 @@ class ClientLibrary
 		  end
 	end
 
-	def error(word)	
-		puts "command after \"#{word}\" incorrect or invalid for a logged out user"
+	def error
+		puts "command after \"#{@input[0]}\" incorrect or invalid for a logged out user"
 		puts "(use the \"help\" command for instructions)"
     end
 
@@ -113,26 +114,14 @@ class ClientLibrary
 				 tweet
 		    when @input[0] == 'info'
 				 info
-			when @input[0] ==  'followers'
-				conditional("print_followers", "user_followers")
-			when @input[0] == 'followings'
-				conditional("print_followings", "user_followings")
+			when @input[0] ==  'followers' || @input[0] == 'followings'
+				 follows
 			when @input[0] == 'exit'
 				 exit
 			else
-				puts "unrecognized command"
+			  	puts "unrecognized command"
 		end
 
-	end
-
-	#these method takes a key word and the name of two methods (in a string). In this way we can make the analayze input method more condenesed)
-	def conditional(method1, method2)
-			if @user
-
-				send(method1,@user) #takes the string with the name of the method and turns it into a method call
-			else
-				send(method2)
-			end 
 	end
 
 	def feed
@@ -147,7 +136,7 @@ class ClientLibrary
 		elsif @input[1] == "front" 
 			  print_tweets(api_get_call("/front-feed"))
 		else
-			error(@input[0])
+			error
 		end
 	end
 
@@ -184,7 +173,7 @@ class ClientLibrary
 		elsif @input[1].to_i != 0
 			print_tweets(api_get_call("/tweets/#{@input[1]}"))
 		else
-			error(@input[0])
+			error
 		end
     end
 
@@ -242,9 +231,25 @@ class ClientLibrary
 		end
 	end
 
-		
 
-	
+	def follows
+	    if @input[1] 
+			print_names(api_get_call("/follows/#{@input[1]}/#{@input[0]}"))
+		elsif @user
+			print_names(api_get_call("/follows/#{@user}/#{@input[0]}"))
+		else
+			error
+		end
+	end
+
+	def print_names(list)
+		list.each do |item| 
+			puts item
+		end
+	end
+
+
+		
 
 	# def profile
 	# 	tweets = RedisClass.access_pfeed(@user[0].id)
@@ -285,35 +290,7 @@ class ClientLibrary
 	# end
 	
 	#THE 4 METHODS THAM COME NOW NEED TO BE CONDENSED INTO TWO METHODS
-	def print_followers(user)
-		ids = RedisClass.access_followers(user[0].id)
-		ids.each do |id|
-			puts "#{User.find(f.to_i).user_name}"
-		end
-	end
 
-
-
-	def user_followers
-		if User.where(user_name: @input[1]).exists?
-	 		u = User.where(user_name: @input[1])
-	 		print_followers(u)
-	 	end
-	 end
-
-	 def print_followings(user)
-		ids = RedisClass.access_followings(user[0].id)
-		ids.each do |id|
-			puts "#{User.find(f.to_i).user_name}"
-		end
-	end
-
-	def user_followings
-		if User.where(user_name: @input[1]).exists?
-	 		u = User.where(user_name: @input[1])
-	 		print_followings(u)
-	 	end
-	 end
 
 
 
