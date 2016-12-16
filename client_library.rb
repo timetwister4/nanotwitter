@@ -244,6 +244,7 @@ class ClientLibrary
 		if names.nil?
 			return error
 		else 
+			byebug
 			names = JSON.parse(names)
 			byebug
 			names.each do |name| 

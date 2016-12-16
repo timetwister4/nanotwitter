@@ -88,14 +88,14 @@ end
 def get_names(list,followers, names)
     if followers
     	list.each do |item| 
-    		names << User.find(item.follower_id).user_name.to_json
+    		names << User.find(item.follower_id).user_name
     	end
    	else
    		list.each do |item|
-   			names << User.find(item.followed_id).user_name.to_json
+   			names << User.find(item.followed_id).user_name
    		end
    	end
-   	names
+   	names.to_json
 end
 
 
