@@ -88,15 +88,15 @@ end
 def get_names(list,followers, names)
     if followers
     	list.each do |item| 
-    		names << User.find(item.follower_id).user_name
+    		names << User.find(item.follower_id).user_name.to_json
     	end
    	else
    		list.each do |item|
-   			names << User.find(item.followed_id).user_name
+   			names << User.find(item.followed_id).user_name.to_json
    		end
    	end
-   	names.to_json
- end
+   	names
+end
 
 
 get '/api/v1/tweets/:tweet_id/likes' do

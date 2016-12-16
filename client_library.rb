@@ -237,14 +237,18 @@ class ClientLibrary
 			print_names(api_get_call("/follows/#{@input[1]}/#{@input[0]}"))
 		elsif @user
 			print_names(api_get_call("/follows/#{@user}/#{@input[0]}"))
-		else
-			error
 		end
 	end
 
-	def print_names(list)
-		list.each do |item| 
-			puts item
+	def print_names(names)
+		if names.nil?
+			return error
+		else 
+			names = JSON.parse(names)
+			byebug
+			names.each do |name| 
+				puts name
+			end
 		end
 	end
 
