@@ -95,7 +95,7 @@ def get_names(list,followers, names)
    			names << User.find(item.followed_id).user_name
    		end
    	end
-   	names
+   	names.to_json
  end
 
 
