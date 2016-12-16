@@ -5,8 +5,6 @@ require 'typhoeus'
 
 class ClientLibrary
 
-
-
 	def initialize 
 		#@TweetFactory = TweetProcessor.new
 		@input = ''
@@ -33,7 +31,6 @@ class ClientLibrary
 		  response = Typhoeus::Request.get(
 		  	uri+"#{url_cont}"
 		  )
-		  byebug
 		  if response.code == 200 && validate_response(response.body)
 		    return JSON.parse(response.body)
 		  else
@@ -48,7 +45,6 @@ class ClientLibrary
 		  	uri+"#{url_cont}",
 		  	params: params
 		  )
-		  byebug
 		  if response.code == 200 && validate_response(response.body)
 		    return JSON.parse(response.body)
 		  else
@@ -83,7 +79,7 @@ class ClientLibrary
 		puts 'command 1: 	login (logs you into your nanotwitter account)'
 		puts 'command 2: 	feed front (shows the feed of tweets in the unlogged-in homepage) '
 		puts 'command 3:	tweet new + text (if you are logged in you can tweet by doing this command'
-	    puts 'command 4:	tweet id (if you are logged in you can tweet by doing this command'
+	    puts 'command 4:	tweet id (find a specific tweet by id)'
 		puts 'command 4: 	search + string (searches for tweets that include a certain string)' 
 		puts 'command 5:    feed profile (if logged in this shows your twitter profile feed) '
 		puts 'command 6:    feed home (if logged in this shows your twitter home feed)'
@@ -95,8 +91,6 @@ class ClientLibrary
 		puts 'command 12:   followings (if logged in, returns the username of all that you follow)'
 		puts 'command 13:   followings + username (retuns the username of all the peope that a certain username follows'
 		puts 'command 14:   exit (exits the program)'
-		
-
 	end
 
 	def analyze_input
@@ -237,6 +231,8 @@ class ClientLibrary
 			print_names(api_get_call("/follows/#{@input[1]}/#{@input[0]}"))
 		elsif @user
 			print_names(api_get_call("/follows/#{@user}/#{@input[0]}"))
+		else
+			error
 		end
 	end
 
@@ -244,67 +240,12 @@ class ClientLibrary
 		if names.nil?
 			return error
 		else 
-			byebug
-			names = JSON.parse(names)
-			byebug
 			names.each do |name| 
 				puts name
 			end
 		end
 	end
 
-
-		
-
-	# def profile
-	# 	tweets = RedisClass.access_pfeed(@user[0].id)
-	# 	puts "#{@user[0].user_name}'s profile feed:"
-	# 	print_tweets(tweets)
-
-	# end
-
-	# def home
-	# 	tweets = RedisClass.access_hfeed(@user[0].id)
-	# 	puts "#{@user[0].user_name}'s home feed:"
-	# 	print_tweets(tweets)
-
-	# end
-
-	# def user_profile
-	# 	if User.where(user_name: @input[1]).exists?
-	# 		u = User.where(user_name: @input[1])
-	# 		tweets = RedisClass.access_pfeed(u[0].id)
-	# 		puts "#{u[0].user_name}'s profile feed:"
-	# 		print_tweets(tweets)
-	# 	end
-	# end
-
-	
-	# def user_info
-	# 	if User.where(user_name: @input[1]).exists?
-	# 		print_info(User.where(user_name: @input[1]))
-	# 	else
-	# 		puts "username does not exist"
-	# 	end
-	# end
-
-	# def print_info(user)
-	# 		puts "# of people #{user[0].user_name} follows: #{user[0].follower_count}"
-	# 		puts "# of people following #{user[0].user_name}: #{user[0].following_count}"
-	# 		puts "# of tweets #{user[0].user_name} has: #{user[0].tweet_count}"
-	# end
-	
-	#THE 4 METHODS THAM COME NOW NEED TO BE CONDENSED INTO TWO METHODS
-
-
-
-
-	
-		# tweets.each do |t|
-		# 	 t = JSON.parse(t)
-	 #   		puts "#{t["created_at"]}: #{t["text"]} , #{t["author_name"]}"
-			
-		# end
 
 end
 

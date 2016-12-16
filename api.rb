@@ -34,15 +34,6 @@ get '/api/v1/tweets/:tweet_id/replies' do
     RedisClass.access_replies(params[:tweet_id]).to_json
 end
 
-# get '/api/v1/users/:user_name/tweets' do
-#    if User.where(user_name: params[:user_name]).exists?
-#   	  User.where(user_name: params[:user_name])[0].tweets.to_json
-#   else
-#   	default
-#   end
-  
-# end
-
 get '/api/v1/tag/:tag_name' do
 	 RedisClass.access_tag(params[:tag_name]).to_json
 
