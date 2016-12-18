@@ -69,7 +69,8 @@
 <h3>
 <a id="technology" class="anchor" href="#technology" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Technology</h3>
 
-<p>nanoTwitter is written in Ruby and utilizes a Sinatra framework, a more lightweight framework than Rails. It relies extensively on Redis, which handles every feed including the front page. </p>
+<p>NanoTwitter is written in Ruby and utilizes a Sinatra framework. We use rack as the interface between our web server and our application. We use Thin and Puma as the web servers in development and production respectively. Authentication uses bycrypt to encrypt passwords. We use Activerecord as the ORM between sinatra and our databases (Sqlite3 in development/testing and Postrgres in production). We use typheous to make http calls between our client library and our api. Redis is used extensively as a second database that stores all the information about our feeds, likes, tags and responses. We use faker and CSV to seed our database with fake users, tweets and follows in order to carry out efficiency tests. Apart from our main nanotwitter application, we have a second service within Heroku for our test interface (that includes seeding our data).Unit Testing is done using the minitest/autorun library and the rack-test gem. We use Git as the control system to manage and version our source code and codeship for automating our builds and tests. Finally we used loader.io for our load and scalability experiments.  
+ </p>
 
 <h3><a id="load-tests" class="anchor" href="#load-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Load Tests</h3>
 
@@ -256,7 +257,7 @@
 
 
 <a id="Screencast" class="anchor" href="#Screencast" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Screencast</h3>
-<iframe width="1000" height="600" src="https://www.youtube.com/embed/https:/h_qnkmNsBJE">
+<iframe width="1000" height="600" src="https://www.youtube.com/embed/h_qnkmNsBJE">
 </iframe> 
 
 <h3>
