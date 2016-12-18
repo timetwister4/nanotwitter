@@ -108,7 +108,9 @@ class ClientLibrary
 				 tweet
 		    when @input[0] == 'info'
 				 info
-			when @input[0] ==  'followers' || @input[0] == 'followings'
+			when @input[0] ==  'followers' 
+				 follows
+			when @input[0] == 'followings'
 				 follows
 			when @input[0] == 'exit'
 				 exit
@@ -148,10 +150,10 @@ class ClientLibrary
 		if data.nil?
 			return puts "\"#{input}\" does not exist in our system"
     	else 
-		   puts "username:        		   #{data["user_name"]} "
-		   puts "tweet count:      		   #{data["tweet_count"]}"
-		   puts "# of followers:           #{data["follower_count"]}"
-		   puts "# of people following:    #{data["following_count"]}"
+		   puts "username:\t\t\t#{data["user_name"]} "
+		   puts "tweet count:\t\t\t#{data["tweet_count"]}"
+		   puts "# of followers:\t\t\t#{data["follower_count"]}"
+		   puts "# of people following:\t\t\t#{data["following_count"]}"
 		end
     end
 			
